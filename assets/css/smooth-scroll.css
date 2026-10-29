@@ -1,0 +1,9 @@
+/* Native document geometry and a safe fallback before Lenis initializes. */
+html { scroll-behavior: smooth; }
+html.lenis, html.lenis body { height: auto; }
+html.lenis.lenis-smooth { scroll-behavior: auto !important; }
+html.lenis.lenis-stopped { overflow: clip; }
+.lenis [data-lenis-prevent], .lenis [role="dialog"] { overscroll-behavior: contain; }
+@media (prefers-reduced-motion: reduce) {
+  html, html.lenis.lenis-smooth { scroll-behavior: auto !important; }
+}

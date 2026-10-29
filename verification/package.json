@@ -1,0 +1,16 @@
+{
+  "name": "portfolio-verification",
+  "version": "1.0.0",
+  "description": "Browser regression checks for the static Hero and About redesign",
+  "scripts": {
+    "test": "node verify.mjs && node scroll-background.mjs"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "MIT",
+  "type": "module",
+  "devDependencies": {
+    "playwright": "^1.56.1"
+  },
+  "private": true
+}

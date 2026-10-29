@@ -1,0 +1,274 @@
+{
+  "testedAt": "2026-10-29T20:23:48.567Z",
+  "browser": "Chromium 141 / software WebGL",
+  "results": [
+    {
+      "test": "Full About background",
+      "width": 320,
+      "theme": "dark",
+      "sectionHeight": 2966.3125,
+      "imageHeight": 1000,
+      "sectionWidth": 320,
+      "imageWidth": 2500.625,
+      "source": "http://127.0.0.1:36623/assets/images/about-summitscape.webp",
+      "allChaptersCovered": true,
+      "sceneryHeight": 2965.3125,
+      "overflow": false,
+      "status": "PASS"
+    },
+    {
+      "test": "Full About background",
+      "width": 375,
+      "theme": "dark",
+      "sectionHeight": 2703.84375,
+      "imageHeight": 1000,
+      "sectionWidth": 375,
+      "imageWidth": 2500.625,
+      "source": "http://127.0.0.1:36623/assets/images/about-summitscape.webp",
+      "allChaptersCovered": true,
+      "sceneryHeight": 2702.84375,
+      "overflow": false,
+      "status": "PASS"
+    },
+    {
+      "test": "Full About background",
+      "width": 390,
+      "theme": "dark",
+      "sectionHeight": 2380.0625,
+      "imageHeight": 1000,
+      "sectionWidth": 390,
+      "imageWidth": 2500.625,
+      "source": "http://127.0.0.1:36623/assets/images/about-summitscape.webp",
+      "allChaptersCovered": true,
+      "sceneryHeight": 2379.0625,
+      "overflow": false,
+      "status": "PASS"
+    },
+    {
+      "test": "Full About background",
+      "width": 768,
+      "theme": "dark",
+      "sectionHeight": 1688.59375,
+      "imageHeight": 307.109375,
+      "sectionWidth": 768,
+      "imageWidth": 768,
+      "source": "http://127.0.0.1:36623/assets/images/about-summitscape.webp",
+      "allChaptersCovered": true,
+      "sceneryHeight": 1687.59375,
+      "overflow": false,
+      "status": "PASS"
+    },
+    {
+      "test": "Full About background",
+      "width": 1024,
+      "theme": "dark",
+      "sectionHeight": 1686.640625,
+      "imageHeight": 409.484375,
+      "sectionWidth": 1024,
+      "imageWidth": 1024,
+      "source": "http://127.0.0.1:36623/assets/images/about-summitscape.webp",
+      "allChaptersCovered": true,
+      "sceneryHeight": 1685.640625,
+      "overflow": false,
+      "status": "PASS"
+    },
+    {
+      "test": "Full About background",
+      "width": 1366,
+      "theme": "dark",
+      "sectionHeight": 1725.734375,
+      "imageHeight": 546.25,
+      "sectionWidth": 1366,
+      "imageWidth": 1366,
+      "source": "http://127.0.0.1:36623/assets/images/about-summitscape.webp",
+      "allChaptersCovered": true,
+      "sceneryHeight": 1724.734375,
+      "overflow": false,
+      "status": "PASS"
+    },
+    {
+      "test": "Full About background",
+      "width": 1440,
+      "theme": "dark",
+      "sectionHeight": 1764.109375,
+      "imageHeight": 575.84375,
+      "sectionWidth": 1440,
+      "imageWidth": 1440,
+      "source": "http://127.0.0.1:36623/assets/images/about-summitscape.webp",
+      "allChaptersCovered": true,
+      "sceneryHeight": 1763.109375,
+      "overflow": false,
+      "status": "PASS"
+    },
+    {
+      "test": "Full About background",
+      "width": 1920,
+      "theme": "dark",
+      "sectionHeight": 1744.421875,
+      "imageHeight": 767.796875,
+      "sectionWidth": 1920,
+      "imageWidth": 1920,
+      "source": "http://127.0.0.1:36623/assets/images/about-summitscape.webp",
+      "allChaptersCovered": true,
+      "sceneryHeight": 1743.421875,
+      "overflow": false,
+      "status": "PASS"
+    },
+    {
+      "test": "Full About background",
+      "width": 320,
+      "theme": "light",
+      "sectionHeight": 2966.3125,
+      "imageHeight": 1000,
+      "sectionWidth": 320,
+      "imageWidth": 2500.625,
+      "source": "http://127.0.0.1:36623/assets/images/about-summitscape.webp",
+      "allChaptersCovered": true,
+      "sceneryHeight": 2965.3125,
+      "overflow": false,
+      "status": "PASS"
+    },
+    {
+      "test": "Full About background",
+      "width": 375,
+      "theme": "light",
+      "sectionHeight": 2703.84375,
+      "imageHeight": 1000,
+      "sectionWidth": 375,
+      "imageWidth": 2500.625,
+      "source": "http://127.0.0.1:36623/assets/images/about-summitscape.webp",
+      "allChaptersCovered": true,
+      "sceneryHeight": 2702.84375,
+      "overflow": false,
+      "status": "PASS"
+    },
+    {
+      "test": "Full About background",
+      "width": 390,
+      "theme": "light",
+      "sectionHeight": 2380.0625,
+      "imageHeight": 1000,
+      "sectionWidth": 390,
+      "imageWidth": 2500.625,
+      "source": "http://127.0.0.1:36623/assets/images/about-summitscape.webp",
+      "allChaptersCovered": true,
+      "sceneryHeight": 2379.0625,
+      "overflow": false,
+      "status": "PASS"
+    },
+    {
+      "test": "Full About background",
+      "width": 768,
+      "theme": "light",
+      "sectionHeight": 1688.59375,
+      "imageHeight": 307.109375,
+      "sectionWidth": 768,
+      "imageWidth": 768,
+      "source": "http://127.0.0.1:36623/assets/images/about-summitscape.webp",
+      "allChaptersCovered": true,
+      "sceneryHeight": 1687.59375,
+      "overflow": false,
+      "status": "PASS"
+    },
+    {
+      "test": "Full About background",
+      "width": 1024,
+      "theme": "light",
+      "sectionHeight": 1686.640625,
+      "imageHeight": 409.484375,
+      "sectionWidth": 1024,
+      "imageWidth": 1024,
+      "source": "http://127.0.0.1:36623/assets/images/about-summitscape.webp",
+      "allChaptersCovered": true,
+      "sceneryHeight": 1685.640625,
+      "overflow": false,
+      "status": "PASS"
+    },
+    {
+      "test": "Full About background",
+      "width": 1366,
+      "theme": "light",
+      "sectionHeight": 1725.734375,
+      "imageHeight": 546.25,
+      "sectionWidth": 1366,
+      "imageWidth": 1366,
+      "source": "http://127.0.0.1:36623/assets/images/about-summitscape.webp",
+      "allChaptersCovered": true,
+      "sceneryHeight": 1724.734375,
+      "overflow": false,
+      "status": "PASS"
+    },
+    {
+      "test": "Full About background",
+      "width": 1440,
+      "theme": "light",
+      "sectionHeight": 1764.109375,
+      "imageHeight": 575.84375,
+      "sectionWidth": 1440,
+      "imageWidth": 1440,
+      "source": "http://127.0.0.1:36623/assets/images/about-summitscape.webp",
+      "allChaptersCovered": true,
+      "sceneryHeight": 1763.109375,
+      "overflow": false,
+      "status": "PASS"
+    },
+    {
+      "test": "Full About background",
+      "width": 1920,
+      "theme": "light",
+      "sectionHeight": 1744.421875,
+      "imageHeight": 767.796875,
+      "sectionWidth": 1920,
+      "imageWidth": 1920,
+      "source": "http://127.0.0.1:36623/assets/images/about-summitscape.webp",
+      "allChaptersCovered": true,
+      "sceneryHeight": 1743.421875,
+      "overflow": false,
+      "status": "PASS"
+    },
+    {
+      "test": "Actual wheel eases progressively, real window scroll updates",
+      "status": "PASS",
+      "delta": 475,
+      "distinctPositions": 42
+    },
+    {
+      "test": "Programmatic chapter navigation uses smooth controller and preserves tracker",
+      "status": "PASS"
+    },
+    {
+      "test": "Manual wheel interrupts navigation; no locked forced scroll",
+      "status": "PASS",
+      "contactDistance": 526
+    },
+    {
+      "test": "Nested dialog scroll remains native and does not move background page",
+      "status": "PASS"
+    },
+    {
+      "test": "Robot delivery does not auto-follow or pull the viewport",
+      "status": "PASS"
+    },
+    {
+      "test": "Live reduced-motion preference returns to native/instant then restores easing",
+      "status": "PASS"
+    },
+    {
+      "test": "Mobile touch movement is not prevented or given synthetic inertia",
+      "status": "PASS"
+    },
+    {
+      "test": "Browser keyboard PageDown continues to move the real document",
+      "status": "PASS"
+    },
+    {
+      "test": "Journey route and story back-to-top use the shared smooth service",
+      "status": "PASS"
+    },
+    {
+      "test": "Blocked smooth module falls back to working native anchor scrolling",
+      "status": "PASS"
+    }
+  ],
+  "pageErrors": []
+}
