@@ -1,15 +1,17 @@
 /* Theme-specific supplied portraits; restrained, flat Portix-reference layout. */
 :root, [data-theme="light"] {
+  --hero-ground: #f4f4f1;
   --folio-ground: #f5f3ee; --folio-ink: #232323; --folio-muted: #656565;
   --folio-line: #d6d6d2; --folio-coral: #c14d30;
 }
 [data-theme="dark"] {
+  --hero-ground: #1f1f1f;
   --folio-ground: #0b0d0f; --folio-ink: #f7f5f1; --folio-muted: #969696;
   --folio-line: #393939; --folio-coral: #e76440;
 }
 html { scroll-padding-top: 88px; }
 body { background: var(--folio-ground); }
-.navbar-wrapper, [data-theme="dark"] .navbar-wrapper { background: var(--folio-ground); border: 0; backdrop-filter: none; -webkit-backdrop-filter: none; }
+.navbar-wrapper, [data-theme="dark"] .navbar-wrapper { background: var(--hero-ground); border: 0; backdrop-filter: none; -webkit-backdrop-filter: none; }
 .navbar-glass, .navbar-glass.portix-navbar { max-width: 1440px; height: 80px; margin: auto; padding: 0 clamp(20px, 6.4vw, 92px); }
 .navbar-wrapper .brand-logo, [data-theme="dark"] .navbar-wrapper .brand-logo { color: var(--folio-ink); font-family: 'Oswald', sans-serif; font-size: 25px; letter-spacing: -.035em; text-transform: uppercase; }
 .navbar-wrapper .brand-logo .red-dot { display: none; }
@@ -27,7 +29,7 @@ body { background: var(--folio-ground); }
 .navbar-wrapper .theme-toggle-label { display: none; }
 .navbar-wrapper .theme-toggle-icon-box { width: 18px; height: 18px; padding: 0; background: transparent; box-shadow: none; }
 .skip-link { background: var(--folio-ink); color: var(--folio-ground); }
-.fh-hero { position: relative; isolation: isolate; overflow: clip; background: var(--folio-ground); color: var(--folio-ink); scroll-margin-top: 80px; }
+.fh-hero { position: relative; isolation: isolate; overflow: clip; background: var(--hero-ground); color: var(--folio-ink); scroll-margin-top: 80px; }
 .fh-atmosphere { position: absolute; inset: 0; z-index: -1; pointer-events: none; }
 .fh-inner { max-width: 1440px; margin: auto; padding: 0 clamp(20px, 6.4vw, 92px); }
 .fh-composition { display: grid; grid-template-columns: 1fr 1.1fr; align-items: center; gap: 0; }
@@ -83,7 +85,7 @@ body { background: var(--folio-ground); }
   .fh-name-mobile { position: absolute; z-index: 4; left: 0; right: 0; bottom: 8px; margin: 0; padding: 22px 10px 13px; font-size: clamp(29px, 9.8vw, 42px); color: #fff; text-shadow: 0 2px 10px #000c, 0 0 2px #0008; background: none; isolation: isolate; }
   /* Soft elliptical shade with no hard box edges, so the photo blends into the hero. */
   .fh-name-mobile::after { content: ""; position: absolute; z-index: -1; inset: -34px -6px -22px; background: #0b0d0fd9; -webkit-mask-image: radial-gradient(ellipse 50% 50% at 50% 56%, #000 38%, transparent 100%); mask-image: radial-gradient(ellipse 50% 50% at 50% 56%, #000 38%, transparent 100%); pointer-events: none; }
-  [data-theme="light"] .fh-name-mobile::after { background: #2a1610cc; }
+  [data-theme="light"] .fh-name-mobile::after { inset: -28px 14px -16px; background: #2a1610b8; -webkit-mask-image: radial-gradient(ellipse 50% 50% at 50% 54%, #000 30%, transparent 100%); mask-image: radial-gradient(ellipse 50% 50% at 50% 54%, #000 30%, transparent 100%); }
   .fh-name-mobile::before { left: 10px; top: 10px; }
   .fh-name-mobile .fh-name-accent { color: #ff7952; }
   .fh-actions { gap: 10px 18px; }
@@ -93,9 +95,11 @@ body { background: var(--folio-ground); }
 }
 @media (prefers-reduced-motion:reduce) { .fh-hero *, .fh-hero *::before, .fh-hero *::after { animation:none !important; transition:none !important; } html { scroll-behavior:auto; } }
 
-/* A shared scenic register links the Hero and all About chapters. */
-.fh-atmosphere { background-image: linear-gradient(90deg, #f5f3eeeb 0%, #f5f3eeb0 55%, #f5f3ee66), url('/assets/images/about-summitscape-light.webp'); background-size: cover; background-position: right bottom; }
-[data-theme="dark"] .fh-atmosphere { background-image: linear-gradient(90deg, #0b0d0fe6 0%, #0b0d0fa6 55%, #0b0d0f66), url('/assets/images/about-summitscape.webp'); }
+/* Hero is a flat, clean field like the reference: no landscape/wireframe layer.
+   Only a short fade at the bottom eases into the About section's own background. */
+.fh-atmosphere { background: none; }
+.fh-hero::after { content: ""; position: absolute; z-index: 1; left: 0; right: 0; bottom: 0; height: 56px; pointer-events: none; background: linear-gradient(to bottom, transparent, #0b0d0f); }
+[data-theme="light"] .fh-hero::after { background: linear-gradient(to bottom, transparent, #f5f3ee); }
 .fh-sr-only { position: absolute; width: 1px; height: 1px; margin: -1px; padding: 0; border: 0; overflow: hidden; clip: rect(0,0,0,0); white-space: nowrap; }
 .fh-name-visual { display: inline; }
 .fh-name-word { display: inline-block; will-change: opacity, transform; }

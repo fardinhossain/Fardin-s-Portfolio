@@ -1,5 +1,5 @@
 {
-  "testedAt": "2026-10-30T08:34:00.835Z",
+  "testedAt": "2026-10-30T08:57:17.863Z",
   "browser": "Chromium 141 / Playwright 1.56.1 / software WebGL",
   "results": [
     {
@@ -16,7 +16,7 @@
         "bottom": 414
       },
       "portraitTheme": "dark",
-      "portraitSource": "http://127.0.0.1:46873/assets/images/hero-portrait-dark-cutout.webp",
+      "portraitSource": "http://127.0.0.1:41821/assets/images/hero-portrait-dark-cutout.webp",
       "extraHalo": false,
       "nameFont": "Anton, Oswald, sans-serif",
       "mobileNameOverlay": true,
@@ -80,7 +80,7 @@
         "bottom": 439
       },
       "portraitTheme": "dark",
-      "portraitSource": "http://127.0.0.1:46873/assets/images/hero-portrait-dark-cutout.webp",
+      "portraitSource": "http://127.0.0.1:41821/assets/images/hero-portrait-dark-cutout.webp",
       "extraHalo": false,
       "nameFont": "Anton, Oswald, sans-serif",
       "mobileNameOverlay": true,
@@ -144,7 +144,7 @@
         "bottom": 454
       },
       "portraitTheme": "dark",
-      "portraitSource": "http://127.0.0.1:46873/assets/images/hero-portrait-dark-cutout.webp",
+      "portraitSource": "http://127.0.0.1:41821/assets/images/hero-portrait-dark-cutout.webp",
       "extraHalo": false,
       "nameFont": "Anton, Oswald, sans-serif",
       "mobileNameOverlay": true,
@@ -208,7 +208,7 @@
         "bottom": 550
       },
       "portraitTheme": "dark",
-      "portraitSource": "http://127.0.0.1:46873/assets/images/hero-portrait-dark-cutout.webp",
+      "portraitSource": "http://127.0.0.1:41821/assets/images/hero-portrait-dark-cutout.webp",
       "extraHalo": false,
       "nameFont": "Anton, Oswald, sans-serif",
       "mobileNameOverlay": false,
@@ -272,7 +272,7 @@
         "bottom": 550
       },
       "portraitTheme": "dark",
-      "portraitSource": "http://127.0.0.1:46873/assets/images/hero-portrait-dark-cutout.webp",
+      "portraitSource": "http://127.0.0.1:41821/assets/images/hero-portrait-dark-cutout.webp",
       "extraHalo": false,
       "nameFont": "Anton, Oswald, sans-serif",
       "mobileNameOverlay": false,
@@ -336,7 +336,7 @@
         "bottom": 708.359375
       },
       "portraitTheme": "dark",
-      "portraitSource": "http://127.0.0.1:46873/assets/images/hero-portrait-dark-cutout.webp",
+      "portraitSource": "http://127.0.0.1:41821/assets/images/hero-portrait-dark-cutout.webp",
       "extraHalo": false,
       "nameFont": "Anton, Oswald, sans-serif",
       "mobileNameOverlay": false,
@@ -400,7 +400,7 @@
         "bottom": 730
       },
       "portraitTheme": "dark",
-      "portraitSource": "http://127.0.0.1:46873/assets/images/hero-portrait-dark-cutout.webp",
+      "portraitSource": "http://127.0.0.1:41821/assets/images/hero-portrait-dark-cutout.webp",
       "extraHalo": false,
       "nameFont": "Anton, Oswald, sans-serif",
       "mobileNameOverlay": false,
@@ -464,7 +464,7 @@
         "bottom": 730
       },
       "portraitTheme": "dark",
-      "portraitSource": "http://127.0.0.1:46873/assets/images/hero-portrait-dark-cutout.webp",
+      "portraitSource": "http://127.0.0.1:41821/assets/images/hero-portrait-dark-cutout.webp",
       "extraHalo": false,
       "nameFont": "Anton, Oswald, sans-serif",
       "mobileNameOverlay": false,
@@ -528,7 +528,7 @@
         "bottom": 414
       },
       "portraitTheme": "light",
-      "portraitSource": "http://127.0.0.1:46873/assets/images/hero-portrait-light-cutout.webp",
+      "portraitSource": "http://127.0.0.1:41821/assets/images/hero-portrait-light-cutout.webp",
       "extraHalo": false,
       "nameFont": "Anton, Oswald, sans-serif",
       "mobileNameOverlay": true,
@@ -592,7 +592,7 @@
         "bottom": 439
       },
       "portraitTheme": "light",
-      "portraitSource": "http://127.0.0.1:46873/assets/images/hero-portrait-light-cutout.webp",
+      "portraitSource": "http://127.0.0.1:41821/assets/images/hero-portrait-light-cutout.webp",
       "extraHalo": false,
       "nameFont": "Anton, Oswald, sans-serif",
       "mobileNameOverlay": true,
@@ -656,7 +656,7 @@
         "bottom": 454
       },
       "portraitTheme": "light",
-      "portraitSource": "http://127.0.0.1:46873/assets/images/hero-portrait-light-cutout.webp",
+      "portraitSource": "http://127.0.0.1:41821/assets/images/hero-portrait-light-cutout.webp",
       "extraHalo": false,
       "nameFont": "Anton, Oswald, sans-serif",
       "mobileNameOverlay": true,
@@ -720,7 +720,7 @@
         "bottom": 550
       },
       "portraitTheme": "light",
-      "portraitSource": "http://127.0.0.1:46873/assets/images/hero-portrait-light-cutout.webp",
+      "portraitSource": "http://127.0.0.1:41821/assets/images/hero-portrait-light-cutout.webp",
       "extraHalo": false,
       "nameFont": "Anton, Oswald, sans-serif",
       "mobileNameOverlay": false,
@@ -784,7 +784,7 @@
         "bottom": 550
       },
       "portraitTheme": "light",
-      "portraitSource": "http://127.0.0.1:46873/assets/images/hero-portrait-light-cutout.webp",
+      "portraitSource": "http://127.0.0.1:41821/assets/images/hero-portrait-light-cutout.webp",
       "extraHalo": false,
       "nameFont": "Anton, Oswald, sans-serif",
       "mobileNameOverlay": false,
@@ -848,7 +848,7 @@
         "bottom": 708.359375
       },
       "portraitTheme": "light",
-      "portraitSource": "http://127.0.0.1:46873/assets/images/hero-portrait-light-cutout.webp",
+      "portraitSource": "http://127.0.0.1:41821/assets/images/hero-portrait-light-cutout.webp",
       "extraHalo": false,
       "nameFont": "Anton, Oswald, sans-serif",
       "mobileNameOverlay": false,
@@ -912,7 +912,7 @@
         "bottom": 730
       },
       "portraitTheme": "light",
-      "portraitSource": "http://127.0.0.1:46873/assets/images/hero-portrait-light-cutout.webp",
+      "portraitSource": "http://127.0.0.1:41821/assets/images/hero-portrait-light-cutout.webp",
       "extraHalo": false,
       "nameFont": "Anton, Oswald, sans-serif",
       "mobileNameOverlay": false,
@@ -976,7 +976,7 @@
         "bottom": 730
       },
       "portraitTheme": "light",
-      "portraitSource": "http://127.0.0.1:46873/assets/images/hero-portrait-light-cutout.webp",
+      "portraitSource": "http://127.0.0.1:41821/assets/images/hero-portrait-light-cutout.webp",
       "extraHalo": false,
       "nameFont": "Anton, Oswald, sans-serif",
       "mobileNameOverlay": false,

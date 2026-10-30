@@ -39,3 +39,8 @@ Professional context imports website data and an allowlist extracted from the su
 Node 22+; npm run dev → http://localhost:4175. Launchers start this same loopback server. .env.example is blank; populated .env variants are ignored and refused by the local server. Static dist is whitelisted and excludes server/env files. No transpilation or production dependency installation is required; browser libraries/fonts remain on their pinned CDNs.
 
 The inspection-only PREVIEW.html embeds the new assets/client source, marks itself as an inspection preview, makes no assistant API calls and disables contact submission. It is not a live backend. Root README contains commands and architecture; tests explain what was and was not verified.
+
+
+## Flat hero field
+
+The navbar and Hero use a flat theme field matching the supplied reference: charcoal #1f1f1f in dark mode and #f4f4f1 in light mode. The wireframe landscape no longer appears behind the Hero; it remains in About, where each theme keeps its own landscape. A 56px fade at the Hero's bottom eases into About's background. Body and other sections keep their existing backgrounds.

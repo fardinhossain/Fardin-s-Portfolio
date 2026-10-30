@@ -28,6 +28,8 @@ for(const theme of ['dark','light'])for(const width of [320,375,390,768,1024,136
   return {overlaps,portraitFit:getComputedStyle(document.querySelector('.fh-portrait img')).objectFit,nameSize:parseFloat(getComputedStyle(document.querySelector('.fh-name')).fontSize),horizontal:document.documentElement.scrollWidth>innerWidth};
  });
  assert(!geometry.overlaps&&!geometry.horizontal&&geometry.portraitFit==='contain','Hero geometry '+JSON.stringify({width,theme,geometry}));
+ const flat=await page.evaluate(()=>({nav:getComputedStyle(document.querySelector('.navbar-wrapper')).backgroundColor,hero:getComputedStyle(document.querySelector('.fh-hero')).backgroundColor,layer:getComputedStyle(document.querySelector('.fh-atmosphere')).backgroundImage}));
+ assert(flat.nav===flat.hero&&flat.layer==='none'&&flat.hero===(theme==='light'?'rgb(244, 244, 241)':'rgb(31, 31, 31)'),'Hero background is not the flat theme field '+JSON.stringify({theme,width,flat}));
  const alpha=await page.evaluate(()=>{const i=document.querySelector('.fh-portrait img'),c=document.createElement('canvas');c.width=i.naturalWidth;c.height=i.naturalHeight;const x=c.getContext('2d');x.drawImage(i,0,0);const a=(px,py)=>x.getImageData(px,py,1,1).data[3];return {corners:[a(6,6),a(c.width-7,6),a(6,Math.floor(c.height*.4)),a(c.width-7,Math.floor(c.height*.4))],subject:a(Math.floor(c.width*.55),Math.floor(c.height*.4))};});
  assert(alpha.corners.every(v=>v<12)&&alpha.subject>240,'Portrait backdrop is not transparent '+JSON.stringify({theme,width,alpha}));
  await page.locator('.fh-chat-launcher').click();
