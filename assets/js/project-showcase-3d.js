@@ -1,233 +1,273 @@
 // ==========================================================================
-// FARDIN.AI — ANIMATED 3D ROBOT PROJECT SHOWCASE
-// Modular Components:
-//   - ANIMATION_STATES (IDLE -> ENTERING -> SCANNING -> PICKING_UP -> DELIVERING -> RELEASING -> EXITING)
-//   - FlyingRobot (Three.js articulated white-and-red assistant robot + 3D mini-card)
-//   - RobotScene (WebGL scene, lighting, particle trail pool, DOM-to-3D projection)
-//   - ProjectDeliveryAnimation (Coordinated cubic Bézier flight & state machine controller)
-//   - ProjectCard3D (Interactive 3D project card with spring landing & hover tracking)
-//   - ProjectFilters (Category filter tabs & View All toggle)
-//   - FeaturedProjects (Complete showcase section)
+// FARDIN.AI — PROJECTS SHOWCASE SECTION (DESKTOP & MOBILE REDESIGN)
+// Features:
+//   - Futuristic Summitscape Wireframe Mountain Background (Dark & Light)
+//   - Large Gradient "Projects" Heading (Space Grotesk) & Inter Subtitle
+//   - Metrics Stats (5+ Projects Built, 10+ Technologies, Real World Focus)
+//   - Category Filter Pills (All, Web Apps, AI / ML, Mobile Apps, Tools, Academic)
+//   - Desktop Featured Project Showcase Card (Laptop + Phone Mockup, 2x2 Features, Tech Tags, Demo/GitHub/Details, < > Nav)
+//   - Desktop Responsive Lower Card Grid (02-05, Thumbnails, Descriptions, Chips, Actions)
+//   - Mobile Horizontally Swipeable Carousel with Peeking Adjacent Cards, Active Glow, Pagination Dots & Swipe Hint
+//   - Mobile Dedicated Project Details View (<- Back to Projects, Mountain Hero Preview, Overlay Arrows, Full Badges, Key Features)
+//   - Full Dark / Light Theme & Reduced Motion Support
 // ==========================================================================
 
 import React, { useState, useEffect, useRef, useMemo, useCallback } from "react";
-import { motion, AnimatePresence } from "framer-motion";
 import * as THREE from "three";
-import {
-  GithubIcon,
-  ExternalArrowIcon,
-  ProjectVisualHeader
-} from "./visual-previews.js";
 
 const h = React.createElement;
 
 // --------------------------------------------------------------------------
-// 1. STATE MACHINE DEFINITIONS
+// 1. INLINE SVG ICONS
 // --------------------------------------------------------------------------
-export const ANIMATION_STATES = {
-  IDLE: "IDLE",
-  ENTERING: "ENTERING",
-  SCANNING: "SCANNING",
-  PICKING_UP: "PICKING_UP",
-  DELIVERING: "DELIVERING",
-  RELEASING: "RELEASING",
-  EXITING: "EXITING"
-};
-
-const STATE_LABELS = {
-  IDLE: "UNIT F-01 · STANDBY",
-  ENTERING: "STEP 1 · ENTERING SECTOR",
-  SCANNING: "STEP 2 · SCANNING TARGET",
-  PICKING_UP: "STEP 3 · GRIPPING MODULE",
-  DELIVERING: "STEP 4 · AERIAL DELIVERY",
-  RELEASING: "STEP 5 · DROPPING IN PLACE",
-  EXITING: "STEP 6 · NEXT VECTOR"
-};
-
-// Detect reduced motion preference
-function prefersReducedMotion() {
-  if (typeof window === "undefined" || !window.matchMedia) return false;
-  return window.matchMedia("(prefers-reduced-motion: reduce)").matches;
-}
-
-// Detect WebGL support safely
-function checkWebGLSupport() {
-  if (typeof window === "undefined") return false;
-  try {
-    const canvas = document.createElement("canvas");
-    const gl =
-      canvas.getContext("webgl2") ||
-      canvas.getContext("webgl") ||
-      canvas.getContext("experimental-webgl");
-    return !!gl;
-  } catch (_e) {
-    return false;
-  }
-}
-
-// Cubic Bézier evaluation helper in 3D
-function evalCubicBezier3D(p0, p1, p2, p3, t, outVec) {
-  const u = 1 - t;
-  const tt = t * t;
-  const uu = u * u;
-  const uuu = uu * u;
-  const ttt = tt * t;
-
-  outVec.set(
-    uuu * p0.x + 3 * uu * t * p1.x + 3 * u * tt * p2.x + ttt * p3.x,
-    uuu * p0.y + 3 * uu * t * p1.y + 3 * u * tt * p2.y + ttt * p3.y,
-    uuu * p0.z + 3 * uu * t * p1.z + 3 * u * tt * p2.z + ttt * p3.z
+function IconCube({ size = 20, color = "currentColor" }) {
+  return h(
+    "svg",
+    { width: size, height: size, viewBox: "0 0 24 24", fill: "none", stroke: color, strokeWidth: "1.8", strokeLinecap: "round", strokeLinejoin: "round" },
+    h("path", { d: "M21 16V8a2 2 0 0 0-1-1.73l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.73l7 4a2 2 0 0 0 2 0l7-4A2 2 0 0 0 21 16z" }),
+    h("polyline", { points: "3.27 6.96 12 12.01 20.73 6.96" }),
+    h("line", { x1: "12", y1: "22.08", x2: "12", y2: "12" })
   );
-  return outVec;
 }
 
-// Smooth ease-in-out cubic
-function easeInOutCubic(x) {
-  return x < 0.5 ? 4 * x * x * x : 1 - Math.pow(-2 * x + 2, 3) / 2;
+function IconCodeBrackets({ size = 20, color = "currentColor" }) {
+  return h(
+    "svg",
+    { width: size, height: size, viewBox: "0 0 24 24", fill: "none", stroke: color, strokeWidth: "1.8", strokeLinecap: "round", strokeLinejoin: "round" },
+    h("polyline", { points: "16 18 22 12 16 6" }),
+    h("polyline", { points: "8 6 2 12 8 18" }),
+    h("line", { x1: "14", y1: "4", x2: "10", y2: "20" })
+  );
 }
 
-// Smooth ease-out back for playful settle
-function easeOutBack(x) {
-  const c1 = 1.70158;
-  const c3 = c1 + 1;
-  return 1 + c3 * Math.pow(x - 1, 3) + c1 * Math.pow(x - 1, 2);
+function IconUsersGroup({ size = 20, color = "currentColor" }) {
+  return h(
+    "svg",
+    { width: size, height: size, viewBox: "0 0 24 24", fill: "none", stroke: color, strokeWidth: "1.8", strokeLinecap: "round", strokeLinejoin: "round" },
+    h("path", { d: "M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2" }),
+    h("circle", { cx: "9", cy: "7", r: "4" }),
+    h("path", { d: "M23 21v-2a4 4 0 0 0-3-3.87" }),
+    h("path", { d: "M16 3.13a4 4 0 0 1 0 7.75" })
+  );
 }
 
-// --------------------------------------------------------------------------
-// 2. DYNAMIC 3D MINIATURE CARD TEXTURE GENERATOR
-// Renders the actual project's title, category, preview motif & red accent
-// onto the 3D miniature card carried by the robot.
-// --------------------------------------------------------------------------
-function createMiniCardCanvasTexture() {
-  const canvas = document.createElement("canvas");
-  canvas.width = 512;
-  canvas.height = 340;
-  const ctx = canvas.getContext("2d");
-  const texture = new THREE.CanvasTexture(canvas);
-  texture.colorSpace = THREE.SRGBColorSpace;
-  texture.needsUpdate = true;
-
-  const imgCache = new Map();
-
-  function drawCardFrame(project, loadedImg) {
-    if (!ctx) return;
-    const title = project ? project.title : "AI Module";
-    const category = project ? project.shortCategory : "AI / ML";
-    const tags = project && project.tags ? project.tags.slice(0, 3) : ["Python", "PyTorch"];
-
-    // Outer card surface
-    const isDark =
-      typeof document !== "undefined" &&
-      document.documentElement.getAttribute("data-theme") === "dark";
-    ctx.clearRect(0, 0, 512, 340);
-    ctx.fillStyle = isDark ? "#181C26" : "#FFFFFF";
-    ctx.fillRect(0, 0, 512, 340);
-
-    // Subtle outer border
-    ctx.strokeStyle = isDark ? "#292E3A" : "#CBD5E1";
-    ctx.lineWidth = 8;
-    ctx.strokeRect(4, 4, 504, 332);
-
-    // Top preview window (real project screenshot or dark fallback)
-    if (loadedImg && loadedImg.complete && loadedImg.naturalWidth > 0) {
-      ctx.save();
-      ctx.beginPath();
-      ctx.rect(18, 18, 476, 152);
-      ctx.clip();
-      ctx.drawImage(loadedImg, 18, 18, 476, 152);
-      ctx.restore();
-    } else {
-      const grad = ctx.createLinearGradient(16, 16, 496, 175);
-      grad.addColorStop(0, "#090D16");
-      grad.addColorStop(1, "#1E293B");
-      ctx.fillStyle = grad;
-      ctx.fillRect(18, 18, 476, 152);
-
-      ctx.fillStyle = "#E11D48";
-      ctx.fillRect(42, 92, 220, 14);
-      ctx.fillStyle = "#FACC15";
-      ctx.fillRect(42, 118, 165, 12);
-      ctx.fillStyle = "#10B981";
-      ctx.fillRect(42, 140, 260, 10);
-    }
-
-    // Category pill inside preview window
-    ctx.fillStyle = "#FFFFFF";
-    ctx.fillRect(32, 30, 144, 32);
-    ctx.fillStyle = "#090D16";
-    ctx.font = "bold 17px sans-serif";
-    ctx.fillText(category.toUpperCase(), 42, 52);
-
-    // Red live indicator dot
-    ctx.beginPath();
-    ctx.arc(462, 46, 9, 0, Math.PI * 2);
-    ctx.fillStyle = "#E11D48";
-    ctx.fill();
-
-    // Project Title on white body
-    ctx.fillStyle = "#090D16";
-    ctx.font = "900 29px sans-serif";
-    const clippedTitle = title.length > 24 ? title.slice(0, 22) + "…" : title;
-    ctx.fillText(clippedTitle, 28, 222);
-
-    // Red accent underline bar
-    ctx.fillStyle = "#E11D48";
-    ctx.fillRect(28, 238, 86, 6);
-
-    // Technology chips row
-    let chipX = 28;
-    ctx.font = "bold 16px monospace";
-    for (let i = 0; i < tags.length; i++) {
-      const t = tags[i];
-      const w = Math.min(145, ctx.measureText(t).width + 26);
-      ctx.fillStyle = "#F1F5F9";
-      ctx.fillRect(chipX, 264, w, 36);
-      ctx.strokeStyle = "#CBD5E1";
-      ctx.lineWidth = 2;
-      ctx.strokeRect(chipX, 264, w, 36);
-      ctx.fillStyle = "#334155";
-      ctx.fillText(t, chipX + 13, 288);
-      chipX += w + 12;
-    }
-
-    texture.needsUpdate = true;
+function IconCategory({ type = "all", size = 16, color = "currentColor" }) {
+  switch (type) {
+    case "all":
+      return h(
+        "svg",
+        { width: size, height: size, viewBox: "0 0 24 24", fill: "none", stroke: color, strokeWidth: "2", strokeLinecap: "round", strokeLinejoin: "round" },
+        h("rect", { x: "3", y: "3", width: "7", height: "7", rx: "1.5" }),
+        h("rect", { x: "14", y: "3", width: "7", height: "7", rx: "1.5" }),
+        h("rect", { x: "14", y: "14", width: "7", height: "7", rx: "1.5" }),
+        h("rect", { x: "3", y: "14", width: "7", height: "7", rx: "1.5" })
+      );
+    case "web":
+      return h(
+        "svg",
+        { width: size, height: size, viewBox: "0 0 24 24", fill: "none", stroke: color, strokeWidth: "2", strokeLinecap: "round", strokeLinejoin: "round" },
+        h("rect", { x: "2", y: "3", width: "20", height: "14", rx: "2" }),
+        h("line", { x1: "8", y1: "21", x2: "16", y2: "21" }),
+        h("line", { x1: "12", y1: "17", x2: "12", y2: "21" })
+      );
+    case "ai-ml":
+      return h(
+        "svg",
+        { width: size, height: size, viewBox: "0 0 24 24", fill: "none", stroke: color, strokeWidth: "2", strokeLinecap: "round", strokeLinejoin: "round" },
+        h("path", { d: "M12 2v4M12 18v4M4.93 4.93l2.83 2.83M16.24 16.24l2.83 2.83M2 12h4M18 12h4M4.93 19.07l2.83-2.83M16.24 7.76l2.83-2.83" }),
+        h("circle", { cx: "12", cy: "12", r: "3" })
+      );
+    case "mobile":
+      return h(
+        "svg",
+        { width: size, height: size, viewBox: "0 0 24 24", fill: "none", stroke: color, strokeWidth: "2", strokeLinecap: "round", strokeLinejoin: "round" },
+        h("rect", { x: "5", y: "2", width: "14", height: "20", rx: "2.5" }),
+        h("line", { x1: "12", y1: "18", x2: "12.01", y2: "18" })
+      );
+    case "tools":
+      return h(
+        "svg",
+        { width: size, height: size, viewBox: "0 0 24 24", fill: "none", stroke: color, strokeWidth: "2", strokeLinecap: "round", strokeLinejoin: "round" },
+        h("path", { d: "M14.7 6.3a1 1 0 0 0 0 1.4l1.6 1.6a1 1 0 0 0 1.4 0l3.77-3.77a6 6 0 0 1-7.94 7.94l-6.91 6.91a2.12 2.12 0 0 1-3-3l6.91-6.91a6 6 0 0 1 7.94-7.94l-3.76 3.76z" })
+      );
+    case "academic":
+      return h(
+        "svg",
+        { width: size, height: size, viewBox: "0 0 24 24", fill: "none", stroke: color, strokeWidth: "2", strokeLinecap: "round", strokeLinejoin: "round" },
+        h("path", { d: "M22 10v6M2 10l10-5 10 5-10 5z" }),
+        h("path", { d: "M6 12v5c0 2 2 3 6 3s6-1 6-3v-5" })
+      );
+    default:
+      return h(
+        "svg",
+        { width: size, height: size, viewBox: "0 0 24 24", fill: "none", stroke: color, strokeWidth: "2" },
+        h("circle", { cx: "12", cy: "12", r: "10" })
+      );
   }
+}
 
-  function updateProjectCard(project) {
-    if (project && project.image && typeof Image !== "undefined") {
-      if (imgCache.has(project.image)) {
-        drawCardFrame(project, imgCache.get(project.image));
-        return;
-      }
-      drawCardFrame(project, null);
-      const img = new Image();
-      img.crossOrigin = "anonymous";
-      img.onload = () => {
-        imgCache.set(project.image, img);
-        drawCardFrame(project, img);
-      };
-      img.src = project.image;
-      return;
-    }
-    drawCardFrame(project, null);
+function IconFeatureBullet({ name = "sparkle", size = 14, color = "currentColor" }) {
+  switch (name) {
+    case "sparkle":
+      return h(
+        "svg",
+        { width: size, height: size, viewBox: "0 0 24 24", fill: "none", stroke: color, strokeWidth: "2", strokeLinecap: "round", strokeLinejoin: "round" },
+        h("path", { d: "m12 3-1.912 5.813a2 2 0 0 1-1.275 1.275L3 12l5.813 1.912a2 2 0 0 1 1.275 1.275L12 21l1.912-5.813a2 2 0 0 1 1.275-1.275L21 12l-5.813-1.912a2 2 0 0 1-1.275-1.275L12 3Z" })
+      );
+    case "map":
+      return h(
+        "svg",
+        { width: size, height: size, viewBox: "0 0 24 24", fill: "none", stroke: color, strokeWidth: "2", strokeLinecap: "round", strokeLinejoin: "round" },
+        h("polygon", { points: "3 6 9 3 15 6 21 3 21 18 15 21 9 18 3 21" }),
+        h("line", { x1: "9", y1: "3", x2: "9", y2: "18" }),
+        h("line", { x1: "15", y1: "6", x2: "15", y2: "21" })
+      );
+    case "radar":
+    case "pin":
+      return h(
+        "svg",
+        { width: size, height: size, viewBox: "0 0 24 24", fill: "none", stroke: color, strokeWidth: "2", strokeLinecap: "round", strokeLinejoin: "round" },
+        h("path", { d: "M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z" }),
+        h("circle", { cx: "12", cy: "10", r: "3" })
+      );
+    case "layout":
+      return h(
+        "svg",
+        { width: size, height: size, viewBox: "0 0 24 24", fill: "none", stroke: color, strokeWidth: "2", strokeLinecap: "round", strokeLinejoin: "round" },
+        h("rect", { x: "3", y: "3", width: "18", height: "18", rx: "2" }),
+        h("line", { x1: "3", y1: "9", x2: "21", y2: "9" }),
+        h("line", { x1: "9", y1: "21", x2: "9", y2: "9" })
+      );
+    case "phone":
+      return h(
+        "svg",
+        { width: size, height: size, viewBox: "0 0 24 24", fill: "none", stroke: color, strokeWidth: "2" },
+        h("rect", { x: "5", y: "2", width: "14", height: "20", rx: "2.5" })
+      );
+    case "chat":
+      return h(
+        "svg",
+        { width: size, height: size, viewBox: "0 0 24 24", fill: "none", stroke: color, strokeWidth: "2" },
+        h("path", { d: "M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z" })
+      );
+    case "calc":
+      return h(
+        "svg",
+        { width: size, height: size, viewBox: "0 0 24 24", fill: "none", stroke: color, strokeWidth: "2" },
+        h("rect", { x: "4", y: "2", width: "16", height: "20", rx: "2" }),
+        h("line", { x1: "8", y1: "6", x2: "16", y2: "6" })
+      );
+    case "doc":
+    case "file":
+      return h(
+        "svg",
+        { width: size, height: size, viewBox: "0 0 24 24", fill: "none", stroke: color, strokeWidth: "2" },
+        h("path", { d: "M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z" }),
+        h("polyline", { points: "14 2 14 8 20 8" })
+      );
+    case "cpu":
+      return h(
+        "svg",
+        { width: size, height: size, viewBox: "0 0 24 24", fill: "none", stroke: color, strokeWidth: "2" },
+        h("rect", { x: "4", y: "4", width: "16", height: "16", rx: "2" }),
+        h("rect", { x: "9", y: "9", width: "6", height: "6" })
+      );
+    case "chart":
+      return h(
+        "svg",
+        { width: size, height: size, viewBox: "0 0 24 24", fill: "none", stroke: color, strokeWidth: "2" },
+        h("line", { x1: "18", y1: "20", x2: "18", y2: "10" }),
+        h("line", { x1: "12", y1: "20", x2: "12", y2: "4" }),
+        h("line", { x1: "6", y1: "20", x2: "6", y2: "14" })
+      );
+    case "check":
+      return h(
+        "svg",
+        { width: size, height: size, viewBox: "0 0 24 24", fill: "none", stroke: color, strokeWidth: "2.5" },
+        h("polyline", { points: "20 6 9 17 4 12" })
+      );
+    case "shield":
+      return h(
+        "svg",
+        { width: size, height: size, viewBox: "0 0 24 24", fill: "none", stroke: color, strokeWidth: "2" },
+        h("path", { d: "M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z" })
+      );
+    default:
+      return h(
+        "svg",
+        { width: size, height: size, viewBox: "0 0 24 24", fill: "none", stroke: color, strokeWidth: "2" },
+        h("circle", { cx: "12", cy: "12", r: "4" })
+      );
   }
+}
 
-  updateProjectCard(null);
-  return { texture, updateProjectCard };
+function IconStar({ size = 13, color = "currentColor" }) {
+  return h(
+    "svg",
+    { width: size, height: size, viewBox: "0 0 24 24", fill: color, stroke: color, strokeWidth: "1" },
+    h("polygon", { points: "12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2" })
+  );
+}
+
+function IconHeart({ size = 16, color = "currentColor" }) {
+  return h(
+    "svg",
+    { width: size, height: size, viewBox: "0 0 24 24", fill: "none", stroke: color, strokeWidth: "2", strokeLinecap: "round", strokeLinejoin: "round" },
+    h("path", { d: "M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z" })
+  );
+}
+
+function IconGitHub({ size = 16, color = "currentColor" }) {
+  return h(
+    "svg",
+    { width: size, height: size, viewBox: "0 0 24 24", fill: color },
+    h("path", { d: "M12 0C5.37 0 0 5.37 0 12c0 5.31 3.435 9.795 8.205 11.385.6.105.825-.255.825-.57 0-.285-.015-1.23-.015-2.235-3.015.555-3.795-.735-4.035-1.41-.135-.345-.72-1.41-1.23-1.695-.42-.225-1.02-.78-.015-.795.945-.015 1.62.87 1.845 1.23 1.08 1.815 2.805 1.305 3.495.99.105-.78.42-1.305.765-1.605-2.67-.3-5.46-1.335-5.46-5.925 0-1.305.465-2.385 1.23-3.225-.12-.3-.54-1.53.12-3.18 0 0 1.005-.315 3.3 1.23.96-.27 1.98-.405 3-.405s2.04.135 3 .405c2.295-1.56 3.3-1.23 3.3-1.23.66 1.65.24 2.88.12 3.18.765.84 1.23 1.905 1.23 3.225 0 4.605-2.805 5.625-5.475 5.925.435.375.81 1.095.81 2.22 0 1.605-.015 2.895-.015 3.3 0 .315.225.69.825.57A12.02 12.02 0 0 0 24 12c0-6.63-5.37-12-12-12z" })
+  );
+}
+
+function IconArrowRight({ size = 15, color = "currentColor" }) {
+  return h(
+    "svg",
+    { width: size, height: size, viewBox: "0 0 24 24", fill: "none", stroke: color, strokeWidth: "2.2", strokeLinecap: "round", strokeLinejoin: "round" },
+    h("line", { x1: "5", y1: "12", x2: "19", y2: "12" }),
+    h("polyline", { points: "12 5 19 12 12 19" })
+  );
+}
+
+function IconExternalArrow({ size = 14, color = "currentColor" }) {
+  return h(
+    "svg",
+    { width: size, height: size, viewBox: "0 0 24 24", fill: "none", stroke: color, strokeWidth: "2.2", strokeLinecap: "round", strokeLinejoin: "round" },
+    h("path", { d: "M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6" }),
+    h("polyline", { points: "15 3 21 3 21 9" }),
+    h("line", { x1: "10", y1: "14", x2: "21", y2: "3" })
+  );
+}
+
+function IconChevronLeft({ size = 16, color = "currentColor" }) {
+  return h(
+    "svg",
+    { width: size, height: size, viewBox: "0 0 24 24", fill: "none", stroke: color, strokeWidth: "2.2", strokeLinecap: "round", strokeLinejoin: "round" },
+    h("polyline", { points: "15 18 9 12 15 6" })
+  );
+}
+
+function IconChevronRight({ size = 16, color = "currentColor" }) {
+  return h(
+    "svg",
+    { width: size, height: size, viewBox: "0 0 24 24", fill: "none", stroke: color, strokeWidth: "2.2", strokeLinecap: "round", strokeLinejoin: "round" },
+    h("polyline", { points: "9 18 15 12 9 6" })
+  );
 }
 
 // --------------------------------------------------------------------------
-// 3. FLYING ROBOT 3D MODEL BUILDER (`FlyingRobot`)
-// Builds the adorable glossy white assistant robot with expressive red LED
-// eyes, articulated arms/grippers, hover-legs, thrusters, scanning cone,
-// and suspended 3D miniature project card.
+// 2. COMPATIBILITY 3D ROBOT FACTORY EXPORT (Preserved for experience-timeline-3d.js)
 // --------------------------------------------------------------------------
 export function createFlyingRobot3D() {
   const root = new THREE.Group();
   const bodyPivot = new THREE.Group();
   root.add(bodyPivot);
 
-  // Shared materials matching fardin.ai white/black/red aesthetic
   const whiteShellMat = new THREE.MeshPhysicalMaterial({
     color: 0xffffff,
     roughness: 0.16,
@@ -242,12 +282,6 @@ export function createFlyingRobot3D() {
     metalness: 0.18
   });
 
-  const darkJointMat = new THREE.MeshStandardMaterial({
-    color: 0x0f172a,
-    roughness: 0.25,
-    metalness: 0.4
-  });
-
   const visorMat = new THREE.MeshPhysicalMaterial({
     color: 0x090d16,
     roughness: 0.08,
@@ -255,37 +289,26 @@ export function createFlyingRobot3D() {
     clearcoat: 1.0
   });
 
-  const redLedMat = new THREE.MeshBasicMaterial({
-    color: 0xe11d48
-  });
+  const redLedMat = new THREE.MeshBasicMaterial({ color: 0xe11d48 });
+  const thrusterMat = new THREE.MeshBasicMaterial({ color: 0xff3b30, transparent: true, opacity: 0.85 });
+  const antigravRingMat = new THREE.MeshBasicMaterial({ color: 0xfacc15, transparent: true, opacity: 0.6 });
+  const scanBeamMat = new THREE.MeshBasicMaterial({ color: 0xe11d48, transparent: true, opacity: 0.25 });
 
-  const brightCoreMat = new THREE.MeshBasicMaterial({
-    color: 0xff4d6d
-  });
-
-  const yellowAccentMat = new THREE.MeshBasicMaterial({
-    color: 0xfacc15
-  });
-
-  // --- A. HEAD GROUP ---
   const headGroup = new THREE.Group();
   headGroup.position.set(0, 0.56, 0);
   bodyPivot.add(headGroup);
 
-  // Main rounded porcelain head shell
-  const headGeo = new THREE.SphereGeometry(0.46, 32, 24);
+  const headGeo = new THREE.SphereGeometry(0.46, 24, 20);
   headGeo.scale(1.18, 0.92, 0.96);
   const headMesh = new THREE.Mesh(headGeo, whiteShellMat);
   headGroup.add(headMesh);
 
-  // Curved obsidian visor plate on front of head
-  const visorGeo = new THREE.SphereGeometry(0.43, 28, 20);
+  const visorGeo = new THREE.SphereGeometry(0.43, 20, 16);
   visorGeo.scale(1.06, 0.72, 0.65);
   const visorMesh = new THREE.Mesh(visorGeo, visorMat);
   visorMesh.position.set(0, -0.02, 0.19);
   headGroup.add(visorMesh);
 
-  // Expressive Red LED Eyes (Left & Right)
   const eyeGroup = new THREE.Group();
   eyeGroup.position.set(0, -0.01, 0.465);
   headGroup.add(eyeGroup);
@@ -301,135 +324,31 @@ export function createFlyingRobot3D() {
   rightEye.position.set(0.145, 0, 0);
   eyeGroup.add(rightEye);
 
-  // Tiny white/pink specular eye highlights for adorable expression
-  const glintGeo = new THREE.SphereGeometry(0.018, 8, 8);
-  const glintMat = new THREE.MeshBasicMaterial({ color: 0xffffff });
-  const leftGlint = new THREE.Mesh(glintGeo, glintMat);
-  leftGlint.position.set(-0.125, 0.022, 0.045);
-  eyeGroup.add(leftGlint);
-
-  const rightGlint = new THREE.Mesh(glintGeo, glintMat);
-  rightGlint.position.set(0.165, 0.022, 0.045);
-  eyeGroup.add(rightGlint);
-
-  // Side Ear Pods + Red Rings
-  const earGeo = new THREE.CylinderGeometry(0.12, 0.12, 0.12, 20);
-  earGeo.rotateZ(Math.PI * 0.5);
-  const leftEar = new THREE.Mesh(earGeo, softGrayMat);
-  leftEar.position.set(-0.54, 0, 0);
-  headGroup.add(leftEar);
-
-  const rightEar = new THREE.Mesh(earGeo, softGrayMat);
-  rightEar.position.set(0.54, 0, 0);
-  headGroup.add(rightEar);
-
-  const earRingGeo = new THREE.TorusGeometry(0.09, 0.018, 10, 24);
-  earRingGeo.rotateY(Math.PI * 0.5);
-  const leftEarRing = new THREE.Mesh(earRingGeo, redLedMat);
-  leftEarRing.position.set(-0.6, 0, 0);
-  headGroup.add(leftEarRing);
-
-  const rightEarRing = new THREE.Mesh(earRingGeo, redLedMat);
-  rightEarRing.position.set(0.6, 0, 0);
-  headGroup.add(rightEarRing);
-
-  // Top Antenna + Glowing Red Beacon Tip
-  const antennaStem = new THREE.Mesh(
-    new THREE.CylinderGeometry(0.022, 0.032, 0.24, 12),
-    softGrayMat
-  );
-  antennaStem.position.set(0, 0.48, 0);
-  headGroup.add(antennaStem);
-
-  const antennaTip = new THREE.Mesh(
-    new THREE.SphereGeometry(0.068, 16, 16),
-    redLedMat
-  );
-  antennaTip.position.set(0, 0.62, 0);
+  const antennaTip = new THREE.Mesh(new THREE.SphereGeometry(0.045, 12, 12), redLedMat);
+  antennaTip.position.set(0, 0.55, 0);
   headGroup.add(antennaTip);
 
-  // --- B. TORSO / CHASSIS GROUP ---
   const torsoGroup = new THREE.Group();
-  torsoGroup.position.set(0, -0.08, 0);
+  torsoGroup.position.set(0, 0, 0);
   bodyPivot.add(torsoGroup);
 
-  const torsoGeo = new THREE.SphereGeometry(0.38, 28, 22);
-  torsoGeo.scale(1.0, 1.08, 0.88);
-  const torsoMesh = new THREE.Mesh(torsoGeo, whiteShellMat);
-  torsoGroup.add(torsoMesh);
+  const chestGeo = new THREE.SphereGeometry(0.44, 24, 20);
+  chestGeo.scale(0.96, 1.05, 0.88);
+  const chestMesh = new THREE.Mesh(chestGeo, whiteShellMat);
+  chestMesh.position.set(0, -0.02, 0);
+  torsoGroup.add(chestMesh);
 
-  // Collar ring
-  const collarRing = new THREE.Mesh(
-    new THREE.TorusGeometry(0.24, 0.025, 10, 28).rotateX(Math.PI * 0.5),
-    darkJointMat
-  );
-  collarRing.position.set(0, 0.34, 0);
-  torsoGroup.add(collarRing);
-
-  // Chest AI Core Badge (Glowing Red Ring + Center)
-  const chestCoreRing = new THREE.Mesh(
-    new THREE.RingGeometry(0.065, 0.105, 24),
-    redLedMat
-  );
-  chestCoreRing.position.set(0, 0.05, 0.34);
-  torsoGroup.add(chestCoreRing);
-
-  const chestCoreCenter = new THREE.Mesh(
-    new THREE.CircleGeometry(0.05, 20),
-    brightCoreMat
-  );
-  chestCoreCenter.position.set(0, 0.05, 0.342);
-  torsoGroup.add(chestCoreCenter);
-
-  // --- C. ARTICULATED ARMS & MECHANICAL GRIPPERS ---
   const leftArmGroup = new THREE.Group();
-  leftArmGroup.position.set(-0.42, 0.12, 0.05);
+  leftArmGroup.position.set(-0.46, 0.1, 0);
   torsoGroup.add(leftArmGroup);
 
   const rightArmGroup = new THREE.Group();
-  rightArmGroup.position.set(0.42, 0.12, 0.05);
+  rightArmGroup.position.set(0.46, 0.1, 0);
   torsoGroup.add(rightArmGroup);
 
-  function buildArmAndGripper(isLeft) {
-    const armRoot = new THREE.Group();
-    const shoulder = new THREE.Mesh(new THREE.SphereGeometry(0.075, 14, 14), darkJointMat);
-    armRoot.add(shoulder);
+  const leftArmParts = { armRoot: leftArmGroup, gripperPivot: leftArmGroup };
+  const rightArmParts = { armRoot: rightArmGroup, gripperPivot: rightArmGroup };
 
-    const upperArm = new THREE.Mesh(
-      new THREE.CapsuleGeometry(0.055, 0.22, 8, 12),
-      whiteShellMat
-    );
-    upperArm.position.set(isLeft ? -0.04 : 0.04, -0.16, 0.04);
-    upperArm.rotation.z = isLeft ? 0.18 : -0.18;
-    armRoot.add(upperArm);
-
-    const gripperPivot = new THREE.Group();
-    gripperPivot.position.set(isLeft ? -0.06 : 0.06, -0.32, 0.08);
-    armRoot.add(gripperPivot);
-
-    const wrist = new THREE.Mesh(new THREE.CylinderGeometry(0.05, 0.05, 0.05, 12), darkJointMat);
-    gripperPivot.add(wrist);
-
-    // Two mechanical pincer fingers
-    const clawGeo = new THREE.BoxGeometry(0.028, 0.12, 0.045);
-    const outerClaw = new THREE.Mesh(clawGeo, redLedMat);
-    outerClaw.position.set(isLeft ? -0.035 : 0.035, -0.06, 0);
-    gripperPivot.add(outerClaw);
-
-    const innerClaw = new THREE.Mesh(clawGeo, darkJointMat);
-    innerClaw.position.set(isLeft ? 0.025 : -0.025, -0.06, 0);
-    gripperPivot.add(innerClaw);
-
-    return { armRoot, gripperPivot, outerClaw, innerClaw };
-  }
-
-  const leftArmParts = buildArmAndGripper(true);
-  leftArmGroup.add(leftArmParts.armRoot);
-
-  const rightArmParts = buildArmAndGripper(false);
-  rightArmGroup.add(rightArmParts.armRoot);
-
-  // --- D. ARTICULATED HOVER-LEGS & DUAL THRUSTERS ---
   const leftLegGroup = new THREE.Group();
   leftLegGroup.position.set(-0.17, -0.4, 0);
   torsoGroup.add(leftLegGroup);
@@ -438,142 +357,29 @@ export function createFlyingRobot3D() {
   rightLegGroup.position.set(0.17, -0.4, 0);
   torsoGroup.add(rightLegGroup);
 
-  function buildHoverLeg() {
-    const leg = new THREE.Group();
-    const hip = new THREE.Mesh(new THREE.SphereGeometry(0.055, 12, 12), darkJointMat);
-    leg.add(hip);
+  const thrusterFlame = new THREE.Mesh(new THREE.ConeGeometry(0.12, 0.45, 16), thrusterMat);
+  thrusterFlame.position.set(0, -0.68, 0);
+  thrusterFlame.rotation.x = Math.PI;
+  torsoGroup.add(thrusterFlame);
 
-    const boot = new THREE.Mesh(
-      new THREE.CapsuleGeometry(0.058, 0.11, 8, 12),
-      whiteShellMat
-    );
-    boot.position.set(0, -0.1, 0);
-    leg.add(boot);
+  const antigravRing = new THREE.Mesh(new THREE.TorusGeometry(0.24, 0.025, 8, 20), antigravRingMat);
+  antigravRing.rotation.x = Math.PI * 0.5;
+  antigravRing.position.set(0, -0.48, 0);
+  torsoGroup.add(antigravRing);
 
-    const soleGlow = new THREE.Mesh(
-      new THREE.CylinderGeometry(0.05, 0.07, 0.04, 12),
-      redLedMat
-    );
-    soleGlow.position.set(0, -0.19, 0);
-    leg.add(soleGlow);
-    return leg;
-  }
-
-  leftLegGroup.add(buildHoverLeg());
-  rightLegGroup.add(buildHoverLeg());
-
-  // Central Under-Chassis Thruster Plume + Antigravity Ring
-  const thrusterGroup = new THREE.Group();
-  thrusterGroup.position.set(0, -0.46, 0);
-  torsoGroup.add(thrusterGroup);
-
-  const thrusterConeGeo = new THREE.ConeGeometry(0.16, 0.42, 20, 1, true);
-  thrusterConeGeo.rotateX(Math.PI);
-  const thrusterMat = new THREE.MeshBasicMaterial({
-    color: 0xe11d48,
-    transparent: true,
-    opacity: 0.65,
-    side: THREE.DoubleSide
-  });
-  const thrusterFlame = new THREE.Mesh(thrusterConeGeo, thrusterMat);
-  thrusterFlame.position.set(0, -0.18, 0);
-  thrusterGroup.add(thrusterFlame);
-
-  const innerCoreCone = new THREE.Mesh(
-    new THREE.ConeGeometry(0.08, 0.24, 16).rotateX(Math.PI),
-    yellowAccentMat
-  );
-  innerCoreCone.position.set(0, -0.1, 0);
-  thrusterGroup.add(innerCoreCone);
-
-  const antigravRingGeo = new THREE.RingGeometry(0.22, 0.27, 28);
-  antigravRingGeo.rotateX(Math.PI * 0.5);
-  const antigravRingMat = new THREE.MeshBasicMaterial({
-    color: 0xe11d48,
-    transparent: true,
-    opacity: 0.45,
-    side: THREE.DoubleSide
-  });
-  const antigravRing = new THREE.Mesh(antigravRingGeo, antigravRingMat);
-  antigravRing.position.set(0, -0.25, 0);
-  thrusterGroup.add(antigravRing);
-
-  // --- E. CONICAL RED SCANNING BEAM (Active in SCANNING state) ---
   const scanBeamGroup = new THREE.Group();
-  scanBeamGroup.position.set(0, 0.52, 0.44);
+  const scanReticle = new THREE.Mesh(new THREE.RingGeometry(0.08, 0.12, 16), redLedMat);
+  scanBeamGroup.add(scanReticle);
   scanBeamGroup.visible = false;
   bodyPivot.add(scanBeamGroup);
 
-  const scanConeGeo = new THREE.ConeGeometry(0.68, 1.65, 28, 1, true);
-  scanConeGeo.translate(0, -0.82, 0);
-  scanConeGeo.rotateX(-Math.PI * 0.35);
-  const scanBeamMat = new THREE.MeshBasicMaterial({
-    color: 0xe11d48,
-    transparent: true,
-    opacity: 0.22,
-    side: THREE.DoubleSide,
-    depthWrite: false
-  });
-  const scanConeMesh = new THREE.Mesh(scanConeGeo, scanBeamMat);
-  scanBeamGroup.add(scanConeMesh);
-
-  const scanReticleGeo = new THREE.RingGeometry(0.45, 0.52, 32);
-  const scanReticleMat = new THREE.MeshBasicMaterial({
-    color: 0xe11d48,
-    transparent: true,
-    opacity: 0.75,
-    side: THREE.DoubleSide
-  });
-  const scanReticle = new THREE.Mesh(scanReticleGeo, scanReticleMat);
-  scanReticle.position.set(0, -0.95, 1.15);
-  scanReticle.rotation.x = Math.PI * 0.22;
-  scanBeamGroup.add(scanReticle);
-
-  // --- F. CARRIED 3D MINIATURE PROJECT CARD + TRACTOR BEAM ---
   const cargoPivot = new THREE.Group();
-  cargoPivot.position.set(0, -0.78, 0.14);
-  cargoPivot.visible = false;
-  bodyPivot.add(cargoPivot);
+  cargoPivot.position.set(0, -0.45, 0.1);
+  torsoGroup.add(cargoPivot);
 
-  const { texture: miniCardTexture, updateProjectCard } = createMiniCardCanvasTexture();
-
-  // Miniature 3D card mesh with white sides and dynamic front project texture
-  const cardMaterials = [
-    whiteShellMat, // right
-    whiteShellMat, // left
-    whiteShellMat, // top
-    whiteShellMat, // bottom
-    new THREE.MeshBasicMaterial({ map: miniCardTexture }), // front face
-    whiteShellMat // back face
-  ];
-  const miniCardGeo = new THREE.BoxGeometry(1.48, 0.96, 0.065);
-  const miniCardMesh = new THREE.Mesh(miniCardGeo, cardMaterials);
-  miniCardMesh.position.set(0, -0.42, 0);
+  const miniCardMesh = new THREE.Mesh(new THREE.BoxGeometry(0.48, 0.32, 0.02), whiteShellMat);
   cargoPivot.add(miniCardMesh);
-
-  // Soft 3D drop shadow plane beneath the miniature card
-  const miniShadowGeo = new THREE.PlaneGeometry(1.55, 0.32);
-  miniShadowGeo.rotateX(-Math.PI * 0.5);
-  const miniShadowMat = new THREE.MeshBasicMaterial({
-    color: 0x090d16,
-    transparent: true,
-    opacity: 0.18,
-    depthWrite: false
-  });
-  const miniShadowMesh = new THREE.Mesh(miniShadowGeo, miniShadowMat);
-  miniShadowMesh.position.set(0, -1.04, 0);
-  cargoPivot.add(miniShadowMesh);
-
-  // Tractor beam tether rings connecting robot grippers to the card
-  const tractorRingGeo = new THREE.TorusGeometry(0.32, 0.015, 8, 28);
-  tractorRingGeo.rotateX(Math.PI * 0.5);
-  const tractorRingMat = new THREE.MeshBasicMaterial({
-    color: 0xe11d48,
-    transparent: true,
-    opacity: 0.55
-  });
-  const tractorRing = new THREE.Mesh(tractorRingGeo, tractorRingMat);
-  tractorRing.position.set(0, -0.02, 0);
+  const tractorRing = new THREE.Mesh(new THREE.TorusGeometry(0.25, 0.02, 8, 20), redLedMat);
   cargoPivot.add(tractorRing);
 
   return {
@@ -600,1370 +406,825 @@ export function createFlyingRobot3D() {
     cargoPivot,
     miniCardMesh,
     tractorRing,
-    updateProjectCard
+    updateProjectCard: () => {}
   };
 }
 
 // --------------------------------------------------------------------------
-// 4. 3D ROBOT SCENE & DELIVERY ANIMATION CONTROLLER (`RobotScene`)
-// Renders the Three.js scene, particle trail, lighting, and orchestrates
-// the 6-step delivery state machine across all projects.
+// 3. MAIN FEATURED PROJECTS COMPONENT (`FeaturedProjects`)
 // --------------------------------------------------------------------------
-export function RobotScene({
-  stageRef,
-  perchRef,
-  slotRefsMap,
-  projects,
-  hoveredProjectId,
-  summonTargetId,
-  deliveryRunId,
-  skipRequested,
-  onStateChange,
-  onProjectLanded,
-  onAllDelivered
-}) {
-  const mountRef = useRef(null);
-  const hudRef = useRef(null);
-  const controllerRef = useRef(null);
-
-  // Keep latest callbacks & props in refs so the RAF loop never uses stale closures
-  const latestPropsRef = useRef({
-    projects,
-    hoveredProjectId,
-    summonTargetId,
-    onStateChange,
-    onProjectLanded,
-    onAllDelivered
-  });
-  useEffect(() => {
-    latestPropsRef.current = {
-      projects,
-      hoveredProjectId,
-      summonTargetId,
-      onStateChange,
-      onProjectLanded,
-      onAllDelivered
-    };
-  }, [projects, hoveredProjectId, summonTargetId, onStateChange, onProjectLanded, onAllDelivered]);
-
-  useEffect(() => {
-    const container = mountRef.current;
-    if (!container || !checkWebGLSupport()) return;
-
-    const reducedMotion = prefersReducedMotion();
-    const isMobile = window.innerWidth < 768;
-
-    const width = Math.max(320, container.clientWidth);
-    const height = Math.max(420, container.clientHeight);
-
-    const scene = new THREE.Scene();
-    const cameraFov = 36;
-    const cameraZ = 14;
-    const camera = new THREE.PerspectiveCamera(cameraFov, width / height, 0.1, 100);
-    camera.position.set(0, 0, cameraZ);
-
-    let renderer;
-    try {
-      renderer = new THREE.WebGLRenderer({
-        antialias: true,
-        alpha: true,
-        powerPreference: "high-performance"
-      });
-    } catch (_err) {
-      return;
-    }
-
-    renderer.setSize(width, height);
-    renderer.setPixelRatio(Math.min(window.devicePixelRatio || 1, isMobile ? 1.5 : 1.85));
-    renderer.outputColorSpace = THREE.SRGBColorSpace;
-    container.innerHTML = "";
-    container.appendChild(renderer.domElement);
-
-    // Studio Lighting for Glossy White Porcelain + Red Accents
-    const ambientLight = new THREE.AmbientLight(0xffffff, 1.35);
-    scene.add(ambientLight);
-
-    const keyLight = new THREE.DirectionalLight(0xffffff, 1.65);
-    keyLight.position.set(6, 10, 9);
-    scene.add(keyLight);
-
-    const rimLight = new THREE.DirectionalLight(0xffe4e6, 0.95);
-    rimLight.position.set(-7, 5, -4);
-    scene.add(rimLight);
-
-    const botPointLight = new THREE.PointLight(0xe11d48, 0.9, 6);
-    scene.add(botPointLight);
-
-    // Create the 3D Flying Robot Assistant
-    const robot = createFlyingRobot3D();
-    scene.add(robot.root);
-
-    // Lightweight Red Particle Trail Pool
-    const maxParticles = isMobile ? 18 : 42;
-    const particleGeo = new THREE.SphereGeometry(0.055, 8, 8);
-    const particles = [];
-    const particleGroup = new THREE.Group();
-    scene.add(particleGroup);
-
-    for (let i = 0; i < maxParticles; i++) {
-      const pMat = new THREE.MeshBasicMaterial({
-        color: i % 3 === 0 ? 0xfacc15 : 0xe11d48,
-        transparent: true,
-        opacity: 0
-      });
-      const pMesh = new THREE.Mesh(particleGeo, pMat);
-      pMesh.visible = false;
-      particleGroup.add(pMesh);
-      particles.push({
-        mesh: pMesh,
-        mat: pMat,
-        life: 0,
-        maxLife: 0.55,
-        vel: new THREE.Vector3()
-      });
-    }
-
-    let particleCursor = 0;
-    function spawnTrailParticle(pos, speedFactor = 1) {
-      if (reducedMotion) return;
-      const p = particles[particleCursor];
-      particleCursor = (particleCursor + 1) % maxParticles;
-      p.life = p.maxLife;
-      p.mesh.visible = true;
-      p.mesh.position.set(
-        pos.x + (Math.random() - 0.5) * 0.18,
-        pos.y - 0.38 * baseScale + (Math.random() - 0.5) * 0.1,
-        pos.z - 0.1
-      );
-      p.mesh.scale.setScalar(0.65 + Math.random() * 0.55 * speedFactor);
-      p.vel.set(
-        (Math.random() - 0.5) * 0.45,
-        -0.65 - Math.random() * 0.55,
-        (Math.random() - 0.5) * 0.2
-      );
-    }
-
-    // Coordinate conversion helpers between DOM stage pixels and 3D world space (z = 0)
-    function getVisibleBoundsAtZ0() {
-      const cW = Math.max(320, container.clientWidth);
-      const cH = Math.max(420, container.clientHeight);
-      const vH = 2 * Math.tan((cameraFov * Math.PI) / 360) * cameraZ;
-      const vW = vH * (cW / cH);
-      const pxPerUnit = cH / vH;
-      return { cW, cH, vW, vH, pxPerUnit };
-    }
-
-    function computePixelLockedScale() {
-      const { cW, pxPerUnit } = getVisibleBoundsAtZ0();
-      // Robot unscaled height is ~1.85 units; lock visual height to ~82px desktop, ~54px mobile
-      const desiredUnitPx = cW < 768 ? 29 : 45;
-      return desiredUnitPx / Math.max(20, pxPerUnit);
-    }
-
-    let baseScale = computePixelLockedScale();
-    robot.root.scale.setScalar(baseScale);
-
-    function domPointToWorld(px, py) {
-      const { cW, cH, vW, vH } = getVisibleBoundsAtZ0();
-      const wx = (px / cW - 0.5) * vW;
-      const wy = (0.5 - py / cH) * vH;
-      return new THREE.Vector3(wx, wy, 0);
-    }
-
-    function worldToDomPoint(worldPos) {
-      const { cW, cH } = getVisibleBoundsAtZ0();
-      const projected = worldPos.clone().project(camera);
-      const px = (projected.x * 0.5 + 0.5) * cW;
-      const py = (-projected.y * 0.5 + 0.5) * cH;
-      return { px, py };
-    }
-
-    function getDockPerchWorldPos() {
-      const containerRect = container.getBoundingClientRect();
-      const perchEl = perchRef && perchRef.current;
-      if (perchEl && containerRect.width > 0 && containerRect.height > 0) {
-        const pRect = perchEl.getBoundingClientRect();
-        const cx = pRect.left - containerRect.left + pRect.width * 0.5;
-        const cy = pRect.top - containerRect.top + pRect.height * 0.48;
-        const worldPerch = domPointToWorld(cx, cy);
-        worldPerch.z = 0;
-        return worldPerch;
-      }
-      const { vW, vH } = getVisibleBoundsAtZ0();
-      return new THREE.Vector3(-vW * 0.42, vH * 0.45, 0.2);
-    }
-
-    function getCardSlotWorldPos(projectId, index, total) {
-      const slotEl = slotRefsMap.current.get(projectId);
-      const containerRect = container.getBoundingClientRect();
-      if (slotEl && containerRect.width > 0 && containerRect.height > 0) {
-        const rect = slotEl.getBoundingClientRect();
-        const centerX = rect.left - containerRect.left + rect.width * 0.5;
-        const dropY = rect.top - containerRect.top + Math.min(110, rect.height * 0.34);
-        return domPointToWorld(centerX, dropY);
-      }
-      // Fallback grid estimate if DOM rect not yet measured
-      const { vW, vH } = getVisibleBoundsAtZ0();
-      const cols = isMobile ? 1 : 3;
-      const col = index % cols;
-      const row = Math.floor(index / cols);
-      const x = isMobile ? 0 : (col - 1) * (vW * 0.28);
-      const y = vH * 0.16 - row * (vH * (isMobile ? 0.22 : 0.34));
-      return new THREE.Vector3(x, y, 0);
-    }
-
-    // Distinct entry directions and scan waypoints anchored around targetPos.y
-    function getFlightVectorsForIndex(index, targetPos) {
-      const { vW, vH } = getVisibleBoundsAtZ0();
-      const pattern = index % 6;
-      const scanLift = 1.05 * baseScale;
-      const entryLift = 1.65 * baseScale;
-      let startPos;
-      let scanPos;
-
-      if (pattern === 0) {
-        // 1. Swoop in from Top-Left
-        startPos = new THREE.Vector3(-vW * 0.56, targetPos.y + entryLift, 1.8);
-        scanPos = new THREE.Vector3(targetPos.x - vW * 0.12, targetPos.y + scanLift, 1.1);
-      } else if (pattern === 1) {
-        // 2. Bank in from Top-Right
-        startPos = new THREE.Vector3(vW * 0.56, targetPos.y + entryLift, 1.8);
-        scanPos = new THREE.Vector3(targetPos.x + vW * 0.12, targetPos.y + scanLift, 1.1);
-      } else if (pattern === 2) {
-        // 3. Arc in from Far-Right flank
-        startPos = new THREE.Vector3(vW * 0.6, targetPos.y + scanLift * 0.6, 2.0);
-        scanPos = new THREE.Vector3(targetPos.x - vW * 0.08, targetPos.y + scanLift, 1.2);
-      } else if (pattern === 3) {
-        // 4. Climb in from Left flank
-        startPos = new THREE.Vector3(-vW * 0.6, targetPos.y + scanLift * 0.6, 1.9);
-        scanPos = new THREE.Vector3(targetPos.x + vW * 0.1, targetPos.y + scanLift, 1.2);
-      } else if (pattern === 4) {
-        // 5. Dive in from High Center Arc
-        startPos = new THREE.Vector3(0.0, targetPos.y + entryLift * 1.15, 2.2);
-        scanPos = new THREE.Vector3(targetPos.x, targetPos.y + scanLift, 1.25);
-      } else {
-        // 6. Sweep in from Right-Upper diagonal
-        startPos = new THREE.Vector3(vW * 0.58, targetPos.y + entryLift, 1.9);
-        scanPos = new THREE.Vector3(targetPos.x - vW * 0.1, targetPos.y + scanLift, 1.15);
-      }
-
-      // Control points for smooth cubic Bézier curves
-      const arcLift = Math.min(0.65, vH * 0.09);
-      const enterC1 = new THREE.Vector3(
-        (startPos.x + scanPos.x) * 0.5,
-        Math.max(startPos.y, scanPos.y) + arcLift,
-        1.2
-      );
-      const enterC2 = new THREE.Vector3(
-        scanPos.x + (startPos.x > scanPos.x ? 0.35 : -0.35),
-        scanPos.y + arcLift * 0.5,
-        0.9
-      );
-
-      // Delivery path from scanPos to targetPos (hovering slightly above the card)
-      const hoverOffset = 0.65 * baseScale;
-      const dropHoverPos = new THREE.Vector3(targetPos.x, targetPos.y + hoverOffset, 0.45);
-      const deliverC1 = new THREE.Vector3(
-        scanPos.x + (dropHoverPos.x - scanPos.x) * 0.35,
-        scanPos.y + arcLift * 0.6,
-        0.95
-      );
-      const deliverC2 = new THREE.Vector3(
-        dropHoverPos.x - (dropHoverPos.x - scanPos.x) * 0.2,
-        dropHoverPos.y + arcLift * 0.7,
-        0.7
-      );
-
-      return {
-        startPos,
-        enterC1,
-        enterC2,
-        scanPos,
-        deliverC1,
-        deliverC2,
-        dropHoverPos
-      };
-    }
-
-    // State Machine Memory
-    const sm = {
-      state: ANIMATION_STATES.IDLE,
-      projectIndex: 0,
-      phaseElapsed: 0,
-      phaseDuration: 0.4,
-      vectors: null,
-      currentPos: getDockPerchWorldPos(),
-      prevPos: getDockPerchWorldPos(),
-      velocity: new THREE.Vector3(),
-      exitStartPos: getDockPerchWorldPos(),
-      dockPos: getDockPerchWorldPos(),
-      hudText: "",
-      hudVisible: false,
-      celebrationTimer: 0,
-      blinkTimer: 0
-    };
-
-    robot.root.position.copy(sm.currentPos);
-
-    function notifyState(newState, activeIdx, activeProject, hudLabel) {
-      sm.state = newState;
-      sm.hudText = hudLabel || "";
-      sm.hudVisible = Boolean(hudLabel);
-      if (latestPropsRef.current.onStateChange) {
-        latestPropsRef.current.onStateChange({
-          state: newState,
-          stateLabel: STATE_LABELS[newState] || newState,
-          projectIndex: activeIdx,
-          project: activeProject || null
-        });
-      }
-    }
-
-    function beginProjectDelivery(index) {
-      const list = latestPropsRef.current.projects || [];
-      if (index >= list.length) {
-        // All projects delivered -> transition to EXITING back to dock perch
-        sm.exitStartPos.copy(sm.currentPos);
-        sm.dockPos.copy(getDockPerchWorldPos());
-        sm.phaseElapsed = 0;
-        sm.phaseDuration = 0.52;
-        robot.cargoPivot.visible = false;
-        robot.scanBeamGroup.visible = false;
-        notifyState(ANIMATION_STATES.EXITING, index, null, "MISSION COMPLETE · DOCKING");
-        return;
-      }
-
-      const proj = list[index];
-      sm.projectIndex = index;
-      const slotTarget = getCardSlotWorldPos(proj.id, index, list.length);
-      sm.vectors = getFlightVectorsForIndex(index, slotTarget);
-
-      // Update the 3D miniature card texture with this project's real title & category
-      robot.updateProjectCard(proj);
-      robot.cargoPivot.visible = false;
-      robot.scanBeamGroup.visible = false;
-
-      // If index > 0, smoothly fly from current release point or edge
-      if (index > 0) {
-        sm.vectors.startPos.lerp(sm.currentPos, 0.35);
-      }
-
-      sm.phaseElapsed = 0;
-      sm.phaseDuration = isMobile ? 0.24 : 0.26;
-      notifyState(
-        ANIMATION_STATES.ENTERING,
-        index,
-        proj,
-        `INBOUND [${index + 1}/${list.length}] · ${proj.title}`
-      );
-    }
-
-    function startFullSequence() {
-      const list = latestPropsRef.current.projects || [];
-      if (reducedMotion || list.length === 0) {
-        list.forEach((p) => {
-          if (latestPropsRef.current.onProjectLanded) {
-            latestPropsRef.current.onProjectLanded(p.id);
-          }
-        });
-        if (latestPropsRef.current.onAllDelivered) {
-          latestPropsRef.current.onAllDelivered();
-        }
-        sm.currentPos.copy(getDockPerchWorldPos());
-        robot.root.position.copy(sm.currentPos);
-        notifyState(ANIMATION_STATES.IDLE, 0, null, "");
-        return;
-      }
-      beginProjectDelivery(0);
-    }
-
-    function skipToCompleted() {
-      const list = latestPropsRef.current.projects || [];
-      list.forEach((p) => {
-        if (latestPropsRef.current.onProjectLanded) {
-          latestPropsRef.current.onProjectLanded(p.id);
-        }
-      });
-      if (latestPropsRef.current.onAllDelivered) {
-        latestPropsRef.current.onAllDelivered();
-      }
-      robot.cargoPivot.visible = false;
-      robot.scanBeamGroup.visible = false;
-      sm.exitStartPos.copy(sm.currentPos);
-      sm.dockPos.copy(getDockPerchWorldPos());
-      sm.phaseElapsed = 0;
-      sm.phaseDuration = 0.38;
-      notifyState(ANIMATION_STATES.EXITING, list.length, null, "FAST-FORWARD · DOCKING");
-    }
-
-    controllerRef.current = {
-      startFullSequence,
-      skipToCompleted,
-      summonWave: () => {
-        sm.celebrationTimer = 1.1;
-      }
-    };
-
-    // IntersectionObserver & Page Visibility to pause rendering when off-screen
-    let isVisible = true;
-    const io = new IntersectionObserver(
-      (entries) => {
-        entries.forEach((entry) => {
-          isVisible = entry.isIntersecting;
-        });
-      },
-      { threshold: 0.02 }
-    );
-    io.observe(container);
-
-    const onResize = () => {
-      if (!container) return;
-      const w = Math.max(320, container.clientWidth);
-      const h = Math.max(420, container.clientHeight);
-      camera.aspect = w / h;
-      camera.updateProjectionMatrix();
-      renderer.setSize(w, h);
-      baseScale = computePixelLockedScale();
-      robot.root.scale.setScalar(baseScale);
-      if (sm.state === ANIMATION_STATES.IDLE) {
-        sm.currentPos.copy(getDockPerchWorldPos());
-        robot.root.position.copy(sm.currentPos);
-      }
-    };
-    window.addEventListener("resize", onResize);
-
-    // Main Animation Loop
-    let rafId = null;
-    let lastTime = performance.now();
-    const tempPos = new THREE.Vector3();
-
-    const animate = (now) => {
-      rafId = requestAnimationFrame(animate);
-      const dt = Math.min(0.05, Math.max(0.001, (now - lastTime) / 1000));
-      lastTime = now;
-
-      if (!isVisible || document.hidden) return;
-
-      const tSec = now * 0.001;
-      sm.prevPos.copy(sm.currentPos);
-
-      const list = latestPropsRef.current.projects || [];
-      const activeProj = list[sm.projectIndex] || null;
-
-      // ====================================================================
-      // STATE MACHINE UPDATE
-      // ====================================================================
-      if (sm.state === ANIMATION_STATES.ENTERING && sm.vectors) {
-        sm.phaseElapsed += dt;
-        const u = Math.min(1, sm.phaseElapsed / sm.phaseDuration);
-        const eased = easeInOutCubic(u);
-        evalCubicBezier3D(
-          sm.vectors.startPos,
-          sm.vectors.enterC1,
-          sm.vectors.enterC2,
-          sm.vectors.scanPos,
-          eased,
-          sm.currentPos
-        );
-        spawnTrailParticle(sm.currentPos, 1.3);
-
-        // Open grippers in preparation
-        robot.leftArmParts.gripperPivot.rotation.z = 0.25;
-        robot.rightArmParts.gripperPivot.rotation.z = -0.25;
-
-        if (u >= 1) {
-          sm.phaseElapsed = 0;
-          sm.phaseDuration = isMobile ? 0.16 : 0.18;
-          robot.scanBeamGroup.visible = true;
-          notifyState(
-            ANIMATION_STATES.SCANNING,
-            sm.projectIndex,
-            activeProj,
-            activeProj ? `SCANNING · ${activeProj.title}` : "SCANNING TARGET"
-          );
-        }
-      } else if (sm.state === ANIMATION_STATES.SCANNING && sm.vectors) {
-        sm.phaseElapsed += dt;
-        const u = Math.min(1, sm.phaseElapsed / sm.phaseDuration);
-
-        // Hover and sweep scanning beam
-        sm.currentPos.copy(sm.vectors.scanPos);
-        sm.currentPos.y += Math.sin(u * Math.PI * 2) * 0.08;
-        robot.scanBeamGroup.rotation.y = Math.sin(u * Math.PI * 2) * 0.38;
-        robot.scanReticle.rotation.z += dt * 5;
-        robot.leftEye.scale.set(1.2, 1.35, 1.2);
-        robot.rightEye.scale.set(1.2, 1.35, 1.2);
-
-        if (u >= 1) {
-          robot.scanBeamGroup.visible = false;
-          robot.leftEye.scale.set(1, 1, 1);
-          robot.rightEye.scale.set(1, 1, 1);
-          sm.phaseElapsed = 0;
-          sm.phaseDuration = isMobile ? 0.15 : 0.17;
-          robot.cargoPivot.visible = true;
-          robot.cargoPivot.scale.setScalar(0.2);
-          notifyState(
-            ANIMATION_STATES.PICKING_UP,
-            sm.projectIndex,
-            activeProj,
-            activeProj ? `LOCKED ON · ${activeProj.title}` : "ATTACHING MODULE"
-          );
-        }
-      } else if (sm.state === ANIMATION_STATES.PICKING_UP && sm.vectors) {
-        sm.phaseElapsed += dt;
-        const u = Math.min(1, sm.phaseElapsed / sm.phaseDuration);
-        const popScale = Math.max(0.1, easeOutBack(u));
-        robot.cargoPivot.scale.setScalar(popScale);
-
-        // Grippers clamp inward onto the miniature project card
-        robot.leftArmGroup.rotation.x = -0.35 * u;
-        robot.rightArmGroup.rotation.x = -0.35 * u;
-        robot.leftArmParts.gripperPivot.rotation.z = 0.25 * (1 - u) - 0.12 * u;
-        robot.rightArmParts.gripperPivot.rotation.z = -0.25 * (1 - u) + 0.12 * u;
-
-        if (u >= 1) {
-          // Re-measure live DOM card slot right before flying to it
-          if (activeProj) {
-            const freshSlot = getCardSlotWorldPos(activeProj.id, sm.projectIndex, list.length);
-            sm.vectors.dropHoverPos.set(freshSlot.x, freshSlot.y + 0.65 * baseScale, 0.45);
-          }
-          sm.phaseElapsed = 0;
-          sm.phaseDuration = isMobile ? 0.26 : 0.31;
-          notifyState(
-            ANIMATION_STATES.DELIVERING,
-            sm.projectIndex,
-            activeProj,
-            activeProj
-              ? `DELIVERING [${sm.projectIndex + 1}/${list.length}] · ${activeProj.title}`
-              : "DELIVERING MODULE"
-          );
-        }
-      } else if (sm.state === ANIMATION_STATES.DELIVERING && sm.vectors) {
-        sm.phaseElapsed += dt;
-        const u = Math.min(1, sm.phaseElapsed / sm.phaseDuration);
-        const eased = easeInOutCubic(u);
-
-        evalCubicBezier3D(
-          sm.vectors.scanPos,
-          sm.vectors.deliverC1,
-          sm.vectors.deliverC2,
-          sm.vectors.dropHoverPos,
-          eased,
-          sm.currentPos
-        );
-        spawnTrailParticle(sm.currentPos, 1.45);
-
-        // Natural pendulum sway on the suspended 3D miniature card
-        const vx = (sm.currentPos.x - sm.prevPos.x) / dt;
-        robot.cargoPivot.rotation.z = THREE.MathUtils.clamp(-vx * 0.045, -0.32, 0.32);
-        robot.cargoPivot.rotation.x = Math.sin(u * Math.PI) * 0.14;
-        robot.tractorRing.scale.setScalar(0.9 + Math.sin(tSec * 18) * 0.12);
-
-        if (u >= 1) {
-          sm.phaseElapsed = 0;
-          sm.phaseDuration = isMobile ? 0.15 : 0.18;
-          notifyState(
-            ANIMATION_STATES.RELEASING,
-            sm.projectIndex,
-            activeProj,
-            activeProj ? `DEPLOYED · ${activeProj.title}` : "DEPLOYING"
-          );
-          // Trigger the real DOM ProjectCard3D spring landing right as the robot releases it!
-          if (activeProj && latestPropsRef.current.onProjectLanded) {
-            latestPropsRef.current.onProjectLanded(activeProj.id);
-          }
-        }
-      } else if (sm.state === ANIMATION_STATES.RELEASING && sm.vectors) {
-        sm.phaseElapsed += dt;
-        const u = Math.min(1, sm.phaseElapsed / sm.phaseDuration);
-
-        // Open grippers and drop miniature card downward into the DOM card slot
-        robot.leftArmParts.gripperPivot.rotation.z = 0.35 * u;
-        robot.rightArmParts.gripperPivot.rotation.z = -0.35 * u;
-        robot.cargoPivot.position.y = -0.78 - u * 0.65;
-        robot.cargoPivot.scale.setScalar(Math.max(0.01, 1 - u * 0.92));
-
-        // Happy squint on LED eyes
-        robot.leftEye.scale.set(1.15, 0.55, 1);
-        robot.rightEye.scale.set(1.15, 0.55, 1);
-
-        if (u >= 1) {
-          robot.cargoPivot.visible = false;
-          robot.cargoPivot.position.y = -0.78;
-          robot.cargoPivot.scale.setScalar(1);
-          robot.leftEye.scale.set(1, 1, 1);
-          robot.rightEye.scale.set(1, 1, 1);
-          // Move to next project!
-          beginProjectDelivery(sm.projectIndex + 1);
-        }
-      } else if (sm.state === ANIMATION_STATES.EXITING) {
-        sm.phaseElapsed += dt;
-        const u = Math.min(1, sm.phaseElapsed / sm.phaseDuration);
-        const eased = easeInOutCubic(u);
-        sm.dockPos.copy(getDockPerchWorldPos());
-        sm.currentPos.lerpVectors(sm.exitStartPos, sm.dockPos, eased);
-        sm.currentPos.y += Math.sin(u * Math.PI) * 0.65;
-        spawnTrailParticle(sm.currentPos, 0.9);
-
-        if (u >= 1) {
-          if (latestPropsRef.current.onAllDelivered) {
-            latestPropsRef.current.onAllDelivered();
-          }
-          notifyState(ANIMATION_STATES.IDLE, 0, null, "");
-        }
-      } else {
-        // ==================================================================
-        // IDLE / INTERACTIVE GUIDE MODE
-        // Robot hovers at its holopad dock or glides to inspect a hovered card!
-        // ==================================================================
-        baseScale = computePixelLockedScale();
-        robot.root.scale.setScalar(baseScale);
-
-        const hoveredId =
-          latestPropsRef.current.summonTargetId || latestPropsRef.current.hoveredProjectId;
-        let targetIdlePos = getDockPerchWorldPos();
-
-        if (hoveredId && !isMobile) {
-          const idx = list.findIndex((p) => p.id === hoveredId);
-          if (idx !== -1) {
-            const cardWorld = getCardSlotWorldPos(hoveredId, idx, list.length);
-            targetIdlePos = new THREE.Vector3(
-              cardWorld.x + (idx % 2 === 0 ? 0.65 * baseScale : -0.65 * baseScale),
-              cardWorld.y + 0.55 * baseScale,
-              0.4
-            );
-          }
-        }
-
-        tempPos.copy(targetIdlePos);
-        tempPos.y += Math.sin(tSec * 2.8) * 0.08 * baseScale;
-        tempPos.x += Math.cos(tSec * 1.7) * 0.03 * baseScale;
-        sm.currentPos.lerp(tempPos, Math.min(1, dt * 5.0));
-
-        // Periodic natural eye blink in IDLE
-        sm.blinkTimer += dt;
-        if (sm.blinkTimer > 3.4) {
-          const blinkPhase = (sm.blinkTimer - 3.4) / 0.16;
-          if (blinkPhase < 1) {
-            const sy = Math.max(0.12, Math.abs(Math.cos(blinkPhase * Math.PI)));
-            robot.leftEye.scale.y = sy;
-            robot.rightEye.scale.y = sy;
-          } else {
-            robot.leftEye.scale.y = 1;
-            robot.rightEye.scale.y = 1;
-            sm.blinkTimer = 0;
-          }
-        }
-
-        // Playful wave / spin if summoned
-        if (sm.celebrationTimer > 0) {
-          sm.celebrationTimer = Math.max(0, sm.celebrationTimer - dt);
-          robot.rightArmGroup.rotation.z =
-            -2.2 + Math.sin(tSec * 18) * 0.45;
-          robot.headGroup.rotation.z = Math.sin(tSec * 12) * 0.18;
-        } else {
-          robot.rightArmGroup.rotation.z = THREE.MathUtils.lerp(
-            robot.rightArmGroup.rotation.z,
-            0,
-            dt * 6
-          );
-          robot.headGroup.rotation.z = THREE.MathUtils.lerp(
-            robot.headGroup.rotation.z,
-            0,
-            dt * 6
-          );
-        }
-      }
-
-      // Apply robot position and natural banking/tilt based on velocity
-      robot.root.position.copy(sm.currentPos);
-      botPointLight.position.set(sm.currentPos.x, sm.currentPos.y + 0.4, sm.currentPos.z + 1.2);
-
-      sm.velocity.subVectors(sm.currentPos, sm.prevPos).divideScalar(dt);
-      const targetRoll = THREE.MathUtils.clamp(-sm.velocity.x * 0.055, -0.42, 0.42);
-      const targetPitch = THREE.MathUtils.clamp(sm.velocity.y * 0.035, -0.28, 0.28);
-
-      robot.bodyPivot.rotation.z = THREE.MathUtils.lerp(
-        robot.bodyPivot.rotation.z,
-        targetRoll,
-        Math.min(1, dt * 10)
-      );
-      robot.bodyPivot.rotation.x = THREE.MathUtils.lerp(
-        robot.bodyPivot.rotation.x,
-        targetPitch,
-        Math.min(1, dt * 10)
-      );
-
-      // Look direction: turn head slightly toward motion or hovered card
-      const targetYaw = THREE.MathUtils.clamp(sm.velocity.x * 0.04, -0.45, 0.45);
-      robot.headGroup.rotation.y = THREE.MathUtils.lerp(
-        robot.headGroup.rotation.y,
-        targetYaw,
-        Math.min(1, dt * 8)
-      );
-
-      // Hover legs trail backward smoothly with speed
-      const speedMag = sm.velocity.length();
-      const legSwing = THREE.MathUtils.clamp(speedMag * 0.04, 0, 0.45);
-      robot.leftLegGroup.rotation.x = legSwing + Math.sin(tSec * 6) * 0.06;
-      robot.rightLegGroup.rotation.x = legSwing + Math.cos(tSec * 6) * 0.06;
-
-      // Thruster flame and antigravity ring pulse
-      const thrustScale = 0.85 + Math.min(0.65, speedMag * 0.06) + Math.sin(tSec * 28) * 0.12;
-      robot.thrusterFlame.scale.set(1, thrustScale, 1);
-      robot.antigravRing.scale.setScalar(0.92 + Math.sin(tSec * 10) * 0.12);
-
-      // Update Particle Trail Pool
-      for (let i = 0; i < maxParticles; i++) {
-        const p = particles[i];
-        if (p.life > 0) {
-          p.life -= dt;
-          if (p.life <= 0) {
-            p.mesh.visible = false;
-          } else {
-            p.mesh.position.addScaledVector(p.vel, dt);
-            const ratio = p.life / p.maxLife;
-            p.mat.opacity = ratio * 0.65;
-            p.mesh.scale.setScalar(ratio * 0.9);
-          }
-        }
-      }
-
-      // Sync Floating Holographic HUD badge cleanly above the robot's antenna
-      if (hudRef.current) {
-        if (sm.hudVisible && sm.hudText) {
-          const { px, py } = worldToDomPoint(
-            new THREE.Vector3(sm.currentPos.x, sm.currentPos.y + 1.25 * baseScale, sm.currentPos.z)
-          );
-          const clampedX = Math.max(12, Math.min(container.clientWidth - 230, px - 84));
-          const clampedY = Math.max(6, py - 32);
-          hudRef.current.style.opacity = "1";
-          hudRef.current.style.transform = `translate3d(${clampedX.toFixed(1)}px, ${clampedY.toFixed(1)}px, 0)`;
-          const labelSpan = hudRef.current.querySelector(".hud-label");
-          if (labelSpan && labelSpan.textContent !== sm.hudText) {
-            labelSpan.textContent = sm.hudText;
-          }
-        } else {
-          hudRef.current.style.opacity = "0";
-        }
-      }
-
-      // Expose delivery state for visual styling, without moving the viewport.
-      const isBotDelivering =
-        sm.state === ANIMATION_STATES.ENTERING ||
-        sm.state === ANIMATION_STATES.SCANNING ||
-        sm.state === ANIMATION_STATES.PICKING_UP ||
-        sm.state === ANIMATION_STATES.DELIVERING ||
-        sm.state === ANIMATION_STATES.RELEASING;
-
-      const projSectionEl = document.getElementById("projects");
-      if (projSectionEl) {
-        projSectionEl.setAttribute("data-projects-delivering", isBotDelivering ? "true" : "false");
-      }
-
-      // Viewport position belongs to the visitor; robot delivery never drives scrolling.
-
-      renderer.render(scene, camera);
-    };
-
-    rafId = requestAnimationFrame(animate);
-
-    return () => {
-      if (rafId) cancelAnimationFrame(rafId);
-      io.disconnect();
-      window.removeEventListener("resize", onResize);
-      renderer.dispose();
-    };
-  }, []);
-
-  // Trigger delivery sequence when deliveryRunId increments (> 0)
-  useEffect(() => {
-    if (deliveryRunId > 0 && controllerRef.current) {
-      controllerRef.current.startFullSequence();
-    }
-  }, [deliveryRunId]);
-
-  // Handle skip request
-  useEffect(() => {
-    if (skipRequested && controllerRef.current) {
-      controllerRef.current.skipToCompleted();
-    }
-  }, [skipRequested]);
-
-  // Handle summon wave
-  useEffect(() => {
-    if (summonTargetId && controllerRef.current) {
-      controllerRef.current.summonWave();
-    }
-  }, [summonTargetId]);
-
-  return h("div", {
-    ref: mountRef,
-    className: "robot-scene-canvas-layer",
-    "aria-hidden": "true"
-  });
-}
-
-// --------------------------------------------------------------------------
-// 5. PROJECT DELIVERY ANIMATION WRAPPER (`ProjectDeliveryAnimation`)
-// Coordinates scroll-triggered entry, telemetry bar, and WebGL fallback.
-// --------------------------------------------------------------------------
-export function ProjectDeliveryAnimation({
-  stageRef,
-  perchRef,
-  slotRefsMap,
-  projects,
-  hoveredProjectId,
-  summonTargetId,
-  deliveryRunId,
-  skipRequested,
-  onStateChange,
-  onProjectLanded,
-  onAllDelivered
-}) {
-  return h(RobotScene, {
-    stageRef,
-    perchRef,
-    slotRefsMap,
-    projects,
-    hoveredProjectId,
-    summonTargetId,
-    deliveryRunId,
-    skipRequested,
-    onStateChange,
-    onProjectLanded,
-    onAllDelivered
-  });
-}
-
-// --------------------------------------------------------------------------
-// 6. INTERACTIVE 3D PROJECT CARD (`ProjectCard3D`)
-// Features spring-physics drop landing, 3D perspective hover tilt,
-// robot inspection highlight, and full working links/actions.
-// --------------------------------------------------------------------------
-export function ProjectCard3D({
-  project,
-  index,
-  isDelivered,
-  isJustLanded,
-  isActiveTarget,
-  isRobotInspected,
-  slotRefCallback,
-  onHoverCard,
-  onLeaveCard,
+export function FeaturedProjects({
+  projectsList = [],
+  categories = [],
   onOpenModal,
   onOpenJourney
 }) {
-  const [tilt, setTilt] = useState({ rx: 0, ry: 0 });
+  const [activeCategory, setActiveCategory] = useState("all");
+  const [featuredIndex, setFeaturedIndex] = useState(0);
+  const [mobileDetailsProject, setMobileDetailsProject] = useState(null);
+  const [activeMobileCardIndex, setActiveMobileCardIndex] = useState(0);
 
-  const handlePointerMove = (e) => {
-    if (window.innerWidth < 768) return;
-    const rect = e.currentTarget.getBoundingClientRect();
-    const nx = (e.clientX - rect.left) / Math.max(1, rect.width) - 0.5;
-    const ny = (e.clientY - rect.top) / Math.max(1, rect.height) - 0.5;
-    setTilt({ rx: -ny * 5.5, ry: nx * 5.5 });
-  };
+  const carouselRef = useRef(null);
+  const isTouchScrollingRef = useRef(false);
 
-  const handlePointerLeave = () => {
-    setTilt({ rx: 0, ry: 0 });
-    if (onLeaveCard) onLeaveCard();
-  };
+  // Filter projects by category
+  const filteredProjects = useMemo(() => {
+    if (!projectsList || projectsList.length === 0) return [];
+    if (activeCategory === "all") return projectsList;
+    return projectsList.filter((proj) =>
+      proj.categories && proj.categories.includes(activeCategory)
+    );
+  }, [projectsList, activeCategory]);
 
-  // Subtle alternating drop rotation for realistic aerial release
-  const dropRotateZ = index % 2 === 0 ? -2.2 : 2.2;
+  // Keep featured project index in valid range
+  useEffect(() => {
+    setFeaturedIndex(0);
+    setActiveMobileCardIndex(0);
+  }, [activeCategory]);
+
+  const activeFeatured = useMemo(() => {
+    if (filteredProjects.length === 0) return projectsList[0] || null;
+    const idx = Math.min(Math.max(0, featuredIndex), filteredProjects.length - 1);
+    return filteredProjects[idx];
+  }, [filteredProjects, featuredIndex, projectsList]);
+
+  // Remaining projects for the desktop lower 4-card grid
+  const lowerGridProjects = useMemo(() => {
+    if (!activeFeatured) return [];
+    // Display projects from filtered list other than the active featured project
+    const others = filteredProjects.filter((p) => p.id !== activeFeatured.id);
+    return others.slice(0, 4);
+  }, [filteredProjects, activeFeatured]);
+
+  // Cycle Next/Prev for featured project on desktop
+  const handleNextFeatured = useCallback(() => {
+    if (filteredProjects.length <= 1) return;
+    setFeaturedIndex((prev) => (prev + 1) % filteredProjects.length);
+  }, [filteredProjects.length]);
+
+  const handlePrevFeatured = useCallback(() => {
+    if (filteredProjects.length <= 1) return;
+    setFeaturedIndex((prev) => (prev - 1 + filteredProjects.length) % filteredProjects.length);
+  }, [filteredProjects.length]);
+
+  // Synchronize Mobile Carousel Active Card on Scroll
+  const handleCarouselScroll = useCallback(() => {
+    if (!carouselRef.current || isTouchScrollingRef.current) return;
+    const el = carouselRef.current;
+    const cardWidth = el.scrollWidth / Math.max(1, filteredProjects.length);
+    const newIdx = Math.round(el.scrollLeft / cardWidth);
+    if (newIdx >= 0 && newIdx < filteredProjects.length && newIdx !== activeMobileCardIndex) {
+      setActiveMobileCardIndex(newIdx);
+    }
+  }, [filteredProjects.length, activeMobileCardIndex]);
+
+  const scrollToMobileCard = useCallback((index) => {
+    if (!carouselRef.current) return;
+    const el = carouselRef.current;
+    const cardWidth = el.scrollWidth / Math.max(1, filteredProjects.length);
+    isTouchScrollingRef.current = true;
+    setActiveMobileCardIndex(index);
+    el.scrollTo({
+      left: index * cardWidth,
+      behavior: "smooth"
+    });
+    setTimeout(() => {
+      isTouchScrollingRef.current = false;
+    }, 450);
+  }, [filteredProjects.length]);
+
+  // Open Project Details (Modal for Desktop, Dedicated View for Mobile)
+  const handleOpenDetails = useCallback((project) => {
+    if (!project) return;
+    if (typeof window !== "undefined" && window.innerWidth <= 992) {
+      setMobileDetailsProject(project);
+      window.scrollTo({ top: document.getElementById("projects")?.offsetTop || 0, behavior: "smooth" });
+    } else if (onOpenModal) {
+      onOpenModal(project);
+    }
+  }, [onOpenModal]);
+
+  // Dedicated Mobile Details View Navigation
+  const handleNextMobileDetails = useCallback(() => {
+    if (!mobileDetailsProject || filteredProjects.length <= 1) return;
+    const currIdx = filteredProjects.findIndex((p) => p.id === mobileDetailsProject.id);
+    const nextIdx = (currIdx + 1) % filteredProjects.length;
+    setMobileDetailsProject(filteredProjects[nextIdx]);
+  }, [mobileDetailsProject, filteredProjects]);
+
+  const handlePrevMobileDetails = useCallback(() => {
+    if (!mobileDetailsProject || filteredProjects.length <= 1) return;
+    const currIdx = filteredProjects.findIndex((p) => p.id === mobileDetailsProject.id);
+    const prevIdx = (currIdx - 1 + filteredProjects.length) % filteredProjects.length;
+    setMobileDetailsProject(filteredProjects[prevIdx]);
+  }, [mobileDetailsProject, filteredProjects]);
 
   return h(
-    "div",
+    "section",
     {
-      ref: (el) => slotRefCallback(project.id, el),
-      className: `project-card-slot ${isActiveTarget ? "is-active-delivery-target" : ""}`,
-      onMouseEnter: () => isDelivered && onHoverCard && onHoverCard(project.id),
-      onMouseLeave: handlePointerLeave
+      id: "projects",
+      className: "projects-showcase-section",
+      "data-projects-delivering": "true",
+      "aria-label": "Featured Projects Showcase"
     },
-    isJustLanded && h("div", { className: "card-landing-pulse", "aria-hidden": "true" }),
-    !isDelivered
-      ? h("div", {
-          className: "project-slot-dropzone",
-          "aria-hidden": "true"
-        })
-      : h(
-          motion.article,
-          {
-            layout: true,
-            initial: { opacity: 0, scale: 0.84, y: -28, rotateZ: dropRotateZ },
-            animate: {
-              opacity: 1,
-              scale: [0.84, 1.03, 1],
-              y: [-28, 4, 0],
-              rotateZ: [dropRotateZ, index % 2 === 0 ? 0.8 : -0.8, 0]
-            },
-            transition: {
-              duration: 0.48,
-              ease: [0.16, 1, 0.3, 1]
-            },
-            className: `bezel-outer project-card-3d ${
-              isRobotInspected ? "is-robot-inspected" : ""
-            }`,
-            onPointerMove: handlePointerMove,
-            onClick: () => onOpenModal(project),
-            style: {
-              transform: `perspective(950px) rotateX(${tilt.rx}deg) rotateY(${tilt.ry}deg)`
-            }
-          },
-          h(
+
+    // 1. Futuristic Summitscape Mountain Background (Light & Dark theme dynamic)
+    h("div", { className: "projects-mountain-bg", "aria-hidden": "true" }),
+
+    // 2. Subtle Grid Lines Texture Overlay
+    h("div", { className: "projects-grid-overlay", "aria-hidden": "true" }),
+
+    // 3. Section Container
+    h(
+      "div",
+      { className: "projects-container" },
+
+      // ====================================================================
+      // A. DEDICATED MOBILE PROJECT DETAILS VIEW (Triggered on Mobile tap)
+      // ====================================================================
+      mobileDetailsProject
+        ? h(
             "div",
-            { className: "bezel-inner", style: { display: "flex", flexDirection: "column", height: "100%" } },
-            // Top Preview Window
+            { className: "projects-mobile-details-view" },
+
+            // Top Bar: Back Button & Share Icon
             h(
               "div",
-              { className: "project-preview-window" },
-              h("span", { className: "project-floating-cat" }, project.shortCategory),
-              (project.liveUrl || project.githubUrl) &&
+              { className: "projects-details-topbar" },
+              h(
+                "button",
+                {
+                  className: "projects-details-back-btn",
+                  onClick: () => setMobileDetailsProject(null),
+                  "aria-label": "Back to Projects list"
+                },
+                h(IconChevronLeft, { size: 18 }),
+                "Back to Projects"
+              ),
+              h(
+                "a",
+                {
+                  href: mobileDetailsProject.liveUrl || mobileDetailsProject.githubUrl,
+                  target: "_blank",
+                  rel: "noopener noreferrer",
+                  className: "projects-details-share-btn",
+                  "aria-label": "Open project URL"
+                },
+                h(IconExternalArrow, { size: 16 })
+              )
+            ),
+
+            // Hero Device Preview with Wireframe Summitscape & Overlay Arrows
+            h(
+              "div",
+              { className: "projects-details-preview-hero" },
+              h("div", { className: "projects-details-preview-bg", "aria-hidden": "true" }),
+              h(
+                "div",
+                { className: "projects-details-preview-content" },
+                h("img", {
+                  src: mobileDetailsProject.image || "assets/images/locationkhuji.png",
+                  alt: mobileDetailsProject.title,
+                  className: "projects-details-hero-img"
+                })
+              ),
+              filteredProjects.length > 1 &&
+                h(
+                  "button",
+                  {
+                    className: "projects-details-hero-arrow left",
+                    onClick: handlePrevMobileDetails,
+                    "aria-label": "Previous project"
+                  },
+                  h(IconChevronLeft, { size: 20 })
+                ),
+              filteredProjects.length > 1 &&
+                h(
+                  "button",
+                  {
+                    className: "projects-details-hero-arrow right",
+                    onClick: handleNextMobileDetails,
+                    "aria-label": "Next project"
+                  },
+                  h(IconChevronRight, { size: 20 })
+                )
+            ),
+
+            // Title with orange gradient accent
+            h(
+              "h2",
+              { className: "projects-details-title" },
+              mobileDetailsProject.titlePrefix || mobileDetailsProject.title,
+              " ",
+              mobileDetailsProject.titleAccent &&
+                h("span", { className: "projects-title-gradient" }, mobileDetailsProject.titleAccent)
+            ),
+
+            // Description
+            h("p", { className: "projects-details-desc" }, mobileDetailsProject.description || mobileDetailsProject.summary),
+
+            // Complete Tech Badges
+            h(
+              "div",
+              { className: "projects-tech-tags-list" },
+              (mobileDetailsProject.tags || []).map((tag, idx) =>
+                h("span", { key: idx, className: "projects-tech-tag" }, tag)
+              )
+            ),
+
+            // Action Buttons Row
+            h(
+              "div",
+              { className: "projects-details-actions" },
+              mobileDetailsProject.liveUrl &&
                 h(
                   "a",
                   {
-                    href: project.liveUrl || project.githubUrl,
+                    href: mobileDetailsProject.liveUrl,
                     target: "_blank",
-                    rel: "noopener",
-                    className: "project-floating-ext",
-                    title: project.liveUrl
-                      ? `Open ${project.title} Live Demo`
-                      : `Open ${project.title} GitHub`,
-                    onClick: (e) => e.stopPropagation()
+                    rel: "noopener noreferrer",
+                    className: "projects-btn-primary"
                   },
-                  h(ExternalArrowIcon, { size: 14 })
+                  "Live Demo",
+                  h(IconArrowRight, { size: 15 })
                 ),
-              h(ProjectVisualHeader, { project })
+              mobileDetailsProject.githubUrl &&
+                h(
+                  "a",
+                  {
+                    href: mobileDetailsProject.githubUrl,
+                    target: "_blank",
+                    rel: "noopener noreferrer",
+                    className: "projects-btn-secondary"
+                  },
+                  h(IconGitHub, { size: 16 }),
+                  "GitHub"
+                )
             ),
 
-            // Card Body
-            h(
-              "div",
-              { className: "project-body" },
+            // Key Features List
+            mobileDetailsProject.keyFeatures && mobileDetailsProject.keyFeatures.length > 0 &&
               h(
                 "div",
-                { className: "project-body-top" },
-                h("h3", { className: "project-title" }, project.title),
-                h("p", { className: "project-desc" }, project.summary),
+                { className: "projects-details-features-card" },
                 h(
                   "div",
-                  { className: "project-tags-row" },
-                  project.tags.slice(0, 4).map((tag) =>
-                    h("span", { key: tag, className: "tech-chip" }, tag)
+                  { className: "projects-details-features-heading" },
+                  h("span", { className: "projects-badge-dot" }),
+                  "Key Features"
+                ),
+                mobileDetailsProject.keyFeatures.map((feat, idx) =>
+                  h(
+                    "div",
+                    { key: idx, className: "projects-details-feature-row" },
+                    h(
+                      "div",
+                      { className: "projects-details-feature-dot" },
+                      h(IconFeatureBullet, { name: feat.icon, size: 14 })
+                    ),
+                    h(
+                      "div",
+                      null,
+                      h("div", { className: "projects-details-feature-text" }, feat.title),
+                      feat.desc && h("div", { className: "projects-details-feature-sub" }, feat.desc)
+                    )
+                  )
+                )
+              )
+          )
+
+        // ====================================================================
+        // B. STANDARD VIEW (HEADER + FILTERS + DESKTOP HERO & GRID + MOBILE CAROUSEL)
+        // ====================================================================
+        : h(
+            React.Fragment,
+            null,
+
+            // Header Row: Badge, Title & Stats Counters
+            h(
+              "div",
+              { className: "projects-header-row" },
+              h(
+                "div",
+                { className: "projects-header-left" },
+                h(
+                  "div",
+                  { className: "projects-badge" },
+                  h("span", { className: "projects-badge-dot" }),
+                  "PROJECTS"
+                ),
+                h(
+                  "h2",
+                  { className: "projects-title" },
+                  "Pro",
+                  h("span", { className: "projects-title-gradient" }, "jects")
+                ),
+                h(
+                  "p",
+                  { className: "projects-subtitle" },
+                  "A collection of projects where I explore ideas, solve real problems, and turn concepts into usable products."
+                )
+              ),
+
+              // Desktop Top-Right Stats
+              h(
+                "div",
+                { className: "projects-stats-row" },
+                h(
+                  "div",
+                  { className: "projects-stat-card" },
+                  h("div", { className: "projects-stat-icon-box" }, h(IconCube, { size: 20 })),
+                  h(
+                    "div",
+                    { className: "projects-stat-info" },
+                    h("span", { className: "projects-stat-number" }, "5+"),
+                    h("span", { className: "projects-stat-label" }, "Projects Built")
+                  )
+                ),
+                h(
+                  "div",
+                  { className: "projects-stat-card" },
+                  h("div", { className: "projects-stat-icon-box" }, h(IconCodeBrackets, { size: 20 })),
+                  h(
+                    "div",
+                    { className: "projects-stat-info" },
+                    h("span", { className: "projects-stat-number" }, "10+"),
+                    h("span", { className: "projects-stat-label" }, "Technologies")
+                  )
+                ),
+                h(
+                  "div",
+                  { className: "projects-stat-card" },
+                  h("div", { className: "projects-stat-icon-box" }, h(IconUsersGroup, { size: 20 })),
+                  h(
+                    "div",
+                    { className: "projects-stat-info" },
+                    h("span", { className: "projects-stat-number" }, "Real"),
+                    h("span", { className: "projects-stat-label" }, "World Focus")
+                  )
+                )
+              )
+            ),
+
+            // Category Filter Buttons Bar
+            h(
+              "div",
+              { className: "projects-filters-bar", role: "tablist", "aria-label": "Filter projects by category" },
+              categories.map((cat) =>
+                h(
+                  "button",
+                  {
+                    key: cat.id,
+                    role: "tab",
+                    "aria-selected": activeCategory === cat.id,
+                    className: `projects-filter-btn ${activeCategory === cat.id ? "active" : ""}`,
+                    onClick: () => setActiveCategory(cat.id)
+                  },
+                  h(IconCategory, { type: cat.id || cat.icon, size: 16 }),
+                  cat.label
+                )
+              )
+            ),
+
+            // ----------------------------------------------------------------
+            // DESKTOP SECTION: FEATURED PROJECT SHOWCASE CARD
+            // ----------------------------------------------------------------
+            activeFeatured &&
+              h(
+                "div",
+                { className: "projects-featured-card" },
+
+                // Left: High Fidelity Laptop & Phone Mockup Presentation
+                h(
+                  "div",
+                  { className: "projects-featured-preview-box" },
+                  h(
+                    "div",
+                    { className: "projects-laptop-frame" },
+                    h(
+                      "div",
+                      { className: "projects-device-topbar" },
+                      h("span", { className: "projects-device-dot" }),
+                      h("span", { className: "projects-device-dot" }),
+                      h("span", { className: "projects-device-dot" })
+                    ),
+                    h("img", {
+                      src: activeFeatured.image || "assets/images/locationkhuji.png",
+                      alt: activeFeatured.title,
+                      className: "projects-laptop-screen"
+                    })
+                  ),
+                  // Floating Phone Mockup
+                  h(
+                    "div",
+                    { className: "projects-phone-frame" },
+                    h("img", {
+                      src: activeFeatured.image || "assets/images/locationkhuji.png",
+                      alt: `${activeFeatured.title} Mobile`,
+                      className: "projects-phone-screen"
+                    })
+                  )
+                ),
+
+                // Right: Content, Badges, Features, Tags & Actions
+                h(
+                  "div",
+                  { className: "projects-featured-content" },
+
+                  // Top Meta Bar
+                  h(
+                    "div",
+                    { className: "projects-featured-top-meta" },
+                    h(
+                      "span",
+                      { className: "projects-featured-badge" },
+                      h(IconStar, { size: 12 }),
+                      "Featured Project"
+                    ),
+                    h(
+                      "div",
+                      { className: "projects-featured-counter" },
+                      activeFeatured.number || "01",
+                      h("span", { className: "projects-featured-counter-muted" }, ` /0${filteredProjects.length || 5}`)
+                    )
+                  ),
+
+                  // Title with Orange Accent
+                  h(
+                    "h3",
+                    { className: "projects-featured-title" },
+                    activeFeatured.titlePrefix || activeFeatured.title,
+                    " ",
+                    activeFeatured.titleAccent &&
+                      h("span", { className: "projects-title-gradient" }, activeFeatured.titleAccent)
+                  ),
+
+                  // Description
+                  h("p", { className: "projects-featured-desc" }, activeFeatured.description || activeFeatured.summary),
+
+                  // Key Features 2x2 Grid
+                  activeFeatured.keyFeatures && activeFeatured.keyFeatures.length > 0 &&
+                    h(
+                      "div",
+                      { className: "projects-features-grid" },
+                      activeFeatured.keyFeatures.map((feat, idx) =>
+                        h(
+                          "div",
+                          { key: idx, className: "projects-feature-item" },
+                          h(
+                            "div",
+                            { className: "projects-feature-icon" },
+                            h(IconFeatureBullet, { name: feat.icon, size: 13 })
+                          ),
+                          h("div", { className: "projects-feature-title" }, feat.title)
+                        )
+                      )
+                    ),
+
+                  // Technology Badges
+                  h(
+                    "div",
+                    { className: "projects-tech-tags-list" },
+                    (activeFeatured.tags || []).map((tag, idx) =>
+                      h("span", { key: idx, className: "projects-tech-tag" }, tag)
+                    )
+                  ),
+
+                  // Action Buttons & Nav Chevrons
+                  h(
+                    "div",
+                    { className: "projects-featured-actions-row" },
+                    h(
+                      "div",
+                      { className: "projects-action-buttons-group" },
+                      activeFeatured.liveUrl &&
+                        h(
+                          "a",
+                          {
+                            href: activeFeatured.liveUrl,
+                            target: "_blank",
+                            rel: "noopener noreferrer",
+                            className: "projects-btn-primary"
+                          },
+                          "Live Demo",
+                          h(IconArrowRight, { size: 15 })
+                        ),
+                      activeFeatured.githubUrl &&
+                        h(
+                          "a",
+                          {
+                            href: activeFeatured.githubUrl,
+                            target: "_blank",
+                            rel: "noopener noreferrer",
+                            className: "projects-btn-secondary"
+                          },
+                          h(IconGitHub, { size: 16 }),
+                          "GitHub"
+                        ),
+                      h(
+                        "button",
+                        {
+                          type: "button",
+                          onClick: () => handleOpenDetails(activeFeatured),
+                          className: "projects-btn-secondary"
+                        },
+                        "View Details",
+                        h(IconArrowRight, { size: 14 })
+                      )
+                    ),
+
+                    // Prev / Next Chevron Arrows
+                    filteredProjects.length > 1 &&
+                      h(
+                        "div",
+                        { className: "projects-nav-controls" },
+                        h(
+                          "button",
+                          {
+                            type: "button",
+                            className: "projects-nav-arrow-btn",
+                            onClick: handlePrevFeatured,
+                            "aria-label": "Previous featured project"
+                          },
+                          h(IconChevronLeft, { size: 18 })
+                        ),
+                        h(
+                          "button",
+                          {
+                            type: "button",
+                            className: "projects-nav-arrow-btn",
+                            onClick: handleNextFeatured,
+                            "aria-label": "Next featured project"
+                          },
+                          h(IconChevronRight, { size: 18 })
+                        )
+                      )
                   )
                 )
               ),
 
-              // Card Footer Actions (Live Demo, GitHub, View Details / Interactive Journey)
+            // ----------------------------------------------------------------
+            // DESKTOP SECTION: LOWER CARDS GRID (02 - 05)
+            // ----------------------------------------------------------------
+            lowerGridProjects.length > 0 &&
               h(
                 "div",
-                { className: "project-actions-footer" },
+                { className: "projects-grid-cards" },
+                lowerGridProjects.map((project, idx) =>
+                  h(
+                    "div",
+                    {
+                      key: project.id || idx,
+                      className: "projects-grid-card",
+                      onClick: () => handleOpenDetails(project)
+                    },
+
+                    // Card Meta: Category + Number
+                    h(
+                      "div",
+                      { className: "projects-grid-card-meta" },
+                      h(
+                        "span",
+                        { className: "projects-grid-card-category" },
+                        project.shortCategory || "PROJECT"
+                      ),
+                      h("span", { className: "projects-grid-card-number" }, project.number || `0${idx + 2}`)
+                    ),
+
+                    // Thumbnail Box
+                    h(
+                      "div",
+                      { className: "projects-grid-thumbnail-box" },
+                      h("img", {
+                        src: project.image || "assets/images/locationkhuji.png",
+                        alt: project.title,
+                        className: "projects-grid-thumbnail-img",
+                        loading: "lazy"
+                      })
+                    ),
+
+                    // Title
+                    h("h4", { className: "projects-grid-card-title" }, project.title),
+
+                    // Short Summary
+                    h("p", { className: "projects-grid-card-desc" }, project.summary || project.description),
+
+                    // Tech Chips
+                    h(
+                      "div",
+                      { className: "projects-grid-card-tags" },
+                      (project.tags || []).slice(0, 4).map((t, tIdx) =>
+                        h("span", { key: tIdx, className: "projects-grid-card-tag" }, t)
+                      )
+                    ),
+
+                    // Actions
+                    h(
+                      "div",
+                      {
+                        className: "projects-grid-card-actions",
+                        onClick: (e) => e.stopPropagation()
+                      },
+                      project.liveUrl
+                        ? h(
+                            "a",
+                            {
+                              href: project.liveUrl,
+                              target: "_blank",
+                              rel: "noopener noreferrer",
+                              className: "projects-grid-card-btn-primary"
+                            },
+                            "Live Demo",
+                            h(IconArrowRight, { size: 13 })
+                          )
+                        : h(
+                            "button",
+                            {
+                              type: "button",
+                              onClick: () => handleOpenDetails(project),
+                              className: "projects-grid-card-btn-primary"
+                            },
+                            "View Details",
+                            h(IconArrowRight, { size: 13 })
+                          ),
+                      project.githubUrl &&
+                        h(
+                          "a",
+                          {
+                            href: project.githubUrl,
+                            target: "_blank",
+                            rel: "noopener noreferrer",
+                            className: "projects-grid-card-btn-ghost",
+                            "aria-label": `${project.title} GitHub repository`
+                          },
+                          h(IconGitHub, { size: 14 }),
+                          h(IconExternalArrow, { size: 11 })
+                        )
+                    )
+                  )
+                )
+              ),
+
+            // ----------------------------------------------------------------
+            // MOBILE SECTION: HORIZONTALLY SWIPEABLE CAROUSEL & PEAKING CARDS
+            // ----------------------------------------------------------------
+            h(
+              "div",
+              { className: "projects-mobile-section" },
+
+              // Horizontally Swipeable Viewport
+              h(
+                "div",
+                {
+                  ref: carouselRef,
+                  className: "projects-carousel-viewport",
+                  onScroll: handleCarouselScroll
+                },
                 h(
                   "div",
-                  { style: { display: "flex", alignItems: "center", gap: "0.45rem", flexWrap: "nowrap" } },
-                  project.journeyTrigger
-                    ? h(
-                        "button",
+                  { className: "projects-carousel-track" },
+                  filteredProjects.map((project, idx) =>
+                    h(
+                      "div",
+                      {
+                        key: project.id || idx,
+                        className: `projects-mobile-card ${activeMobileCardIndex === idx ? "active-card" : ""}`,
+                        onClick: () => handleOpenDetails(project)
+                      },
+
+                      // Card Top Bar: Featured Badge & Heart/Save Icon
+                      h(
+                        "div",
+                        { className: "projects-mobile-card-topbar" },
+                        h(
+                          "span",
+                          { className: "projects-mobile-badge" },
+                          h(IconStar, { size: 11 }),
+                          project.featured ? "Featured" : project.shortCategory
+                        ),
+                        h(
+                          "button",
+                          {
+                            type: "button",
+                            className: "projects-mobile-heart-btn",
+                            onClick: (e) => e.stopPropagation(),
+                            "aria-label": "Favorite project"
+                          },
+                          h(IconHeart, { size: 15 })
+                        )
+                      ),
+
+                      // Preview Box
+                      h(
+                        "div",
+                        { className: "projects-mobile-preview-box" },
+                        h("img", {
+                          src: project.image || "assets/images/locationkhuji.png",
+                          alt: project.title,
+                          className: "projects-mobile-preview-img",
+                          loading: "lazy"
+                        })
+                      ),
+
+                      // Title
+                      h(
+                        "h3",
+                        { className: "projects-mobile-title" },
+                        project.titlePrefix || project.title,
+                        " ",
+                        project.titleAccent &&
+                          h("span", { className: "projects-title-gradient" }, project.titleAccent)
+                      ),
+
+                      // Description
+                      h("p", { className: "projects-mobile-desc" }, project.summary || project.description),
+
+                      // 3 Tech Badges
+                      h(
+                        "div",
+                        { className: "projects-mobile-tags" },
+                        (project.tags || []).slice(0, 3).map((t, tIdx) =>
+                          h("span", { key: tIdx, className: "projects-mobile-tag" }, t)
+                        )
+                      ),
+
+                      // Actions Row: Live Demo, GitHub, and Number
+                      h(
+                        "div",
                         {
-                          type: "button",
-                          className: "project-action-pill highlight-yellow",
-                          onClick: (e) => {
-                            e.stopPropagation();
-                            onOpenJourney();
-                          }
-                        },
-                        h("span", null, "Interactive Journey →")
-                      )
-                    : project.liveUrl
-                    ? h(
-                        "a",
-                        {
-                          href: project.liveUrl,
-                          target: "_blank",
-                          rel: "noopener",
-                          className: "project-action-pill",
+                          className: "projects-mobile-actions",
                           onClick: (e) => e.stopPropagation()
                         },
-                        h("span", { className: "red-dot", style: { width: 6, height: 6 } }),
-                        h("span", null, "Live Demo →")
+                        project.liveUrl
+                          ? h(
+                              "a",
+                              {
+                                href: project.liveUrl,
+                                target: "_blank",
+                                rel: "noopener noreferrer",
+                                className: "projects-btn-primary",
+                                style: { padding: "0.5rem 1rem", fontSize: "0.78rem" }
+                              },
+                              "Live Demo",
+                              h(IconArrowRight, { size: 13 })
+                            )
+                          : h(
+                              "button",
+                              {
+                                type: "button",
+                                onClick: () => handleOpenDetails(project),
+                                className: "projects-btn-primary",
+                                style: { padding: "0.5rem 1rem", fontSize: "0.78rem" }
+                              },
+                              "Details"
+                            ),
+                        project.githubUrl &&
+                          h(
+                            "a",
+                            {
+                              href: project.githubUrl,
+                              target: "_blank",
+                              rel: "noopener noreferrer",
+                              className: "projects-btn-secondary",
+                              style: { padding: "0.5rem 0.85rem", fontSize: "0.78rem" }
+                            },
+                            h(IconGitHub, { size: 14 }),
+                            "GitHub"
+                          ),
+                        h(
+                          "span",
+                          { className: "projects-mobile-number" },
+                          project.number || `0${idx + 1}`
+                        )
                       )
-                    : null,
-
-                  h(
-                    "button",
-                    {
-                      type: "button",
-                      className: "project-action-pill",
-                      style: { padding: "0.42rem 0.75rem", fontWeight: 600 },
-                      onClick: (e) => {
-                        e.stopPropagation();
-                        onOpenModal(project);
-                      }
-                    },
-                    "View Details"
+                    )
                   )
-                ),
+                )
+              ),
 
-                project.githubUrl &&
-                  h(
-                    "a",
-                    {
-                      href: project.githubUrl,
-                      target: "_blank",
-                      rel: "noopener",
-                      className: "icon-circle-btn",
-                      title: `View ${project.title} Source Code on GitHub`,
-                      "aria-label": `View ${project.title} Source Code on GitHub`,
-                      onClick: (e) => e.stopPropagation()
-                    },
-                    h(GithubIcon, { size: 16 })
-                  )
+              // Pagination Dots
+              h(
+                "div",
+                { className: "projects-pagination-dots" },
+                filteredProjects.map((_, dIdx) =>
+                  h("button", {
+                    key: dIdx,
+                    type: "button",
+                    className: `projects-dot ${activeMobileCardIndex === dIdx ? "active" : ""}`,
+                    onClick: () => scrollToMobileCard(dIdx),
+                    "aria-label": `Scroll to project ${dIdx + 1}`
+                  })
+                )
+              ),
+
+              // Swipe Hint
+              h(
+                "div",
+                { className: "projects-swipe-hint" },
+                "👆 Swipe left or right to explore more projects"
               )
             )
           )
-        )
-  );
-}
-
-// --------------------------------------------------------------------------
-// 7. CATEGORY FILTERS COMPONENT (`ProjectFilters`)
-// --------------------------------------------------------------------------
-export function ProjectFilters({
-  categories,
-  activeCategory,
-  onSelectCategory
-}) {
-  return h(
-    "div",
-    { className: "filter-pills-row", role: "tablist", "aria-label": "Filter projects by category" },
-    categories.map((cat) =>
-      h(
-        "button",
-        {
-          key: cat.id,
-          type: "button",
-          role: "tab",
-          "aria-selected": activeCategory === cat.id,
-          className: `filter-pill-btn ${activeCategory === cat.id ? "active" : ""}`,
-          onClick: () => onSelectCategory(cat.id)
-        },
-        cat.label
-      )
-    )
-  );
-}
-
-// --------------------------------------------------------------------------
-// 8. FEATURED PROJECTS SECTION (`FeaturedProjects`)
-// Integrates the 3D Flying Robot Assistant, scroll-triggered delivery,
-// live state telemetry bar, category filters, and 3D project cards.
-// --------------------------------------------------------------------------
-export function FeaturedProjects({
-  projectsList,
-  categories,
-  onOpenModal,
-  onOpenJourney
-}) {
-  const [projectFilter, setProjectFilter] = useState("all");
-
-  // Filtered projects list (all 6 projects in exact order when 'all' is selected)
-  const filteredProjects = useMemo(() => {
-    if (projectFilter === "all") {
-      return projectsList;
-    }
-    return projectsList.filter((p) => p.categories.includes(projectFilter));
-  }, [projectsList, projectFilter]);
-
-  // Delivery state tracking — starts empty so cards ONLY show after the bot delivers them!
-  const [deliveredIds, setDeliveredIds] = useState(() =>
-    prefersReducedMotion() || !checkWebGLSupport()
-      ? new Set(projectsList.map((p) => p.id))
-      : new Set()
-  );
-  const [justLandedId, setJustLandedId] = useState(null);
-  const [robotTelemetry, setRobotTelemetry] = useState({
-    state: ANIMATION_STATES.IDLE,
-    stateLabel: STATE_LABELS.IDLE,
-    projectIndex: 0,
-    project: null
-  });
-  const [deliveryRunId, setDeliveryRunId] = useState(0);
-  const [skipRequested, setSkipRequested] = useState(false);
-  const [hoveredProjectId, setHoveredProjectId] = useState(null);
-  const [summonTargetId, setSummonTargetId] = useState(null);
-
-  const sectionRef = useRef(null);
-  const stageRef = useRef(null);
-  const perchRef = useRef(null);
-  const slotRefsMap = useRef(new Map());
-  const hasTriggeredInitialRef = useRef(false);
-  const delayTimerRef = useRef(null);
-
-  const registerSlotRef = useCallback((projectId, el) => {
-    if (el) {
-      slotRefsMap.current.set(projectId, el);
-    } else {
-      slotRefsMap.current.delete(projectId);
-    }
-  }, []);
-
-  // Mark a project as landed when the robot drops it
-  const handleProjectLanded = useCallback((projectId) => {
-    setDeliveredIds((prev) => {
-      const next = new Set(prev);
-      next.add(projectId);
-      return next;
-    });
-    setJustLandedId(projectId);
-    setTimeout(() => {
-      setJustLandedId((curr) => (curr === projectId ? null : curr));
-    }, 700);
-  }, []);
-
-  const handleAllDelivered = useCallback(() => {
-    setDeliveredIds(new Set(filteredProjects.map((p) => p.id)));
-    setSkipRequested(false);
-  }, [filteredProjects]);
-
-  // Trigger initial robot delivery when the Featured Projects section enters viewport
-  useEffect(() => {
-    const el = sectionRef.current;
-    if (!el) return;
-
-    if (prefersReducedMotion() || !checkWebGLSupport()) {
-      setDeliveredIds(new Set(projectsList.map((p) => p.id)));
-      return;
-    }
-
-    const checkProjScroll = () => {
-      if (hasTriggeredInitialRef.current) return;
-      if (window.scrollY < 200 && !window.location.hash.includes("projects")) return;
-      const rect = el.getBoundingClientRect();
-      const vh = window.innerHeight || 800;
-
-      // If user has already scrolled past Projects, complete immediately without blocking
-      if (rect.bottom < 0) {
-        if (delayTimerRef.current) clearTimeout(delayTimerRef.current);
-        hasTriggeredInitialRef.current = true;
-        setDeliveredIds(new Set(projectsList.map((p) => p.id)));
-        return;
-      }
-
-      if (rect.top <= vh * 0.68 && rect.bottom >= vh * 0.2) {
-        hasTriggeredInitialRef.current = true;
-        if (prefersReducedMotion()) {
-          setDeliveredIds(new Set(projectsList.map((p) => p.id)));
-          return;
-        }
-        delayTimerRef.current = setTimeout(() => {
-          setDeliveredIds(new Set());
-          setSkipRequested(false);
-          setDeliveryRunId((r) => r + 1);
-        }, 1000);
-      }
-    };
-
-    const io = new IntersectionObserver(
-      (entries) => {
-        entries.forEach((entry) => {
-          if (entry.isIntersecting) {
-            checkProjScroll();
-          }
-        });
-      },
-      { threshold: 0.12 }
-    );
-    io.observe(el);
-
-    window.addEventListener("scroll", checkProjScroll, { passive: true });
-    checkProjScroll();
-
-    return () => {
-      io.disconnect();
-      window.removeEventListener("scroll", checkProjScroll);
-      if (delayTimerRef.current) clearTimeout(delayTimerRef.current);
-    };
-  }, [projectsList]);
-
-  // Replay full robot delivery sequence on demand
-  const handleReplayDelivery = () => {
-    setDeliveredIds(new Set());
-    setSkipRequested(false);
-    setSummonTargetId(null);
-    setDeliveryRunId((r) => r + 1);
-  };
-
-  // Summon the robot to inspect a random or next featured project
-  const handleSummonRobot = () => {
-    if (filteredProjects.length === 0) return;
-    const pick =
-      filteredProjects[Math.floor(Math.random() * filteredProjects.length)];
-    setSummonTargetId(pick.id);
-    setTimeout(() => {
-      setSummonTargetId((curr) => (curr === pick.id ? null : curr));
-    }, 2600);
-  };
-
-  // Handle category filter change cleanly
-  const handleSelectCategory = (catId) => {
-    setProjectFilter(catId);
-    setDeliveredIds(new Set(projectsList.map((p) => p.id)));
-    setSkipRequested(true);
-  };
-
-  const isDeliveringNow =
-    robotTelemetry.state !== ANIMATION_STATES.IDLE &&
-    robotTelemetry.state !== ANIMATION_STATES.EXITING;
-
-  const activeTargetId =
-    isDeliveringNow && robotTelemetry.project ? robotTelemetry.project.id : null;
-
-  return h(
-    "section",
-    { id: "projects", ref: sectionRef, className: "section-block" },
-    // Section Header + Category Filters
-    h(
-      "div",
-      { className: "section-header-bar" },
-      h(
-        "div",
-        { className: "section-title-group" },
-        h("span", { className: "section-red-bar" }),
-        h(
-          "h2",
-          { className: "section-heading" },
-          "Featured Projects",
-          h("span", { className: "red-dot" })
-        )
-      ),
-      h(ProjectFilters, {
-        categories,
-        activeCategory: projectFilter,
-        onSelectCategory: handleSelectCategory
-      })
-    ),
-
-    // Main 3D Showcase Stage (Telemetry Bar + 3D Robot WebGL Overlay + Project Bento Grid)
-    h(
-      "div",
-      { ref: stageRef, className: "projects-showcase-stage" },
-      // Robot Assistant Telemetry & Interactive Controls Bar (includes Holopad Dock)
-      h(
-        "div",
-        { className: "robot-telemetry-bar", role: "region", "aria-label": "3D Robot Assistant Controls" },
-        h(
-          "div",
-          { className: "robot-telemetry-left" },
-          h("span", {
-            ref: perchRef,
-            className: "robot-holopad-dock",
-            title: "Bot F-01 Holopad Dock",
-            "aria-hidden": "true"
-          }),
-          h(
-            "span",
-            { className: "robot-unit-badge" },
-            h("span", { className: "robot-unit-led" }),
-            h("span", null, "BOT F-01")
-          ),
-          h(
-            "span",
-            {
-              className: `robot-state-chip ${
-                robotTelemetry.state === ANIMATION_STATES.IDLE ? "state-idle" : ""
-              }`
-            },
-            robotTelemetry.stateLabel
-          ),
-          h(
-            "span",
-            { className: "robot-status-text" },
-            isDeliveringNow && robotTelemetry.project
-              ? `Carrying ${robotTelemetry.project.title} (${
-                  robotTelemetry.projectIndex + 1
-                }/${filteredProjects.length}) into the portfolio...`
-              : hoveredProjectId
-              ? `Inspecting ${
-                  projectsList.find((p) => p.id === hoveredProjectId)?.title || "project"
-                } · Click any card for full specs`
-              : "All modules delivered · Hover a project card to guide Bot F-01 or replay aerial delivery"
-          )
-        ),
-        h(
-          "div",
-          { className: "robot-telemetry-actions" },
-          isDeliveringNow &&
-            h(
-              "button",
-              {
-                type: "button",
-                className: "robot-control-btn",
-                onClick: () => setSkipRequested(true)
-              },
-              "Instant Land All ⚡"
-            ),
-          h(
-            "button",
-            {
-              type: "button",
-              className: "robot-control-btn",
-              onClick: handleSummonRobot,
-              title: "Summon the 3D robot to inspect a project"
-            },
-            "Summon Bot 🤖"
-          ),
-          h(
-            "button",
-            {
-              type: "button",
-              className: "robot-control-btn primary-replay",
-              onClick: handleReplayDelivery,
-              title: "Replay the 3D robot project delivery sequence"
-            },
-            "Replay Robot Delivery ↻"
-          )
-        )
-      ),
-
-      h(ProjectDeliveryAnimation, {
-        stageRef,
-        perchRef,
-        slotRefsMap,
-        projects: filteredProjects,
-        hoveredProjectId,
-        summonTargetId,
-        deliveryRunId,
-        skipRequested,
-        onStateChange: setRobotTelemetry,
-        onProjectLanded: handleProjectLanded,
-        onAllDelivered: handleAllDelivered
-      }),
-
-      h(
-        motion.div,
-        { layout: true, className: "projects-bento-grid" },
-        h(
-          AnimatePresence,
-          { mode: "popLayout" },
-          filteredProjects.map((project, idx) =>
-            h(ProjectCard3D, {
-              key: project.id,
-              project,
-              index: idx,
-              isDelivered: deliveredIds.has(project.id),
-              isJustLanded: justLandedId === project.id,
-              isActiveTarget: activeTargetId === project.id,
-              isRobotInspected:
-                hoveredProjectId === project.id || summonTargetId === project.id,
-              slotRefCallback: registerSlotRef,
-              onHoverCard: setHoveredProjectId,
-              onLeaveCard: () => setHoveredProjectId(null),
-              onOpenModal,
-              onOpenJourney
-            })
-          )
-        )
-      )
     )
   );
 }

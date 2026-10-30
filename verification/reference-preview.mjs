@@ -2,7 +2,7 @@ import {chromium} from 'playwright';
 import {startServer} from './server.mjs';
 import fs from 'node:fs/promises';
 const server=await startServer(new URL('../',import.meta.url));
-const b=await chromium.launch({headless:true,args:['--no-sandbox','--enable-unsafe-swiftshader']});
+const b=await chromium.launch({headless:true,channel:'chrome',args:['--no-sandbox','--enable-unsafe-swiftshader']});
 const p=await b.newPage({reducedMotion:'reduce',ignoreHTTPSErrors:true});p.on('pageerror',e=>console.log('ERROR',e.message));
 await fs.mkdir(new URL('./artifacts/',import.meta.url),{recursive:true});
 for(const width of [1440,761,390]){

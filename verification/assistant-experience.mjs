@@ -5,7 +5,7 @@ import fs from 'node:fs/promises';
 import {fileURLToPath} from 'node:url';
 import {startServer} from './server.mjs';
 const out=fileURLToPath(new URL('./artifacts/',import.meta.url));await fs.mkdir(out,{recursive:true});
-const browser=await chromium.launch({headless:true,args:['--no-sandbox','--enable-unsafe-swiftshader']});
+const browser=await chromium.launch({headless:true,channel:'chrome',args:['--no-sandbox','--enable-unsafe-swiftshader']});
 const server=await startServer(new URL('../',import.meta.url));
 const ctx=await browser.newContext({ignoreHTTPSErrors:true,reducedMotion:'reduce'});
 const page=await ctx.newPage();const errors=[];const results=[];

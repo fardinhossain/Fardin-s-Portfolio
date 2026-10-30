@@ -7,7 +7,7 @@ const out=fileURLToPath(new URL('./artifacts/',import.meta.url));
 await fs.mkdir(out,{recursive:true});
 const server=await startServer(new URL('../',import.meta.url));
 const baseUrl=server.baseUrl;
-const browser=await chromium.launch({headless:true,args:['--no-sandbox','--enable-unsafe-swiftshader']});
+const browser=await chromium.launch({headless:true,channel:'chrome',args:['--no-sandbox','--enable-unsafe-swiftshader']});
 const results=[];
 const widths=process.env.QUICK?[]:[320,375,390,768,1024,1366,1440,1920];
 const errors=[];

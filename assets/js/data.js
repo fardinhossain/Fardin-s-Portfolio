@@ -56,47 +56,126 @@ export const HERO_METRICS = [
 ];
 
 export const PROJECT_CATEGORIES = [
-  { id: "all", label: "All" },
-  { id: "ai-ml", label: "AI / ML" },
-  { id: "web", label: "Web Applications" },
-  { id: "systems", label: "Systems" },
-  { id: "research", label: "Research" }
+  { id: "all", label: "All", icon: "all" },
+  { id: "web", label: "Web Apps", icon: "web" },
+  { id: "ai-ml", label: "AI / ML", icon: "ai-ml" },
+  { id: "mobile", label: "Mobile Apps", icon: "mobile" },
+  { id: "tools", label: "Tools", icon: "tools" },
+  { id: "academic", label: "Academic", icon: "academic" }
 ];
 
 export const PROJECTS_LIST = [
   {
     id: "locationkhuji",
+    number: "01",
     title: "LocationKhuji",
+    titlePrefix: "Location",
+    titleAccent: "Khuji",
     shortCategory: "Web App",
-    categories: ["ai-ml", "web"],
+    categories: ["all", "web", "ai-ml"],
     featured: true,
     visualType: "location",
     image: "assets/images/locationkhuji.png",
     summary:
-      "AI-powered MERN location discovery platform for finding nearby flats, hospitals, pharmacies, and services across Bangladesh.",
+      "AI-powered Bangladesh map-first discovery platform to explore places, food, tourism, education and more with intelligent recommendations.",
     description:
-      "Bangladesh-based MERN full-stack location discovery platform where users can find rental flats, hospitals, pharmacies, restaurants, and local services within a 1–20 km radius on interactive maps. Powered by Groq and OpenRouter LLM APIs for natural-language search in English, Bangla, and Banglish.",
+      "An AI-powered Bangladesh map-first discovery platform to explore places, food, tourism, education and more with intelligent recommendations.",
+    keyFeatures: [
+      { icon: "sparkle", title: "AI-Powered Recommendations", desc: "LLM semantic reasoning in English, Bangla & Banglish" },
+      { icon: "map", title: "Interactive Map (Leaflet.js)", desc: "1–20 km radial discovery with customized geospatial pins" },
+      { icon: "radar", title: "Real-time Place Discovery", desc: "Live Socket.io status updates, verification and ratings" },
+      { icon: "layout", title: "Modern & Responsive UI", desc: "React 19, Tailwind CSS and dynamic filtering architecture" }
+    ],
     highlights: [
       "Natural-language search across English, Bangla, and Banglish powered by Groq and OpenRouter LLM APIs",
       "Interactive 1–20 km radius map discovery with real-time Socket.io updates and multi-layer search fallback",
       "Role-based authentication, owner property listings, reviews, and full Admin moderation dashboard"
     ],
-    tags: ["React 19", "Node.js", "MongoDB", "Groq / OpenRouter", "Leaflet Maps", "Socket.io"],
+    tags: ["React 19", "Node.js", "MongoDB", "Socket.io", "Firebase", "Leaflet.js", "Groq Llama 3", "DeepSeek V3", "Vercel", "Render"],
     liveUrl: "https://locationkhuji.vercel.app/",
     githubUrl: "https://github.com/fardinhossain/Locationkhuji"
   },
   {
+    id: "unibuddy",
+    number: "02",
+    title: "Unibuddy App",
+    titlePrefix: "Unibuddy",
+    titleAccent: "App",
+    shortCategory: "Mobile App",
+    categories: ["all", "mobile", "academic", "tools"],
+    featured: true,
+    visualType: "unibuddy",
+    image: "assets/images/unibuddy-app.png",
+    summary:
+      "A university community app for students to connect, share resources and collaborate.",
+    description:
+      "A university community app for students to connect, share resources, manage routines, track CGPA, and collaborate in real-time.",
+    keyFeatures: [
+      { icon: "phone", title: "Cross-Platform Mobile Hub", desc: "Complete Flutter + Dart architecture for iOS and Android" },
+      { icon: "chat", title: "Real-time Student Chat & Polls", desc: "Instant campus community rooms backed by Appwrite Cloud" },
+      { icon: "calc", title: "Academic Routine & CGPA", desc: "Multi-semester GPA projection and class schedule management" },
+      { icon: "doc", title: "Assignment Cover Generator", desc: "Automated standard university cover page PDF builder" }
+    ],
+    highlights: [
+      "All-in-one student hub: Class Routine, multi-semester CGPA Calculator, Task Manager, and Cover Page generator",
+      "Real-time campus communication with student chat rooms, polls, and user profiles backed by Appwrite",
+      "Cross-platform Flutter & Dart architecture supporting Android, iOS, and Web"
+    ],
+    tags: ["Flutter", "Firebase", "Dart", "Figma", "Appwrite", "Android / iOS"],
+    liveUrl: "https://tinyurl.com/unibuddyapk",
+    githubUrl: "https://github.com/fardinhossain/Unibuddy_app"
+  },
+  {
+    id: "civic-pulse",
+    number: "03",
+    title: "Civic-Pulse AI",
+    titlePrefix: "Civic-Pulse",
+    titleAccent: "AI",
+    shortCategory: "AI / ML",
+    categories: ["all", "ai-ml", "web", "tools"],
+    featured: true,
+    visualType: "civic",
+    image: "assets/images/civicpulse-ai.jpg",
+    summary:
+      "AI-powered civic infrastructure reporting platform for automated issue categorization, severity scoring, duplicate detection, and department routing.",
+    description:
+      "An automated civic incident triage system leveraging LLMs for severity scoring, citizen photo verification, and smart municipal dispatch.",
+    keyFeatures: [
+      { icon: "sparkle", title: "Automated Report Triage", desc: "Instant categorization & severity scoring with LLM reasoning" },
+      { icon: "map", title: "Geospatial Pin Geocoding", desc: "Interactive map issue pinning with citizen photo evidence" },
+      { icon: "radar", title: "Semantic Duplicate Detection", desc: "Cluster duplicate neighborhood tickets across municipal zones" },
+      { icon: "shield", title: "Municipal Dispatch Portal", desc: "Role-based resolution routing for city maintenance teams" }
+    ],
+    highlights: [
+      "End-to-end AI triage that categorizes reports, scores severity with explainable rationale, and detects semantic duplicates",
+      "Interactive map pin geocoding, photo evidence upload, and automatic municipal department dispatch",
+      "Public citizen tracking portal and role-based municipal Admin resolution dashboard"
+    ],
+    tags: ["AI / LLM API", "Next.js", "React", "Geospatial Maps", "Automated Triage", "Full-Stack"],
+    liveUrl: "https://civicpulseai.vercel.app/",
+    githubUrl: "https://github.com/fardinhossain/Civic-Pulse_AI_API_Hackathon_2026"
+  },
+  {
     id: "schedos",
+    number: "04",
     title: "SchedOS",
-    shortCategory: "Systems",
-    categories: ["systems", "web"],
+    titlePrefix: "Sched",
+    titleAccent: "OS",
+    shortCategory: "Tools",
+    categories: ["all", "tools", "web", "academic"],
     featured: true,
     visualType: "schedos",
     image: "assets/images/schedos.png",
     summary:
       "Interactive OS CPU scheduling laboratory — visualize, simulate, and compare 8 scheduling algorithms with Gantt charts and 557 passing tests.",
     description:
-      "Interactive Operating System CPU Scheduling Algorithm Simulator built with React 19, TypeScript 5, and Tailwind CSS v4. Visualizes, simulates, and compares 8 preemptive and non-preemptive CPU scheduling algorithms with step-by-step execution, Gantt charts, and process metrics.",
+      "Interactive Operating System CPU Scheduling Algorithm Simulator with real-time Gantt charts, metrics, and deterministic simulation.",
+    keyFeatures: [
+      { icon: "cpu", title: "8 CPU Scheduling Algorithms", desc: "Simulation of FCFS, SJF, SRTF, LJF, LRTF, RR, Priority" },
+      { icon: "chart", title: "Interactive Gantt Charts", desc: "Dynamic timeline rendering with step-by-step cycle execution" },
+      { icon: "check", title: "557 Passing Vitest Tests", desc: "100% deterministic test-driven OS scheduling logic" },
+      { icon: "metric", title: "Turnaround & Waiting Metrics", desc: "Side-by-side performance comparison matrix across schedulers" }
+    ],
     highlights: [
       "Real-time simulation and visual comparison of 8 CPU scheduling algorithms (FCFS, SJF, SRTF, LJF, LRTF, RR, Priority)",
       "100% client-side deterministic engine verified by 557 passing Vitest unit tests",
@@ -108,16 +187,25 @@ export const PROJECTS_LIST = [
   },
   {
     id: "seu-routine-maker",
+    number: "05",
     title: "SEU Routine Maker",
-    shortCategory: "Web App",
-    categories: ["web", "systems"],
+    titlePrefix: "SEU Routine",
+    titleAccent: "Maker",
+    shortCategory: "Academic",
+    categories: ["all", "web", "academic", "tools"],
     featured: true,
     visualType: "routine",
     image: "assets/images/seu-routine-maker.jpg",
     summary:
       "Fast, mobile-friendly routine builder for SEU students — import UMS HTML or course screenshots to generate conflict-free schedules and export PNG/PDF.",
     description:
-      "Modern, privacy-first weekly routine maker for Southeast University students built with Next.js and React. Imports UMS Offered Sections HTML files, typed course codes, or course screenshots via OCR to automatically build weekly schedules, detect time conflicts and duplicate sections, and export to PNG, PDF, or .ics calendar.",
+      "Modern, privacy-first weekly routine maker with OCR screenshot parsing, conflict detection, and one-click calendar/PDF export.",
+    keyFeatures: [
+      { icon: "scan", title: "OCR Screenshot Import", desc: "Extract course codes directly from university portal screenshots" },
+      { icon: "alert", title: "Conflict & Duplicate Alerts", desc: "Automatic time overlap detection and schedule optimization" },
+      { icon: "file", title: "Export to PNG, PDF & .ics", desc: "One-click download of high-resolution schedules and calendar sync" },
+      { icon: "offline", title: "Privacy-First Local Storage", desc: "100% client-side data persistence with zero tracking" }
+    ],
     highlights: [
       "Imports UMS HTML files or extracts course codes from screenshots using client-side OCR",
       "Automatic time-conflict detection, duplicate section alerts, and gap analysis",
@@ -128,38 +216,26 @@ export const PROJECTS_LIST = [
     githubUrl: "https://github.com/fardinhossain/SEU-Routine_Maker"
   },
   {
-    id: "civic-pulse",
-    title: "Civic-Pulse AI",
-    shortCategory: "AI / ML",
-    categories: ["ai-ml", "web"],
-    featured: true,
-    visualType: "civic",
-    image: "assets/images/civicpulse-ai.jpg",
-    summary:
-      "AI-powered civic infrastructure reporting platform for automated issue categorization, severity scoring, duplicate detection, and department routing.",
-    description:
-      "Built for the IEEE Computer Society SEU AI & API Hackathon 2026. Transforms unstructured citizen reports of potholes, broken streetlights, water leaks, and hazards into structured, severity-scored, deduplicated, and automatically routed municipal cases with an explainable AI pipeline.",
-    highlights: [
-      "End-to-end AI triage that categorizes reports, scores severity with explainable rationale, and detects semantic duplicates",
-      "Interactive map pin geocoding, photo evidence upload, and automatic municipal department dispatch",
-      "Public citizen tracking portal and role-based municipal Admin resolution dashboard"
-    ],
-    tags: ["AI / LLM API", "Next.js", "React", "Geospatial Maps", "Automated Triage", "Full-Stack"],
-    liveUrl: "https://civicpulseai.vercel.app/",
-    githubUrl: "https://github.com/fardinhossain/Civic-Pulse_AI_API_Hackathon_2026"
-  },
-  {
     id: "flyrank-ml-capstone",
+    number: "06",
     title: "FlyRank AI ML Capstone",
-    shortCategory: "Research",
-    categories: ["ai-ml", "research"],
+    titlePrefix: "FlyRank AI",
+    titleAccent: "ML",
+    shortCategory: "Academic",
+    categories: ["all", "ai-ml", "academic"],
     featured: true,
     visualType: "flyrank",
     image: "assets/images/flyrank-ml-capstone.jpg",
     summary:
       "Decision-support content-refresh ranking over 78.8M DuckDB rows and 9,961 pages (0.78 Precision@50 vs 0.30 baseline) with IEEE paper.",
     description:
-      "Applied Search Intelligence ML capstone framing content-refresh prioritization as a ranking problem over 9,961 candidate pages drawn from a 78.8M-row search warehouse in DuckDB. Evaluated on a strict client-grouped holdout across unseen domains, achieving 0.78 Precision@50 vs 0.30 for the fixed-rule baseline.",
+      "Applied Search Intelligence ML capstone framing content-refresh prioritization as a ranking problem over 9,961 candidate pages drawn from a 78.8M-row search warehouse in DuckDB.",
+    keyFeatures: [
+      { icon: "metric", title: "0.78 Precision@50", desc: "Learned ranker vs 0.30 fixed-rule baseline on unseen domains" },
+      { icon: "db", title: "78.8M DuckDB Rows", desc: "Out-of-core pipeline over 9,961 candidate search pages" },
+      { icon: "book", title: "6-Page IEEE Paper", desc: "Formal research paper with rigorous feature-leakage audit" },
+      { icon: "code", title: "12 Executed Colab Notebooks", desc: "End-to-end data contracts and production ranking playbook" }
+    ],
     highlights: [
       "Achieved 0.78 Precision@50 with the learned ranker vs 0.30 for the fixed-rule baseline on unseen client domains",
       "Out-of-core DuckDB data contract over 78.8M daily-performance rows with full feature-leakage audit",
@@ -170,27 +246,6 @@ export const PROJECTS_LIST = [
     paperUrl: "/paper.pdf",
     journeyTrigger: true,
     githubUrl: "https://github.com/fardinhossain/FlyRankAI-ML-Internship-Task"
-  },
-  {
-    id: "unibuddy",
-    title: "UniBuddy",
-    shortCategory: "Mobile / App",
-    categories: ["web", "systems"],
-    featured: true,
-    visualType: "unibuddy",
-    image: "assets/images/unibuddy-app.png",
-    summary:
-      "Ultimate university companion app built with Flutter & Appwrite — featuring class routines, CGPA calculator, tasks, cover page builder, and chat.",
-    description:
-      "Comprehensive cross-platform mobile and web application built with Flutter (Dart) and Appwrite Cloud for university students. Combines academic productivity tools—including class routines, multi-semester CGPA calculator, assignment cover page generator, and task manager—with real-time student chat and polls.",
-    highlights: [
-      "All-in-one student hub: Class Routine, multi-semester CGPA Calculator, Task Manager, and Cover Page generator",
-      "Real-time campus communication with student chat rooms, polls, and user profiles backed by Appwrite",
-      "Cross-platform Flutter & Dart architecture supporting Android, iOS, and Web"
-    ],
-    tags: ["Flutter", "Dart", "Appwrite", "Android / iOS", "CGPA & Routine", "Real-Time Chat"],
-    liveUrl: "https://tinyurl.com/unibuddyapk",
-    githubUrl: "https://github.com/fardinhossain/Unibuddy_app"
   }
 ];
 
