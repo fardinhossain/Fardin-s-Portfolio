@@ -12,9 +12,9 @@ def data_uri(path):
     # Inspection preview targets modern browsers; optimized equivalents avoid
     # embedding multi-megabyte PNG fallbacks. Production originals stay intact.
     if path.suffix.lower()=='.png' and path.with_suffix('.webp').is_file(): path=path.with_suffix('.webp')
-    mime=mimetypes.guess_type(path.name)[0] or 'application/octet-stream'
+    mime={'.webp':'image/webp','.png':'image/png'}.get(path.suffix.lower()) or mimetypes.guess_type(path.name)[0] or 'application/octet-stream'
     return 'data:'+mime+';base64,'+base64.b64encode(path.read_bytes()).decode()
-embedded={ '/'+p.relative_to(ROOT).as_posix():data_uri(p) for pattern in ('about-summitscape.*','about-summitscape-light.*','hero-portrait-light.*','hero-portrait-dark.*','hero-portrait-current.*') for p in (ROOT/'assets/images').glob(pattern) }
+embedded={ '/'+p.relative_to(ROOT).as_posix():data_uri(p) for pattern in ('about-summitscape.*','about-summitscape-light.*','hero-portrait-light.*','hero-portrait-dark.*','hero-portrait-current.*','hero-portrait-dark-cutout.*','hero-portrait-light-cutout.*') for p in (ROOT/'assets/images').glob(pattern) }
 asset=re.compile(r'''(["'])(/?(?:assets/|Anthropic_Certificates_Images/|Fardin_Hossain_Resume\.pdf|paper\.pdf)[^"']*)\1''')
 def assets(text, js=False):
     def replace(m):

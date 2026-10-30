@@ -8,7 +8,7 @@ Existing project data, experience/certification presentation, internship journey
 
 ## Hero
 
-The newly supplied Confident Portrait with Orange Halo is stored as hero-portrait-current.png plus an optimized WebP. Its original proportions are preserved using contain sizing and feathered bounds. The existing supplied light portrait remains for light mode. Original image files are retained. No generic person or newly invented profile content is used.
+The newly supplied Confident Portrait with Orange Halo is retained unchanged as hero-portrait-current.png. The Hero renders transparent derived cutouts (hero-portrait-dark-cutout.webp and hero-portrait-light-cutout.webp) made by removing only each photo's flat backdrop, so the hero background shows through and no rectangular picture colour remains. The subject, halo, dimensions (1087×1447) and proportions are unchanged; the original files remain in the repository. Mobile name shading uses a masked soft shade with no hard box edge. Its original proportions are preserved using contain sizing and feathered bounds. The existing supplied light portrait remains for light mode. Original image files are retained. No generic person or newly invented profile content is used.
 
 The dark scene uses the existing user-supplied wireframe landscape; the latest attachment set supplies a new portrait, Hero-layout screenshot, tracker screenshot and light landscape, rather than a separate additional raw dark landscape. The actual new light landscape is used, not a white filter over the dark one.
 

@@ -157,7 +157,9 @@ export function CinematicHeroSection({ resumeUrl = PROFILE_DATA.resumeUrl, onNav
       h("span", { className: "fh-name-word" }, "MD."), " ",
       h("span", { className: "fh-name-word fh-name-accent" }, "FARDIN"), " ",
       h("span", { className: "fh-name-word" }, "HOSSAIN")));
-  const portraitWebp = theme === "light" ? "/assets/images/hero-portrait-light.webp" : "/assets/images/hero-portrait-current.webp";
+  // Transparent cutouts (originals retained): the hero background shows through,
+  // so the photo has no separate rectangular backdrop colour.
+  const portraitSrc = theme === "light" ? PROFILE_DATA.heroPortraitLight : PROFILE_DATA.heroPortraitDark;
   const resumeHref = resumeUrl.startsWith("/") || /^https?:/.test(resumeUrl) ? resumeUrl : `/${resumeUrl}`;
   return h("section", { id: "home", ref: root, className: "fh-hero", "aria-labelledby": "fh-headline" },
     h("div", { className: "fh-atmosphere", "aria-hidden": true }),
@@ -176,8 +178,7 @@ export function CinematicHeroSection({ resumeUrl = PROFILE_DATA.resumeUrl, onNav
               h("svg", { viewBox: "0 0 24 24", fill: "none", stroke: "currentColor", strokeWidth: 1.6, "aria-hidden": true }, h("path", { d: "M12 3v12m-4-4 4 4 4-4M5 16v5h14v-5" })), "View Résumé (PDF)"))),
         h("div", { className: "fh-visual" },
           h("div", { className: "fh-portrait" }, h("picture", { "data-portrait-theme": theme },
-            h("source", { type: "image/webp", srcSet: portraitWebp }),
-            h("img", { src: theme === "light" ? PROFILE_DATA.heroPortraitLight : "/assets/images/hero-portrait-current.png",
+            h("img", { src: portraitSrc,
               alt: "Md. Fardin Hossain in a brown T-shirt with an orange halo", width: 1087, height: 1447,
               loading: "eager", fetchPriority: "high", decoding: "async", draggable: false }))),
           h(HeroAuraFlyingRobot, { onActivate: activate, open: chatOpen, onRevealProgress: revealName, onPhase: phase }),

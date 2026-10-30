@@ -80,7 +80,10 @@ body { background: var(--folio-ground); }
   .fh-copy { padding: 20px 0 30px; }
   .fh-kicker { font-size: clamp(9px,2.25cqw,12px); margin-bottom: 17px; }
   .fh-headline { font-size: 10.3cqw; }
-  .fh-name-mobile { position: absolute; z-index: 4; left: 0; right: 0; bottom: 8px; margin: 0; padding: 22px 10px 13px; font-size: clamp(29px, 9.8vw, 42px); color: #fff; text-shadow: 0 2px 8px #0009; background: linear-gradient(transparent, #111318ba); }
+  .fh-name-mobile { position: absolute; z-index: 4; left: 0; right: 0; bottom: 8px; margin: 0; padding: 22px 10px 13px; font-size: clamp(29px, 9.8vw, 42px); color: #fff; text-shadow: 0 2px 10px #000c, 0 0 2px #0008; background: none; isolation: isolate; }
+  /* Soft elliptical shade with no hard box edges, so the photo blends into the hero. */
+  .fh-name-mobile::after { content: ""; position: absolute; z-index: -1; inset: -34px -6px -22px; background: #0b0d0fd9; -webkit-mask-image: radial-gradient(ellipse 50% 50% at 50% 56%, #000 38%, transparent 100%); mask-image: radial-gradient(ellipse 50% 50% at 50% 56%, #000 38%, transparent 100%); pointer-events: none; }
+  [data-theme="light"] .fh-name-mobile::after { background: #2a1610cc; }
   .fh-name-mobile::before { left: 10px; top: 10px; }
   .fh-name-mobile .fh-name-accent { color: #ff7952; }
   .fh-actions { gap: 10px 18px; }
