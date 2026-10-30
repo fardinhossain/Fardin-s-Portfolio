@@ -1,4 +1,4 @@
-import React, { useEffect, useRef, useState } from "react";
+import React, { useEffect, useRef, useState, useCallback } from "react";
 import { scrollToTarget } from "./smooth-scroll.js";
 import { getCurrentTheme, subscribeTheme } from "./theme-manager.js";
 
@@ -120,13 +120,126 @@ export function AboutGhostRobot() {
   return h("div", { ref: host, className: "ae-ghost-robot", "aria-hidden": "true", inert: "" });
 }
 
+// Miniature Flying Assistant Mascot (Bot F-01) for the About tracking rail
+function FlyingTrackerRobot({ isFlying, direction, isMobile }) {
+  const tiltDeg = isMobile
+    ? (direction > 0 ? "16deg" : "-16deg")
+    : (direction > 0 ? "12deg" : "-12deg");
+
+  return h(
+    "div",
+    {
+      className: `ae-tracker-robot ${isFlying ? "is-flying" : "is-hovering"}`,
+      style: {
+        "--flight-tilt": tiltDeg
+      },
+      "aria-hidden": "true"
+    },
+    h(
+      "svg",
+      {
+        width: isMobile ? 32 : 36,
+        height: isMobile ? 34 : 38,
+        viewBox: "0 0 64 64",
+        fill: "none",
+        xmlns: "http://www.w3.org/2000/svg",
+        className: "ae-robot-svg"
+      },
+      // Top Antenna Stalk & Pulsing LED Beacon
+      h("line", { x1: "32", y1: "5", x2: "32", y2: "14", stroke: "var(--ae-accent, #FF6238)", strokeWidth: "3", strokeLinecap: "round" }),
+      h("circle", { cx: "32", cy: "5", r: "3.5", fill: "var(--ae-accent, #FF6238)", className: "ae-robot-antenna-led" }),
+
+      // Aerodynamic porcelain dome head / chassis
+      h("rect", { x: "13", y: "14", width: "38", height: "27", rx: "12", fill: "#FFFFFF", stroke: "#1E2638", strokeWidth: "2" }),
+
+      // Curved Dark Visor Screen
+      h("rect", { x: "18", y: "18", width: "28", height: "16", rx: "6", fill: "#0B0F19" }),
+
+      // Expressive Glowing LED Eyes (Orange/Crimson theme)
+      h("circle", { cx: "26", cy: "26", r: "3.2", fill: "var(--ae-accent, #FF6238)" }),
+      h("circle", { cx: "38", cy: "26", r: "3.2", fill: "var(--ae-accent, #FF6238)" }),
+      // Eye Gleam Highlights
+      h("circle", { cx: "27", cy: "25", r: "1", fill: "#FFFFFF" }),
+      h("circle", { cx: "39", cy: "25", r: "1", fill: "#FFFFFF" }),
+
+      // Left & Right Aerodynamic Flight Winglets
+      h("path", { d: "M13 25 L5 31 L13 35 Z", fill: "#CBD5E1", stroke: "#1E2638", strokeWidth: "1.6" }),
+      h("path", { d: "M51 25 L59 31 L51 35 Z", fill: "#CBD5E1", stroke: "#1E2638", strokeWidth: "1.6" }),
+
+      // Bottom Chassis / Engine Mount
+      h("path", { d: "M20 41 L44 41 L40 49 L24 49 Z", fill: "#E2E8F0", stroke: "#1E2638", strokeWidth: "1.8" }),
+
+      // Core Power Reactor LED
+      h("circle", { cx: "32", cy: "45", r: "2.6", fill: "var(--ae-accent, #FF6238)" }),
+
+      // Jet Thruster Exhaust Flame (Dynamic animated plasma flame)
+      h("path", {
+        className: "ae-robot-flame",
+        d: "M26 49 Q32 63 38 49 Q32 54 26 49 Z",
+        fill: "url(#aeRobotFlameGrad)"
+      }),
+
+      // Gradient definition for flame
+      h(
+        "defs",
+        null,
+        h(
+          "linearGradient",
+          { id: "aeRobotFlameGrad", x1: "0%", y1: "0%", x2: "0%", y2: "100%" },
+          h("stop", { offset: "0%", stopColor: "#FFDD00" }),
+          h("stop", { offset: "55%", stopColor: "#FF6238" }),
+          h("stop", { offset: "100%", stopColor: "#FF1E56", stopOpacity: "0" })
+        )
+      )
+    )
+  );
+}
+
 export function AboutScrollStory() {
   const [active, setActive] = useState(0);
   const refs = useRef([]);
   const sectionRef = useRef(null);
   const navRef = useRef(null);
+  const navLinksRef = useRef(null);
+  const dotRefs = useRef([]);
+  const [robotPos, setRobotPos] = useState({ x: 0, y: 0, ready: false });
+  const [isFlying, setIsFlying] = useState(false);
+  const [flightDir, setFlightDir] = useState(1);
+  const prevActiveRef = useRef(active);
   const [theme, setTheme] = useState(getCurrentTheme);
   const reduced = useReducedMotion();
+
+  // Track active chapter change to trigger flight animation and tilt
+  useEffect(() => {
+    if (prevActiveRef.current !== active) {
+      const dir = active > prevActiveRef.current ? 1 : -1;
+      setFlightDir(dir);
+      setIsFlying(true);
+      prevActiveRef.current = active;
+      const t = setTimeout(() => {
+        setIsFlying(false);
+      }, 550);
+      return () => clearTimeout(t);
+    }
+  }, [active]);
+
+  // Keep robot locked onto the active chapter dot center coordinates
+  const updateRobotPosition = useCallback(() => {
+    const container = navLinksRef.current;
+    const targetDot = dotRefs.current[active];
+    if (!container || !targetDot) return;
+    const cRect = container.getBoundingClientRect();
+    const dRect = targetDot.getBoundingClientRect();
+    const x = dRect.left - cRect.left + dRect.width / 2;
+    const y = dRect.top - cRect.top + dRect.height / 2;
+    setRobotPos({ x, y, ready: true });
+  }, [active]);
+
+  useEffect(() => {
+    updateRobotPosition();
+    window.addEventListener("resize", updateRobotPosition);
+    return () => window.removeEventListener("resize", updateRobotPosition);
+  }, [updateRobotPosition]);
 
   useEffect(() => {
     const unsubscribe = subscribeTheme(setTheme);
@@ -209,13 +322,27 @@ export function AboutScrollStory() {
           }))),
       h("div", { className: "ae-layout" },
         h("nav", { ref: navRef, className: "ae-nav ae-sidebar", "aria-label": "About chapters" },
-            h("div", { className: "ae-nav-links", style: { "--ae-progress": active / 3 } }, h("span", { className: "ae-nav-progress", "aria-hidden": "true" }), chapters.map((chapter, index) =>
-              h("a", { key: chapter.id, href: `#${chapter.id}`, className: `ae-nav-link${index === active ? " ae-active" : ""}`,
-                "aria-current": active === index ? "location" : undefined,
-                "aria-label": `${chapter.number} ${chapter.title}`, onClick: event => navigate(event, index) },
-                h("span", { className: "ae-nav-dot", "aria-hidden": "true" }),
-                h("span", { className: "ae-nav-number", "aria-hidden": "true" }, chapter.number),
-                h("span", { className: "ae-nav-title" }, chapter.title)))),
+            h("div", { ref: navLinksRef, className: "ae-nav-links", style: { "--ae-progress": active / 3 } },
+              h("span", { className: "ae-nav-progress", "aria-hidden": "true" }),
+              chapters.map((chapter, index) =>
+                h("a", { key: chapter.id, href: `#${chapter.id}`, className: `ae-nav-link${index === active ? " ae-active" : ""}`,
+                  "aria-current": active === index ? "location" : undefined,
+                  "aria-label": `${chapter.number} ${chapter.title}`, onClick: event => navigate(event, index) },
+                  h("span", { ref: el => { dotRefs.current[index] = el; }, className: "ae-nav-dot", "aria-hidden": "true" }),
+                  h("span", { className: "ae-nav-number", "aria-hidden": "true" }, chapter.number),
+                  h("span", { className: "ae-nav-title" }, chapter.title))),
+              robotPos.ready && !reduced ? h("div", {
+                className: "ae-robot-flight-wrapper",
+                style: {
+                  left: `${robotPos.x}px`,
+                  top: `${robotPos.y}px`
+                }
+              }, h(FlyingTrackerRobot, {
+                isFlying,
+                direction: flightDir,
+                isMobile: typeof window !== "undefined" && window.innerWidth <= 700
+              })) : null
+            ),
             h("p", { className: "ae-mobile-current" }, `${chapters[active].number} / ${chapters[active].title}`)),
         h("div", { className: "ae-content" },
           article(0,

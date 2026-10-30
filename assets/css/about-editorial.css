@@ -134,10 +134,88 @@
 .ae-reveal-entered .ae-word { animation: ae-word-arrive 560ms ease both; animation-delay: var(--ae-word-delay, 0ms); }
 /* Readable even at the earliest animation frame: no hidden-until-observed state. */
 @keyframes ae-word-arrive { from { opacity: .75; } to { opacity: 1; } }
+/* Flying tracker robot companion */
+.ae-robot-flight-wrapper {
+  position: absolute;
+  pointer-events: none;
+  z-index: 10;
+  transform: translate(-50%, -50%);
+  transition: left 0.45s cubic-bezier(0.34, 1.25, 0.64, 1), top 0.45s cubic-bezier(0.34, 1.25, 0.64, 1);
+  will-change: left, top;
+}
+
+.ae-tracker-robot {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transform-origin: center center;
+  filter: drop-shadow(0 2px 8px rgba(255, 98, 56, 0.5));
+  transition: transform 0.35s cubic-bezier(0.2, 0.8, 0.2, 1);
+}
+
+.ae-tracker-robot.is-hovering {
+  animation: aeRobotHover 2.4s ease-in-out infinite;
+}
+
+.ae-tracker-robot.is-flying {
+  transform: rotate(var(--flight-tilt, 12deg)) scale(1.12);
+}
+
+.ae-robot-svg {
+  display: block;
+  overflow: visible;
+}
+
+.ae-robot-antenna-led {
+  animation: aeRobotLedPulse 1.4s ease-in-out infinite;
+}
+
+.ae-robot-flame {
+  transform-origin: 32px 49px;
+  animation: aeFlameFlicker 0.22s ease-in-out infinite alternate;
+}
+
+.ae-tracker-robot.is-flying .ae-robot-flame {
+  transform: scaleY(1.4) scaleX(1.18);
+  opacity: 1;
+}
+
+@keyframes aeRobotHover {
+  0%, 100% {
+    transform: translateY(0px);
+  }
+  50% {
+    transform: translateY(-4px);
+  }
+}
+
+@keyframes aeRobotLedPulse {
+  0%, 100% {
+    opacity: 0.6;
+    filter: drop-shadow(0 0 2px var(--ae-accent));
+  }
+  50% {
+    opacity: 1;
+    filter: drop-shadow(0 0 6px var(--ae-accent));
+  }
+}
+
+@keyframes aeFlameFlicker {
+  0% {
+    opacity: 0.8;
+    transform: scaleY(0.92) scaleX(0.96);
+  }
+  100% {
+    opacity: 1;
+    transform: scaleY(1.22) scaleX(1.05);
+  }
+}
+
 @media (max-width: 700px) {
-  .ae-section { --ae-nav-top: 64px; --ae-anchor-offset: 170px; padding: 30px 22px 48px; }
+  .ae-section { --ae-nav-top: 0px; --ae-anchor-offset: 140px; padding: 24px 0 48px; }
   .ae-title { margin-top: 0; font-size: clamp(40px, 10vw, 58px); }
-  .ae-intro { margin-bottom: 28px; }
+  .ae-intro { padding: 0 20px; margin-bottom: 24px; }
+  .ae-content { padding: 0 20px; }
   .ae-quote-wrap { max-width: 460px; padding-left: 13px; }
   .ae-quote { font-size: clamp(26px, 6.5vw, 36px); }
   .ae-quote-mark { font-size: 30px; }
@@ -145,15 +223,74 @@
   /* The nav itself belongs to the full narrative layout, so no short aside
      constrains sticky positioning near later chapters. */
   .ae-sidebar { display: block; padding-right: 0; border-right: 0; }
-  .ae-nav { position: sticky; top: var(--ae-nav-top); z-index: 5; margin: 0 -6px 30px; padding: 10px 6px 12px; background: var(--ae-bg); border-bottom: 1px solid var(--ae-line); }
+  .ae-nav {
+    position: sticky;
+    top: 0;
+    left: 0;
+    right: 0;
+    width: 100%;
+    margin: 0 0 24px;
+    padding: 12px 20px 14px;
+    background: rgba(11, 13, 16, 0.92);
+    backdrop-filter: blur(20px);
+    -webkit-backdrop-filter: blur(20px);
+    border-bottom: 1px solid rgba(255, 98, 56, 0.28);
+    box-shadow: 0 8px 30px rgba(0, 0, 0, 0.4);
+    border-radius: 0;
+    z-index: 50;
+  }
+  [data-theme="light"] .ae-nav {
+    background: rgba(245, 243, 238, 0.92);
+    border-bottom: 1px solid rgba(184, 66, 44, 0.25);
+    box-shadow: 0 8px 30px rgba(0, 0, 0, 0.08);
+  }
   .ae-nav-caption { display: none; }
-  .ae-nav-links { flex-direction: row; justify-content: space-between; gap: 8px; }
-  .ae-nav-links::before { left: 24px; right: 24px; top: 22px; bottom: auto; width: auto; height: 1px; }
-  .ae-nav-link { min-height: 44px; min-width: 48px; padding: 0 8px; justify-content: center; gap: 8px; background: var(--ae-bg); }
-  .ae-nav-dot { flex-basis: 9px; height: 9px; }
+  .ae-nav-links {
+    flex-direction: row;
+    justify-content: space-between;
+    align-items: center;
+    gap: 8px;
+    position: relative;
+    width: 100%;
+  }
+  .ae-nav-links::before {
+    left: 20px;
+    right: 20px;
+    top: 50%;
+    transform: translateY(-50%);
+    bottom: auto;
+    width: auto;
+    height: 1px;
+  }
+  .ae-nav-link {
+    min-height: 40px;
+    min-width: 44px;
+    padding: 0 6px;
+    justify-content: center;
+    align-items: center;
+    gap: 7px;
+    background: transparent;
+  }
+  .ae-nav-dot { flex: 0 0 10px; width: 10px; height: 10px; }
   .ae-nav-number { font-size: 10px; }
   .ae-nav-title { display: none; }
-  .ae-mobile-current { display: block; margin: 8px 0 0; color: var(--ae-accent); font-size: 12px; line-height: 1.5; font-weight: 600; }
+  .ae-nav-progress {
+    top: 50%;
+    transform: translateY(-50%);
+    left: 20px;
+    height: 1px;
+    width: calc((100% - 40px) * var(--ae-progress));
+    transition: width 240ms ease;
+  }
+  .ae-mobile-current {
+    display: block;
+    margin: 10px 0 0;
+    color: var(--ae-accent);
+    font-size: 13px;
+    line-height: 1.4;
+    font-weight: 600;
+    text-align: left;
+  }
   .ae-chapter { scroll-margin-top: var(--ae-anchor-offset); margin-bottom: 32px; padding-bottom: 32px; }
   .ae-chapter-title { font-size: 29px; }
   .ae-copy { font-size: 14px; line-height: 1.9; }
@@ -214,7 +351,16 @@
 .ae-entered .ae-step { animation: ae-heading-arrive 600ms ease both; animation-delay: calc(var(--ae-step) * 110ms); }
 @keyframes ae-heading-arrive { from { opacity: .8; transform: translateY(12px); } to { opacity: 1; transform: none; } }
 @media (min-width: 1200px) { .ae-capabilities { grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 20px; } }
-@media (max-width: 700px) { .ae-nav-progress { top: 22px; left: 24px; height: 1px; width: calc((100% - 48px) * var(--ae-progress)); transition: width 220ms; } }
+@media (max-width: 700px) {
+  .ae-nav-progress {
+    top: 50%;
+    transform: translateY(-50%);
+    left: 20px;
+    height: 1px;
+    width: calc((100% - 40px) * var(--ae-progress));
+    transition: width 240ms ease;
+  }
+}
 @media (prefers-reduced-motion: reduce) { .ae-section *, .ae-section *::before, .ae-section *::after { animation: none !important; transition: none !important; } .ae-capability:hover { transform: none; } }
 
 @media (min-width: 701px) { .ae-kicker { font-size: clamp(8px, .7vw, 10px); letter-spacing: .19em; } }
