@@ -403,12 +403,24 @@ function PortfolioApp() {
     if (view !== "home") return;
     const sectionIds = ["home", "about", "experience", "projects", "certifications", "contact"];
     const onScroll = () => {
-      const scrollCheck = window.scrollY + 220;
+      // Bottom of page: activate last section (contact)
+      const scrollBottom = window.innerHeight + window.scrollY;
+      const docHeight = document.documentElement.scrollHeight;
+      if (scrollBottom >= docHeight - 80) {
+        setActiveNav("contact");
+        return;
+      }
+
+      // Track the deepest section whose top has reached or passed the reading threshold (180px)
+      const threshold = 180;
       let current = "home";
       for (const id of sectionIds) {
         const el = document.getElementById(id);
-        if (el && el.offsetTop <= scrollCheck) {
-          current = id;
+        if (el) {
+          const rect = el.getBoundingClientRect();
+          if (rect.top <= threshold) {
+            current = id;
+          }
         }
       }
       setActiveNav(current);

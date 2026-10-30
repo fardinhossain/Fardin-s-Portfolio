@@ -17,7 +17,7 @@ body { background: var(--folio-ground); }
 .navbar-wrapper .brand-logo .red-dot { display: none; }
 .navbar-wrapper .brand-name-text { font-weight: 700; }
 .navbar-wrapper .nav-links-desktop { gap: clamp(18px, 2.2vw, 32px); }
-.navbar-wrapper .nav-item-btn { color: var(--folio-ink); font-size: 10px; font-weight: 700; text-transform: uppercase; letter-spacing: .015em; }
+.navbar-wrapper .nav-item-btn { color: var(--folio-ink); font-size: 10px; font-weight: 700; text-transform: uppercase; letter-spacing: .015em; transition: color 0.18s ease; }
 .navbar-wrapper .nav-item-btn:hover, .navbar-wrapper .nav-item-btn.active { color: var(--folio-coral); }
 .navbar-wrapper .nav-item-btn.active::after { display: none; }
 .navbar-wrapper .nav-actions-right { gap: 13px; }
