@@ -10,8 +10,8 @@
 :root {
   --proj-bg-dark: #080B11;
   --proj-bg-surface-dark: #0D111A;
-  --proj-bg-card-dark: rgba(13, 17, 26, 0.52);
-  --proj-border-dark: rgba(255, 255, 255, 0.08);
+  --proj-bg-card-dark: rgba(18, 24, 38, 0.22);
+  --proj-border-dark: rgba(255, 255, 255, 0.1);
   --proj-border-glow-dark: rgba(255, 98, 56, 0.35);
   --proj-text-title-dark: #FFFFFF;
   --proj-text-muted-dark: #94A3B8;
@@ -285,9 +285,9 @@
   border-radius: 24px;
   padding: 2.25rem;
   margin-bottom: 2.5rem;
-  box-shadow: 0 20px 50px rgba(0, 0, 0, 0.5), 0 0 30px rgba(255, 98, 56, 0.08);
-  backdrop-filter: blur(16px);
-  -webkit-backdrop-filter: blur(16px);
+  box-shadow: 0 20px 50px rgba(0, 0, 0, 0.4), 0 0 30px rgba(255, 98, 56, 0.1), inset 0 1px 0 rgba(255, 255, 255, 0.14);
+  backdrop-filter: blur(20px) saturate(180%);
+  -webkit-backdrop-filter: blur(20px) saturate(180%);
   display: grid;
   grid-template-columns: 1.15fr 1fr;
   gap: 2.5rem;
@@ -306,11 +306,11 @@
   position: relative;
   border-radius: 18px;
   overflow: hidden;
-  background: rgba(5, 7, 11, 0.52);
-  backdrop-filter: blur(12px);
-  -webkit-backdrop-filter: blur(12px);
+  background: rgba(10, 14, 24, 0.22);
+  backdrop-filter: blur(14px) saturate(160%);
+  -webkit-backdrop-filter: blur(14px) saturate(160%);
   border: 1px solid rgba(255, 255, 255, 0.08);
-  box-shadow: 0 12px 36px rgba(0, 0, 0, 0.6);
+  box-shadow: 0 12px 36px rgba(0, 0, 0, 0.4);
   min-height: 380px;
   display: flex;
   align-items: center;
@@ -329,13 +329,13 @@
   position: relative;
   width: 92%;
   aspect-ratio: 16 / 10;
-  background: rgba(17, 20, 29, 0.58);
+  background: rgba(17, 20, 29, 0.32);
   backdrop-filter: blur(10px);
   -webkit-backdrop-filter: blur(10px);
   border-radius: 12px;
   border: 1px solid rgba(255, 255, 255, 0.12);
   overflow: hidden;
-  box-shadow: 0 20px 45px rgba(0, 0, 0, 0.7);
+  box-shadow: 0 20px 45px rgba(0, 0, 0, 0.5);
 }
 
 .projects-device-topbar {
@@ -663,13 +663,14 @@
 .projects-grid-card {
   position: relative;
   background: var(--proj-bg-card-dark);
-  backdrop-filter: blur(16px);
-  -webkit-backdrop-filter: blur(16px);
+  backdrop-filter: blur(20px) saturate(180%);
+  -webkit-backdrop-filter: blur(20px) saturate(180%);
   border: 1px solid var(--proj-border-dark);
   border-radius: 18px;
   padding: 1.25rem;
   display: flex;
   flex-direction: column;
+  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.3), inset 0 1px 0 rgba(255, 255, 255, 0.1);
   transition: all 0.28s cubic-bezier(0.16, 1, 0.3, 1);
   overflow: hidden;
 }
@@ -922,12 +923,12 @@
   max-width: 380px;
   scroll-snap-align: center;
   background: var(--proj-bg-card-dark);
-  backdrop-filter: blur(16px);
-  -webkit-backdrop-filter: blur(16px);
+  backdrop-filter: blur(20px) saturate(180%);
+  -webkit-backdrop-filter: blur(20px) saturate(180%);
   border: 1px solid var(--proj-border-dark);
   border-radius: 22px;
   padding: 1.25rem;
-  box-shadow: 0 12px 30px rgba(0, 0, 0, 0.5);
+  box-shadow: 0 12px 30px rgba(0, 0, 0, 0.4), inset 0 1px 0 rgba(255, 255, 255, 0.12);
   transition: transform 0.3s ease, border-color 0.3s ease, box-shadow 0.3s ease;
   position: relative;
   display: flex;

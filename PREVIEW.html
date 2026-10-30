@@ -5868,10 +5868,11 @@ body {
   z-index: 10;
   margin-top: 4.5rem;
   padding: 2.25rem 2rem 2rem;
-  background: rgba(18, 21, 29, 0.76);
-  backdrop-filter: blur(16px);
-  -webkit-backdrop-filter: blur(16px);
-  border: 1px solid var(--border-light);
+  background: rgba(18, 22, 34, 0.18);
+  backdrop-filter: blur(20px) saturate(180%);
+  -webkit-backdrop-filter: blur(20px) saturate(180%);
+  border: 1px solid rgba(255, 98, 56, 0.25);
+  box-shadow: 0 16px 40px -10px rgba(0, 0, 0, 0.4), inset 0 1px 0 rgba(255, 255, 255, 0.1);
   border-radius: 20px;
   display: flex;
   flex-direction: column;
@@ -6485,17 +6486,17 @@ body,
    DOUBLE-BEZEL CARD ARCHITECTURE
    ========================================================================== */
 [data-theme="dark"] .bezel-outer {
-  background: rgba(18, 22, 34, 0.45);
-  backdrop-filter: blur(16px);
-  -webkit-backdrop-filter: blur(16px);
-  border: 1px solid rgba(255, 98, 56, 0.25);
-  box-shadow: 0 20px 50px rgba(0, 0, 0, 0.5), 0 0 30px rgba(255, 98, 56, 0.08);
+  background: rgba(18, 22, 34, 0.16);
+  backdrop-filter: blur(20px) saturate(180%);
+  -webkit-backdrop-filter: blur(20px) saturate(180%);
+  border: 1px solid rgba(255, 98, 56, 0.32);
+  box-shadow: 0 20px 50px rgba(0, 0, 0, 0.45), 0 0 35px rgba(255, 98, 56, 0.1), inset 0 1px 0 rgba(255, 255, 255, 0.12);
 }
 
 [data-theme="dark"] .bezel-inner {
-  background: rgba(10, 13, 20, 0.35);
-  backdrop-filter: blur(12px);
-  -webkit-backdrop-filter: blur(12px);
+  background: rgba(255, 255, 255, 0.015);
+  backdrop-filter: blur(14px) saturate(160%);
+  -webkit-backdrop-filter: blur(14px) saturate(160%);
   border: 1px solid rgba(255, 255, 255, 0.06);
 }
 
@@ -6778,16 +6779,17 @@ body,
    EXPERIENCE SECTION & TIMELINE
    ========================================================================== */
 [data-theme="dark"] .exp-internship-card {
-  background: rgba(18, 22, 34, 0.48);
-  backdrop-filter: blur(16px);
-  -webkit-backdrop-filter: blur(16px);
-  border: 1px solid rgba(255, 98, 56, 0.28);
-  box-shadow: 0 16px 36px -8px rgba(0, 0, 0, 0.6), inset 0 1px 0 rgba(255, 255, 255, 0.06);
+  background: rgba(18, 24, 38, 0.18);
+  backdrop-filter: blur(20px) saturate(190%);
+  -webkit-backdrop-filter: blur(20px) saturate(190%);
+  border: 1px solid rgba(255, 98, 56, 0.35);
+  box-shadow: 0 16px 40px -8px rgba(0, 0, 0, 0.4), inset 0 1px 0 rgba(255, 255, 255, 0.14), inset 0 0 20px rgba(255, 98, 56, 0.04);
 }
 
 [data-theme="dark"] .exp-internship-card.is-highlighted {
-  border-color: rgba(255, 98, 56, 0.55);
-  box-shadow: 0 20px 42px -10px rgba(255, 98, 56, 0.25), inset 0 1px 0 rgba(255, 98, 56, 0.18);
+  background: rgba(22, 28, 44, 0.22);
+  border-color: rgba(255, 98, 56, 0.65);
+  box-shadow: 0 20px 48px -10px rgba(255, 98, 56, 0.28), inset 0 1px 0 rgba(255, 255, 255, 0.22), inset 0 0 25px rgba(255, 98, 56, 0.08);
 }
 
 [data-theme="dark"] .exp-role-title {
@@ -7047,11 +7049,11 @@ body,
    ========================================================================== */
 [data-theme="dark"] .cert-showcase-stage,
 [data-theme="dark"] .cert-squad-stage-inner {
-  background: rgba(18, 22, 34, 0.45);
-  backdrop-filter: blur(16px);
-  -webkit-backdrop-filter: blur(16px);
-  border: 1px solid rgba(255, 98, 56, 0.22);
-  box-shadow: 0 16px 40px -10px rgba(0, 0, 0, 0.5);
+  background: rgba(18, 22, 34, 0.18);
+  backdrop-filter: blur(20px) saturate(180%);
+  -webkit-backdrop-filter: blur(20px) saturate(180%);
+  border: 1px solid rgba(255, 98, 56, 0.28);
+  box-shadow: 0 20px 48px -10px rgba(0, 0, 0, 0.4), inset 0 1px 0 rgba(255, 255, 255, 0.12);
 }
 
 [data-theme="dark"] .credentials-strip-header {
@@ -7064,17 +7066,17 @@ body,
 }
 
 [data-theme="dark"] .cert-list-tile {
-  background: rgba(18, 22, 34, 0.45);
-  backdrop-filter: blur(12px);
-  -webkit-backdrop-filter: blur(12px);
-  border: 1px solid rgba(255, 255, 255, 0.08);
-  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.35);
+  background: rgba(255, 255, 255, 0.035);
+  backdrop-filter: blur(14px) saturate(160%);
+  -webkit-backdrop-filter: blur(14px) saturate(160%);
+  border: 1px solid rgba(255, 255, 255, 0.09);
+  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.25), inset 0 1px 0 rgba(255, 255, 255, 0.08);
 }
 
 [data-theme="dark"] .cert-list-tile:hover {
-  background: rgba(24, 30, 46, 0.65);
-  border-color: rgba(255, 98, 56, 0.45);
-  box-shadow: 0 8px 24px -6px rgba(255, 98, 56, 0.22);
+  background: rgba(255, 98, 56, 0.08);
+  border-color: rgba(255, 98, 56, 0.55);
+  box-shadow: 0 8px 26px -6px rgba(255, 98, 56, 0.25), inset 0 1px 0 rgba(255, 255, 255, 0.15);
 }
 
 [data-theme="dark"] .cert-tile-title {
@@ -7139,10 +7141,11 @@ body,
    ANTHROPIC 20/20 CERTIFICATE WALL
    ========================================================================== */
 [data-theme="dark"] .cert-wall-stage-inner {
-  background: rgba(18, 22, 34, 0.45);
-  backdrop-filter: blur(16px);
-  -webkit-backdrop-filter: blur(16px);
-  border: 1px solid rgba(255, 98, 56, 0.2);
+  background: rgba(18, 22, 34, 0.18);
+  backdrop-filter: blur(20px) saturate(180%);
+  -webkit-backdrop-filter: blur(20px) saturate(180%);
+  border: 1px solid rgba(255, 98, 56, 0.28);
+  box-shadow: 0 20px 48px -10px rgba(0, 0, 0, 0.4), inset 0 1px 0 rgba(255, 255, 255, 0.12);
 }
 
 [data-theme="dark"] .cert-wall-filter-pill {
@@ -7248,19 +7251,19 @@ body,
    ========================================================================== */
 [data-theme="dark"] .contact-form-card,
 [data-theme="dark"] .contact-info-card {
-  background: rgba(18, 22, 34, 0.48);
-  backdrop-filter: blur(16px);
-  -webkit-backdrop-filter: blur(16px);
-  border: 1px solid rgba(255, 98, 56, 0.25);
-  box-shadow: 0 16px 40px -10px rgba(0, 0, 0, 0.5), 0 0 30px rgba(255, 98, 56, 0.06);
+  background: rgba(18, 22, 34, 0.18);
+  backdrop-filter: blur(20px) saturate(180%);
+  -webkit-backdrop-filter: blur(20px) saturate(180%);
+  border: 1px solid rgba(255, 98, 56, 0.3);
+  box-shadow: 0 20px 48px -10px rgba(0, 0, 0, 0.45), 0 0 35px rgba(255, 98, 56, 0.08), inset 0 1px 0 rgba(255, 255, 255, 0.12);
 }
 
 [data-theme="dark"] .contact-input,
 [data-theme="dark"] .contact-textarea {
-  background: rgba(10, 13, 20, 0.45);
-  backdrop-filter: blur(8px);
-  -webkit-backdrop-filter: blur(8px);
-  border: 1px solid rgba(255, 255, 255, 0.1);
+  background: rgba(255, 255, 255, 0.035);
+  backdrop-filter: blur(10px);
+  -webkit-backdrop-filter: blur(10px);
+  border: 1px solid rgba(255, 255, 255, 0.12);
   color: var(--text-primary);
 }
 
@@ -7297,10 +7300,11 @@ body,
 }
 
 [data-theme="dark"] .site-footer-inner {
-  background: rgba(18, 22, 34, 0.45);
-  backdrop-filter: blur(16px);
-  -webkit-backdrop-filter: blur(16px);
-  border-color: rgba(255, 98, 56, 0.2);
+  background: rgba(18, 22, 34, 0.18);
+  backdrop-filter: blur(20px) saturate(180%);
+  -webkit-backdrop-filter: blur(20px) saturate(180%);
+  border-color: rgba(255, 98, 56, 0.25);
+  box-shadow: 0 16px 40px -10px rgba(0, 0, 0, 0.4), inset 0 1px 0 rgba(255, 255, 255, 0.1);
 }
 
 [data-theme="dark"] .site-footer-desc {
@@ -10952,8 +10956,8 @@ body { background: var(--folio-ground); }
 :root {
   --proj-bg-dark: #080B11;
   --proj-bg-surface-dark: #0D111A;
-  --proj-bg-card-dark: rgba(13, 17, 26, 0.52);
-  --proj-border-dark: rgba(255, 255, 255, 0.08);
+  --proj-bg-card-dark: rgba(18, 24, 38, 0.22);
+  --proj-border-dark: rgba(255, 255, 255, 0.1);
   --proj-border-glow-dark: rgba(255, 98, 56, 0.35);
   --proj-text-title-dark: #FFFFFF;
   --proj-text-muted-dark: #94A3B8;
@@ -11227,9 +11231,9 @@ body { background: var(--folio-ground); }
   border-radius: 24px;
   padding: 2.25rem;
   margin-bottom: 2.5rem;
-  box-shadow: 0 20px 50px rgba(0, 0, 0, 0.5), 0 0 30px rgba(255, 98, 56, 0.08);
-  backdrop-filter: blur(16px);
-  -webkit-backdrop-filter: blur(16px);
+  box-shadow: 0 20px 50px rgba(0, 0, 0, 0.4), 0 0 30px rgba(255, 98, 56, 0.1), inset 0 1px 0 rgba(255, 255, 255, 0.14);
+  backdrop-filter: blur(20px) saturate(180%);
+  -webkit-backdrop-filter: blur(20px) saturate(180%);
   display: grid;
   grid-template-columns: 1.15fr 1fr;
   gap: 2.5rem;
@@ -11248,11 +11252,11 @@ body { background: var(--folio-ground); }
   position: relative;
   border-radius: 18px;
   overflow: hidden;
-  background: rgba(5, 7, 11, 0.52);
-  backdrop-filter: blur(12px);
-  -webkit-backdrop-filter: blur(12px);
+  background: rgba(10, 14, 24, 0.22);
+  backdrop-filter: blur(14px) saturate(160%);
+  -webkit-backdrop-filter: blur(14px) saturate(160%);
   border: 1px solid rgba(255, 255, 255, 0.08);
-  box-shadow: 0 12px 36px rgba(0, 0, 0, 0.6);
+  box-shadow: 0 12px 36px rgba(0, 0, 0, 0.4);
   min-height: 380px;
   display: flex;
   align-items: center;
@@ -11271,13 +11275,13 @@ body { background: var(--folio-ground); }
   position: relative;
   width: 92%;
   aspect-ratio: 16 / 10;
-  background: rgba(17, 20, 29, 0.58);
+  background: rgba(17, 20, 29, 0.32);
   backdrop-filter: blur(10px);
   -webkit-backdrop-filter: blur(10px);
   border-radius: 12px;
   border: 1px solid rgba(255, 255, 255, 0.12);
   overflow: hidden;
-  box-shadow: 0 20px 45px rgba(0, 0, 0, 0.7);
+  box-shadow: 0 20px 45px rgba(0, 0, 0, 0.5);
 }
 
 .projects-device-topbar {
@@ -11605,13 +11609,14 @@ body { background: var(--folio-ground); }
 .projects-grid-card {
   position: relative;
   background: var(--proj-bg-card-dark);
-  backdrop-filter: blur(16px);
-  -webkit-backdrop-filter: blur(16px);
+  backdrop-filter: blur(20px) saturate(180%);
+  -webkit-backdrop-filter: blur(20px) saturate(180%);
   border: 1px solid var(--proj-border-dark);
   border-radius: 18px;
   padding: 1.25rem;
   display: flex;
   flex-direction: column;
+  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.3), inset 0 1px 0 rgba(255, 255, 255, 0.1);
   transition: all 0.28s cubic-bezier(0.16, 1, 0.3, 1);
   overflow: hidden;
 }
@@ -11864,12 +11869,12 @@ body { background: var(--folio-ground); }
   max-width: 380px;
   scroll-snap-align: center;
   background: var(--proj-bg-card-dark);
-  backdrop-filter: blur(16px);
-  -webkit-backdrop-filter: blur(16px);
+  backdrop-filter: blur(20px) saturate(180%);
+  -webkit-backdrop-filter: blur(20px) saturate(180%);
   border: 1px solid var(--proj-border-dark);
   border-radius: 22px;
   padding: 1.25rem;
-  box-shadow: 0 12px 30px rgba(0, 0, 0, 0.5);
+  box-shadow: 0 12px 30px rgba(0, 0, 0, 0.4), inset 0 1px 0 rgba(255, 255, 255, 0.12);
   transition: transform 0.3s ease, border-color 0.3s ease, box-shadow 0.3s ease;
   position: relative;
   display: flex;
