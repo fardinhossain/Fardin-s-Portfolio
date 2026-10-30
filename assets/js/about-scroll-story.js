@@ -197,12 +197,6 @@ export function AboutScrollStory() {
   const paragraph = text => h(ScrollWordReveal, { text, className: "ae-copy" });
 
   return h("section", { ref: sectionRef, id: "about", className: "ae-section", "aria-labelledby": "ae-title" },
-    h("div", { className: "ae-scenery", "aria-hidden": "true" },
-      h("div", { className: "ae-scenery-frame" },
-        h("picture", null,
-          h("source", { srcSet: theme === "light" ? "/assets/images/about-summitscape-light.webp" : "/assets/images/about-summitscape.webp", type: "image/webp" }),
-          h("img", { src: theme === "light" ? "/assets/images/about-summitscape-light.png" : "/assets/images/about-summitscape.png", alt: "", width: 1568, height: 627, loading: "lazy", decoding: "async" })),
-        h(AboutGhostRobot))),
     h("div", { className: "ae-inner" },
       h("header", { className: "ae-intro" },
         h("h2", { id: "ae-title", className: "ae-title" }, "About ", h("span", { className: "ae-title-accent" }, "Me")),

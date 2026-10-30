@@ -40,7 +40,7 @@ import {
   prefersReducedMotion
 } from "./portfolio-intro.js";
 import { CinematicHeroSection } from "./cinematic-hero-section.js";
-import { AboutScrollStory } from "./about-scroll-story.js";
+import { AboutScrollStory, AboutGhostRobot } from "./about-scroll-story.js";
 import { installSmoothScrolling, scrollToTarget } from "./smooth-scroll.js";
 
 const h = React.createElement;
@@ -785,17 +785,16 @@ function PortfolioApp() {
               onNavigateContact: () => navigateToSection("contact"),
               resumeUrl: PROFILE_DATA.resumeUrl
             }),
-            h(AboutScrollStory, null),
 
             h(
               "div",
               { className: "page-shell-flow" },
               h(
                 "div",
-                { className: "page-shell-scenery", "aria-hidden": "true" },
+                { className: "ae-scenery", "aria-hidden": "true" },
                 h(
                   "div",
-                  { className: "page-shell-scenery-frame" },
+                  { className: "ae-scenery-frame" },
                   h(
                     "picture",
                     null,
@@ -818,9 +817,10 @@ function PortfolioApp() {
                       decoding: "async"
                     })
                   ),
-                  h("div", { className: "page-shell-scenery-overlay" })
+                  h(AboutGhostRobot)
                 )
               ),
+              h(AboutScrollStory, null),
               h(
                 "div",
                 { className: "page-shell" },
