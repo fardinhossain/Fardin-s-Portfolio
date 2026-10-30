@@ -24,22 +24,22 @@ def assets(text, js=False):
         value=embedded.get(value,ORIGIN+value)
         return m[1]+value+m[1]
     return asset.sub(replace,text)
-html=(ROOT/'index.html').read_text()
+html=(ROOT/'index.html').read_text(encoding='utf-8')
 imports=json.loads(re.search(r'<script type="importmap">(.*?)</script>',html,re.S)[1])['imports']
 for path in sorted((ROOT/'assets/js').rglob('*')):
     if path.suffix not in ('.js','.mjs'):continue
-    rel=path.relative_to(ROOT).as_posix();code=path.read_text()
+    rel=path.relative_to(ROOT).as_posix();code=path.read_text(encoding='utf-8')
     def module(m):
         local=posixpath.normpath(posixpath.join(posixpath.dirname(rel),m[2]))
         if not (ROOT/local).is_file():raise RuntimeError('Missing module '+local)
         return m[1]+'@portfolio/'+local+m[1]
     code=re.sub(r'''(["'])(\.{1,2}/[^"']+\.(?:js|mjs))\1''',module,code)
     code=assets(code, js=True)
-    imports['@portfolio/'+rel]='data:text/javascript;base64,'+base64.b64encode(code.encode()).decode()
+    imports['@portfolio/'+rel]='data:text/javascript;base64,'+base64.b64encode(code.encode('utf-8')).decode()
 html=re.sub(r'<script type="importmap">.*?</script>',lambda m:'<script type="importmap">'+json.dumps({'imports':imports})+'</script>',html,flags=re.S)
 def css(m):
     p=ROOT/m[1].lstrip('/')
-    return '<style>\n'+assets(p.read_text())+'\n</style>'
+    return '<style>\n'+assets(p.read_text(encoding='utf-8'))+'\n</style>'
 html=re.sub(r'<link rel="stylesheet" href="([^"]+)"\s*/>',css,html)
 html=html.replace('<script type="module" src="/assets/js/app.js"></script>','<script type="module">import "@portfolio/assets/js/app.js";</script>')
 # Root-relative icons/attachments become real public URLs in this private preview.
@@ -65,5 +65,5 @@ new MutationObserver(records=>records.forEach(r=>r.addedNodes.forEach(links))).o
 </script>'''
 adapter=adapter.replace('<script>', '<script>window.__portfolioPreviewAssets='+json.dumps(embedded)+';',1)
 html=html.replace('</head>',adapter+'</head>')
-OUT.write_text(html)
+OUT.write_text(html, encoding='utf-8')
 print('Preview:',OUT,'bytes:',OUT.stat().st_size)
