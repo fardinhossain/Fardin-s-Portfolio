@@ -10386,11 +10386,11 @@ body,
   --folio-ground: #0b0d0f; --folio-ink: #f7f5f1; --folio-muted: #969696;
   --folio-line: #393939; --folio-coral: #e76440;
 }
-html { scroll-padding-top: 88px; }
+html { scroll-padding-top: 72px; }
 body { background: var(--folio-ground); }
 .navbar-wrapper, [data-theme="dark"] .navbar-wrapper { background: var(--hero-ground); border: 0; backdrop-filter: none; -webkit-backdrop-filter: none; }
-.navbar-glass, .navbar-glass.portix-navbar { max-width: 1440px; height: 80px; margin: auto; padding: 0 clamp(20px, 6.4vw, 92px); }
-.navbar-wrapper .brand-logo, [data-theme="dark"] .navbar-wrapper .brand-logo { color: var(--folio-ink); font-family: 'Oswald', sans-serif; font-size: 25px; letter-spacing: -.035em; text-transform: uppercase; }
+.navbar-glass, .navbar-glass.portix-navbar { max-width: 1440px; height: 52px; margin: auto; padding: 0 clamp(20px, 6.4vw, 92px); }
+.navbar-wrapper .brand-logo, [data-theme="dark"] .navbar-wrapper .brand-logo { color: var(--folio-ink); font-family: 'Oswald', sans-serif; font-size: 21px; letter-spacing: -.035em; text-transform: uppercase; }
 .navbar-wrapper .brand-logo .red-dot { display: none; }
 .navbar-wrapper .brand-name-text { font-weight: 700; }
 .navbar-wrapper .nav-links-desktop { gap: clamp(18px, 2.2vw, 32px); }
@@ -10398,15 +10398,15 @@ body { background: var(--folio-ground); }
 .navbar-wrapper .nav-item-btn:hover, .navbar-wrapper .nav-item-btn.active { color: var(--folio-coral); }
 .navbar-wrapper .nav-item-btn.active::after { display: none; }
 .navbar-wrapper .nav-actions-right { gap: 13px; }
-.navbar-wrapper .nav-btn-talk, [data-theme="dark"] .navbar-wrapper .nav-btn-talk { display: inline-flex; height: 38px; min-height: 38px; padding: 0; gap: 0; border: 1px solid var(--folio-line); border-radius: 0; background: transparent; color: var(--folio-ink); box-shadow: none; font-size: 9px; }
-.navbar-wrapper .nav-btn-talk .talk-arrow { order: 0; width: 37px; height: 37px; border: 0; background: #e56440; color: white; font-size: 16px; }
-.navbar-wrapper .nav-btn-talk .talk-text { order: 1; padding: 0 17px; }
+.navbar-wrapper .nav-btn-talk, [data-theme="dark"] .navbar-wrapper .nav-btn-talk { display: inline-flex; height: 32px; min-height: 32px; padding: 0; gap: 0; border: 1px solid var(--folio-line); border-radius: 0; background: transparent; color: var(--folio-ink); box-shadow: none; font-size: 9px; }
+.navbar-wrapper .nav-btn-talk .talk-arrow { order: 0; width: 31px; height: 31px; border: 0; background: #e56440; color: white; font-size: 14px; }
+.navbar-wrapper .nav-btn-talk .talk-text { order: 1; padding: 0 14px; }
 .navbar-wrapper .nav-btn-talk:hover { background: var(--bg-subtle); transform: none; }
-.navbar-wrapper .theme-toggle-btn { display: inline-flex; width: 36px; min-width: 36px; height: 38px; min-height: 38px; padding: 8px; border: 1px solid var(--folio-line); border-radius: 0; background: transparent; color: var(--folio-ink); }
+.navbar-wrapper .theme-toggle-btn { display: inline-flex; width: 32px; min-width: 32px; height: 32px; min-height: 32px; padding: 6px; border: 1px solid var(--folio-line); border-radius: 0; background: transparent; color: var(--folio-ink); }
 .navbar-wrapper .theme-toggle-label { display: none; }
-.navbar-wrapper .theme-toggle-icon-box { width: 18px; height: 18px; padding: 0; background: transparent; box-shadow: none; }
+.navbar-wrapper .theme-toggle-icon-box { width: 16px; height: 16px; padding: 0; background: transparent; box-shadow: none; }
 .skip-link { background: var(--folio-ink); color: var(--folio-ground); }
-.fh-hero { position: relative; isolation: isolate; overflow: clip; background: var(--hero-ground); color: var(--folio-ink); scroll-margin-top: 80px; }
+.fh-hero { position: relative; isolation: isolate; overflow: clip; background: var(--hero-ground); color: var(--folio-ink); scroll-margin-top: 52px; }
 .fh-atmosphere { position: absolute; inset: 0; z-index: -1; pointer-events: none; }
 .fh-inner { max-width: 1440px; margin: auto; padding: 0 clamp(20px, 6.4vw, 92px); }
 .fh-composition { display: grid; grid-template-columns: 1fr 1.1fr; align-items: center; gap: 0; }
@@ -10430,9 +10430,9 @@ body { background: var(--folio-ground); }
 .fh-visual { position: relative; min-width: 0; height: clamp(420px, 46vw, 650px); align-self: stretch; pointer-events: none; }
 /* Both supplied photographs already include their halo. No extra circle,
    circular crop or old cutout is layered over these complete compositions. */
-.fh-portrait { position: absolute; inset: -24px -12% 0 4%; z-index: 2; mask-image: linear-gradient(90deg, transparent, #000 12%, #000 98%, transparent), linear-gradient(transparent, #000 10%, #000 94%, transparent); mask-composite: intersect; -webkit-mask-composite: source-in; }
+.fh-portrait { position: absolute; inset: -24px -14% 0 6%; z-index: 2; mask-image: linear-gradient(90deg, transparent, #000 10%, #000 98%, transparent), linear-gradient(to bottom, transparent, #000 8%, #000 70%, transparent 84%); mask-composite: intersect; -webkit-mask-composite: source-in; }
 .fh-portrait picture { display: flex; justify-content: center; align-items: flex-end; width: 100%; height: 100%; }
-.fh-portrait img { display: block; width: auto; height: 100%; max-width: 100%; object-fit: contain; object-position: center bottom; mask-image: linear-gradient(90deg, transparent, #000 8%, #000 98%, transparent), linear-gradient(#000 94%, transparent); mask-composite: intersect; -webkit-mask-composite: source-in; }
+.fh-portrait img { display: block; width: auto; height: 100%; max-width: 100%; object-fit: contain; object-position: center bottom; mask-image: linear-gradient(90deg, transparent, #000 8%, #000 98%, transparent), linear-gradient(to bottom, #000 0%, #000 70%, transparent 84%); mask-composite: intersect; -webkit-mask-composite: source-in; }
 /* Align light portrait position with dark theme reference without changing photo asset */
 [data-theme="light"] .fh-portrait img,
 [data-portrait-theme="light"] img {
@@ -10454,14 +10454,28 @@ body { background: var(--folio-ground); }
   .fh-contact { padding-inline: 14px; }
   .fh-strengths li { gap: 8px; padding-inline: 10px; }
 }
+@media (max-width:768px) {
+  .navbar-wrapper {
+    position: absolute !important;
+    top: 0 !important;
+    left: 0;
+    right: 0;
+  }
+}
 @media (max-width:700px) {
-  .navbar-glass, .navbar-glass.portix-navbar { height: 64px; }
-  .navbar-wrapper .brand-logo { font-size: 23px; }
-  .navbar-wrapper .theme-toggle-btn { width: 44px; min-width: 44px; height: 44px; }
+  .navbar-wrapper {
+    position: absolute !important;
+    top: 0 !important;
+    left: 0;
+    right: 0;
+  }
+  .navbar-glass, .navbar-glass.portix-navbar { height: 48px; }
+  .navbar-wrapper .brand-logo { font-size: 20px; }
+  .navbar-wrapper .theme-toggle-btn { width: 34px; min-width: 34px; height: 34px; min-height: 34px; padding: 6px; }
   .navbar-wrapper .nav-btn-talk, [data-theme="dark"] .navbar-wrapper .nav-btn-talk { display: none; }
   .fh-composition { grid-template-columns: minmax(0,1fr); }
   .fh-visual { order: -1; height: clamp(350px,100vw,480px); width: min(100%,420px); margin: auto; }
-  .fh-portrait { inset: 0 -8% 0 2%; }
+  .fh-portrait { inset: 0 -8% 0 2%; mask-image: linear-gradient(90deg, transparent, #000 6%, #000 98%, transparent), linear-gradient(to bottom, transparent, #000 4%, #000 70%, transparent 84%); mask-composite: intersect; -webkit-mask-composite: source-in; }
   [data-theme="light"] .fh-portrait img,
   [data-portrait-theme="light"] img {
     transform: translateY(-10px) scale(1.02);
