@@ -920,17 +920,7 @@ export function FeaturedProjects({
                           },
                           h(IconGitHub, { size: 16 }),
                           "GitHub"
-                        ),
-                      h(
-                        "button",
-                        {
-                          type: "button",
-                          onClick: () => handleOpenDetails(activeFeatured),
-                          className: "projects-btn-secondary"
-                        },
-                        "View Details",
-                        h(IconArrowRight, { size: 14 })
-                      )
+                        )
                     ),
 
                     // Prev / Next Chevron Arrows
@@ -1025,28 +1015,18 @@ export function FeaturedProjects({
                         className: "projects-grid-card-actions",
                         onClick: (e) => e.stopPropagation()
                       },
-                      project.liveUrl
-                        ? h(
-                            "a",
-                            {
-                              href: project.liveUrl,
-                              target: "_blank",
-                              rel: "noopener noreferrer",
-                              className: "projects-grid-card-btn-primary"
-                            },
-                            "Live Demo",
-                            h(IconArrowRight, { size: 13 })
-                          )
-                        : h(
-                            "button",
-                            {
-                              type: "button",
-                              onClick: () => handleOpenDetails(project),
-                              className: "projects-grid-card-btn-primary"
-                            },
-                            "View Details",
-                            h(IconArrowRight, { size: 13 })
-                          ),
+                      project.liveUrl &&
+                        h(
+                          "a",
+                          {
+                            href: project.liveUrl,
+                            target: "_blank",
+                            rel: "noopener noreferrer",
+                            className: "projects-grid-card-btn-primary"
+                          },
+                          "Live Demo",
+                          h(IconArrowRight, { size: 13 })
+                        ),
                       project.githubUrl &&
                         h(
                           "a",
