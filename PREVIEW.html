@@ -53,7 +53,8 @@
    Tactile Depth, and Intentional Desktop vs. Mobile Responsive Layouts.
    ========================================================================== */
 
-:root, [data-theme="light"] {
+:root,
+[data-theme="light"] {
   --bg-page: #F6F7FA;
   --bg-surface: #FFFFFF;
   --bg-subtle: #F1F4F9;
@@ -167,7 +168,9 @@
   --shadow-yellow: 0 12px 32px -6px rgba(245, 158, 11, 0.32);
 }
 
-*, *::before, *::after {
+*,
+*::before,
+*::after {
   box-sizing: border-box;
   margin: 0;
   padding: 0;
@@ -227,24 +230,26 @@ body {
 
 .page-shell-flow {
   position: relative;
+  z-index: 1;
   width: 100%;
   overflow: clip;
 }
 
 .page-shell-scenery {
-  position: fixed;
+  position: absolute;
   inset: 0;
   z-index: 0;
   pointer-events: none;
-  width: 100vw;
-  height: 100vh;
+  width: 100%;
+  height: 100%;
 }
 
 .page-shell-scenery-frame {
-  position: absolute;
-  inset: 0;
+  position: sticky;
+  top: 0;
   width: 100%;
-  height: 100%;
+  height: 100vh;
+  height: 100svh;
   overflow: hidden;
   background: transparent;
   transition: background-color 0.4s ease;
@@ -284,10 +289,12 @@ body {
   .page-shell-scenery img {
     object-position: 70% bottom;
   }
+
   .page-shell-scenery-overlay {
     background:
       linear-gradient(90deg, #f5f3eee8, #f5f3eeb3);
   }
+
   [data-theme="dark"] .page-shell-scenery-overlay {
     background:
       linear-gradient(90deg, #0b0d0fe0, #0b0d0f9c);
@@ -304,7 +311,8 @@ body {
 
 @media (max-width: 767px) {
   .page-shell {
-    padding: 0 1rem 6.5rem; /* Space for mobile bottom tab bar */
+    padding: 0 1rem 6.5rem;
+    /* Space for mobile bottom tab bar */
   }
 }
 
@@ -1014,6 +1022,7 @@ body {
     padding: 0.35rem 0.65rem;
     font-size: 0.7rem;
   }
+
   .hero-pillars-float {
     bottom: 10px;
     right: 10px;
@@ -3261,7 +3270,8 @@ body {
   background: var(--j-bg-surface);
 }
 
-.cert-front-header, .cert-back-header {
+.cert-front-header,
+.cert-back-header {
   display: flex;
   align-items: center;
   justify-content: space-between;
@@ -3311,7 +3321,8 @@ body {
   margin-bottom: 0.5rem;
 }
 
-.cert-front-footer, .cert-back-footer {
+.cert-front-footer,
+.cert-back-footer {
   display: flex;
   align-items: center;
   justify-content: space-between;
@@ -3985,10 +3996,14 @@ body {
   .cert-card-inner {
     transition: none !important;
   }
-  .journey-nav-pill, .journey-btn-primary, .journey-btn-secondary {
+
+  .journey-nav-pill,
+  .journey-btn-primary,
+  .journey-btn-secondary {
     transition: none !important;
   }
 }
+
 /* ==========================================================================
    3D FLYING ROBOT PROJECT SHOWCASE (FEATURED PROJECTS)
    ========================================================================== */
@@ -4081,8 +4096,17 @@ body {
 }
 
 @keyframes robotLedPulse {
-  0%, 100% { transform: scale(1); opacity: 1; }
-  50% { transform: scale(1.35); opacity: 0.65; }
+
+  0%,
+  100% {
+    transform: scale(1);
+    opacity: 1;
+  }
+
+  50% {
+    transform: scale(1.35);
+    opacity: 0.65;
+  }
 }
 
 .robot-state-chip {
@@ -4233,6 +4257,7 @@ body {
     opacity: 0.9;
     transform: scale(0.95);
   }
+
   100% {
     opacity: 0;
     transform: scale(1.05);
@@ -4274,8 +4299,15 @@ body {
 }
 
 @keyframes botF01HoverBob {
-  0%, 100% { transform: translateY(0px); }
-  50% { transform: translateY(-3px); }
+
+  0%,
+  100% {
+    transform: translateY(0px);
+  }
+
+  50% {
+    transform: translateY(-3px);
+  }
 }
 
 .bot-f01-eye {
@@ -4284,8 +4316,16 @@ body {
 }
 
 @keyframes botF01Blink {
-  0%, 93%, 100% { transform: scaleY(1); }
-  96% { transform: scaleY(0.18); }
+
+  0%,
+  93%,
+  100% {
+    transform: scaleY(1);
+  }
+
+  96% {
+    transform: scaleY(0.18);
+  }
 }
 
 /* ==========================================================================
@@ -4618,8 +4658,17 @@ body {
 }
 
 @keyframes botStatusPulse {
-  0%, 100% { opacity: 0.5; transform: scale(0.9); }
-  50% { opacity: 1; transform: scale(1.2); }
+
+  0%,
+  100% {
+    opacity: 0.5;
+    transform: scale(0.9);
+  }
+
+  50% {
+    opacity: 1;
+    transform: scale(1.2);
+  }
 }
 
 /* Right Narrative Stream */
@@ -5214,8 +5263,13 @@ body {
 }
 
 @keyframes certSlotShimmer {
-  0% { transform: translateX(-100%); }
-  100% { transform: translateX(100%); }
+  0% {
+    transform: translateX(-100%);
+  }
+
+  100% {
+    transform: translateX(100%);
+  }
 }
 
 .card-landing-pulse {
@@ -5234,6 +5288,7 @@ body {
     opacity: 0.95;
     box-shadow: 0 0 16px rgba(225, 29, 72, 0.45);
   }
+
   100% {
     transform: scale(1.02);
     opacity: 0;
@@ -5828,8 +5883,10 @@ body {
   .site-footer {
     margin-bottom: 2.5rem;
   }
+
   .site-footer-actions {
-    margin-right: 140px; /* Clearance so fixed chat launcher does not cover back-to-top or social buttons */
+    margin-right: 140px;
+    /* Clearance so fixed chat launcher does not cover back-to-top or social buttons */
   }
 }
 
@@ -5924,7 +5981,9 @@ body {
 
 /* Universal Mobile Shell & Viewport Center Alignment (<= 767px) */
 @media (max-width: 767px) {
-  html, body {
+
+  html,
+  body {
     /* clip prevents horizontal overflow without creating a new scroll
        container that breaks the navbar and About's sticky tracker. */
     overflow-x: clip;
@@ -6403,9 +6462,9 @@ body,
 .btn-pill-dark,
 .btn-pill-light {
   transition: background-color 0.45s cubic-bezier(0.16, 1, 0.3, 1),
-              border-color 0.35s ease,
-              box-shadow 0.35s ease,
-              color 0.35s ease;
+    border-color 0.35s ease,
+    box-shadow 0.35s ease,
+    color 0.35s ease;
 }
 
 /* Background Gradients in Dark Mode */
@@ -7423,6 +7482,7 @@ body,
     padding: 0 0.65rem 0 0.4rem;
     height: 34px;
   }
+
   .theme-toggle-label {
     font-size: 0.65rem;
   }
@@ -7489,8 +7549,13 @@ body,
 }
 
 @keyframes preloaderSpin {
-  from { transform: rotate(0deg); }
-  to { transform: rotate(360deg); }
+  from {
+    transform: rotate(0deg);
+  }
+
+  to {
+    transform: rotate(360deg);
+  }
 }
 
 .preloader-brand {
@@ -7696,7 +7761,10 @@ body,
 
 /* Reduced Motion Respect */
 @media (prefers-reduced-motion: reduce) {
-  *, *::before, *::after {
+
+  *,
+  *::before,
+  *::after {
     animation-duration: 0.01ms !important;
     animation-iteration-count: 1 !important;
     transition-duration: 0.01ms !important;
@@ -7936,15 +8004,13 @@ body,
   width: clamp(340px, 38vw, 560px);
   aspect-ratio: 1 / 1;
   border-radius: 50%;
-  background: radial-gradient(
-    circle at 24% 20%,
-    #FF6238 0%,
-    #E85D3B 20%,
-    #A8381B 44%,
-    #42180C 68%,
-    #1C1411 86%,
-    rgba(12, 14, 20, 0.95) 100%
-  );
+  background: radial-gradient(circle at 24% 20%,
+      #FF6238 0%,
+      #E85D3B 20%,
+      #A8381B 44%,
+      #42180C 68%,
+      #1C1411 86%,
+      rgba(12, 14, 20, 0.95) 100%);
   box-shadow:
     -18px -18px 64px rgba(232, 93, 59, 0.28),
     0 0 110px rgba(232, 93, 59, 0.14);
@@ -7953,14 +8019,12 @@ body,
 }
 
 [data-theme="light"] .portix-halo-circle {
-  background: radial-gradient(
-    circle at 24% 20%,
-    #FF8A65 0%,
-    #F4A287 28%,
-    #F5C6B3 56%,
-    #EFEAE2 85%,
-    rgba(250, 248, 245, 0.95) 100%
-  );
+  background: radial-gradient(circle at 24% 20%,
+      #FF8A65 0%,
+      #F4A287 28%,
+      #F5C6B3 56%,
+      #EFEAE2 85%,
+      rgba(250, 248, 245, 0.95) 100%);
   box-shadow:
     -14px -14px 52px rgba(232, 93, 59, 0.2),
     0 0 80px rgba(232, 93, 59, 0.1);
@@ -7978,20 +8042,16 @@ body,
   justify-content: center;
   pointer-events: none;
   margin-left: -2%;
-  -webkit-mask-image: linear-gradient(
-    to bottom,
-    #000000 0%,
-    #000000 86%,
-    rgba(0, 0, 0, 0.8) 94%,
-    transparent 100%
-  );
-  mask-image: linear-gradient(
-    to bottom,
-    #000000 0%,
-    #000000 86%,
-    rgba(0, 0, 0, 0.8) 94%,
-    transparent 100%
-  );
+  -webkit-mask-image: linear-gradient(to bottom,
+      #000000 0%,
+      #000000 86%,
+      rgba(0, 0, 0, 0.8) 94%,
+      transparent 100%);
+  mask-image: linear-gradient(to bottom,
+      #000000 0%,
+      #000000 86%,
+      rgba(0, 0, 0, 0.8) 94%,
+      transparent 100%);
 }
 
 .portix-portrait-img {
@@ -8030,15 +8090,19 @@ body,
   0% {
     transform: translate(0px, 0px) rotate(0deg) scale(1);
   }
+
   25% {
     transform: translate(52px, -20px) rotate(6deg) scale(1.04);
   }
+
   50% {
     transform: translate(24px, 44px) rotate(-4deg) scale(0.96);
   }
+
   75% {
     transform: translate(-44px, 14px) rotate(-7deg) scale(0.98);
   }
+
   100% {
     transform: translate(0px, 0px) rotate(0deg) scale(1);
   }
@@ -8049,8 +8113,15 @@ body,
 }
 
 @keyframes beaconPulse {
-  0% { fill: #E85D3B; filter: drop-shadow(0 0 2px #E85D3B); }
-  100% { fill: #FF8A65; filter: drop-shadow(0 0 8px #FF6E4A); }
+  0% {
+    fill: #E85D3B;
+    filter: drop-shadow(0 0 2px #E85D3B);
+  }
+
+  100% {
+    fill: #FF8A65;
+    filter: drop-shadow(0 0 8px #FF6E4A);
+  }
 }
 
 .robot-scanner-eye {
@@ -8058,8 +8129,18 @@ body,
 }
 
 @keyframes scanEyeBlink {
-  0%, 90%, 100% { transform: scaleX(1); opacity: 1; }
-  95% { transform: scaleX(0.2); opacity: 0.3; }
+
+  0%,
+  90%,
+  100% {
+    transform: scaleX(1);
+    opacity: 1;
+  }
+
+  95% {
+    transform: scaleX(0.2);
+    opacity: 0.3;
+  }
 }
 
 .robot-thruster-flame {
@@ -8068,8 +8149,15 @@ body,
 }
 
 @keyframes thrusterFlicker {
-  0% { transform: scaleY(0.85); opacity: 0.8; }
-  100% { transform: scaleY(1.2); opacity: 1; }
+  0% {
+    transform: scaleY(0.85);
+    opacity: 0.8;
+  }
+
+  100% {
+    transform: scaleY(1.2);
+    opacity: 1;
+  }
 }
 
 [data-theme="dark"] .hero-flying-robot-mascot rect:first-of-type {
@@ -8079,6 +8167,7 @@ body,
 
 /* Laptop Optimization (1366x768, 1280x800, 1440x900) */
 @media (max-height: 850px) and (min-width: 1025px) {
+
   .cinematic-hero-section,
   .portix-hero-section {
     min-height: 560px;
@@ -8113,6 +8202,7 @@ body,
 
 /* Tablet & Mobile Hero Rules */
 @media (max-width: 1024px) {
+
   .cinematic-hero-section,
   .portix-hero-section {
     height: auto;
@@ -8148,6 +8238,7 @@ body,
 }
 
 @media (max-width: 768px) {
+
   .navbar-glass,
   .navbar-glass.portix-navbar {
     height: 60px;
@@ -8226,8 +8317,13 @@ body,
   }
 
   @keyframes heroMobileHover {
-    0% { transform: translateY(0px) rotate(0deg); }
-    100% { transform: translateY(-10px) rotate(5deg); }
+    0% {
+      transform: translateY(0px) rotate(0deg);
+    }
+
+    100% {
+      transform: translateY(-10px) rotate(5deg);
+    }
   }
 }
 
@@ -8242,6 +8338,7 @@ body,
 }
 
 @media (prefers-reduced-motion: reduce) {
+
   .hero-flying-robot-mascot,
   .robot-antenna-beacon,
   .robot-scanner-eye,
@@ -8256,7 +8353,8 @@ body,
    Editorial Document Theme: Cream off-white light, Obsidian dark, Crimson accent
    ========================================================================== */
 
-:root, [data-theme="light"] {
+:root,
+[data-theme="light"] {
   --story-bg: #FAF8F5;
   --story-bg-subtle: #F3EFEA;
   --story-bg-card: #FFFFFF;
@@ -8343,8 +8441,13 @@ body,
 }
 
 @keyframes loaderFadeIn {
-  from { opacity: 0; }
-  to { opacity: 1; }
+  from {
+    opacity: 0;
+  }
+
+  to {
+    opacity: 1;
+  }
 }
 
 /* --------------------------------------------------------------------------
@@ -8465,8 +8568,17 @@ body,
 }
 
 @keyframes pulseDot {
-  0%, 100% { transform: scale(1); opacity: 1; }
-  50% { transform: scale(1.3); opacity: 0.7; }
+
+  0%,
+  100% {
+    transform: scale(1);
+    opacity: 1;
+  }
+
+  50% {
+    transform: scale(1.3);
+    opacity: 0.7;
+  }
 }
 
 /* --------------------------------------------------------------------------
@@ -8559,8 +8671,15 @@ body,
 }
 
 @keyframes botFloatStory {
-  0%, 100% { transform: translateY(0) rotate(0deg); }
-  50% { transform: translateY(-6px) rotate(2deg); }
+
+  0%,
+  100% {
+    transform: translateY(0) rotate(0deg);
+  }
+
+  50% {
+    transform: translateY(-6px) rotate(2deg);
+  }
 }
 
 /* --------------------------------------------------------------------------
@@ -8693,8 +8812,15 @@ body,
 }
 
 @keyframes cueBounce {
-  0%, 100% { transform: translateY(0); }
-  50% { transform: translateY(7px); }
+
+  0%,
+  100% {
+    transform: translateY(0);
+  }
+
+  50% {
+    transform: translateY(7px);
+  }
 }
 
 /* --------------------------------------------------------------------------
@@ -10267,9 +10393,11 @@ body,
   .story-hero-stat-strip {
     grid-template-columns: repeat(3, 1fr);
   }
+
   .story-certs-grid {
     grid-template-columns: repeat(2, 1fr);
   }
+
   .capstone-key-metrics-grid,
   .standing-stats-row,
   .story-finale-recap-grid {
@@ -10281,51 +10409,64 @@ body,
   .story-slim-topbar {
     padding: 0 1rem;
   }
+
   .story-topbar-back span:last-child {
     display: none;
   }
+
   .story-fullscreen-scene {
     padding: 5.5rem 1.25rem 3.5rem;
   }
+
   .story-display-sentence {
     font-size: clamp(1.85rem, 7.5vw, 2.8rem);
     line-height: 1.22;
   }
+
   .story-giant-hero-word {
     font-size: clamp(3.8rem, 18vw, 6.5rem);
   }
+
   .story-hero-stat-strip {
     grid-template-columns: repeat(2, 1fr);
   }
+
   .story-figures-row,
   .fluency-pillars-grid {
     grid-template-columns: 1fr;
   }
+
   .ranker-gauges-grid {
     grid-template-columns: 1fr;
   }
+
   .story-endpoints-timeline {
     flex-direction: column;
     gap: 1rem;
     align-items: stretch;
   }
+
   .endpoint-rail {
     width: 2px;
     height: 30px;
     margin: 0 auto;
   }
+
   .ranker-candidates-table .table-row {
     font-size: 0.78rem;
     padding: 0.65rem 0.75rem;
   }
+
   .story-certs-toolbar {
     flex-direction: column;
     align-items: stretch;
   }
+
   .story-certs-filter-tabs,
   .story-certs-controls {
     width: 100%;
   }
+
   .story-cert-search-input {
     width: 100%;
   }
@@ -10335,15 +10476,18 @@ body,
   .story-hero-stat-strip {
     grid-template-columns: 1fr;
   }
+
   .capstone-key-metrics-grid,
   .standing-stats-row,
   .story-finale-recap-grid,
   .story-certs-grid {
     grid-template-columns: 1fr;
   }
+
   .story-topbar-verify span:last-child {
     font-size: 0.75rem;
   }
+
   .hero-stat-number {
     font-size: 1.75rem;
   }
@@ -10394,7 +10538,6 @@ body,
   /* Front face orientation */
   transform: rotateY(0deg);
 }
-
 </style>
   <style>
 /* Theme-specific supplied portraits; restrained, flat Portix-reference layout. */
@@ -10556,7 +10699,7 @@ body { background: var(--folio-ground); }
   padding: clamp(11px, 1.5vw, 22px) 6vw 72px;
   border-top: 1px solid var(--ae-line);
   isolation: isolate;
-  background: transparent;
+  background: var(--ae-bg);
   color: var(--ae-ink);
   font-family: var(--font-sans, sans-serif);
   border-radius: 0;

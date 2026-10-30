@@ -13,7 +13,7 @@
   padding: clamp(11px, 1.5vw, 22px) 6vw 72px;
   border-top: 1px solid var(--ae-line);
   isolation: isolate;
-  background: transparent;
+  background: var(--ae-bg);
   color: var(--ae-ink);
   font-family: var(--font-sans, sans-serif);
   border-radius: 0;
