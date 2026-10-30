@@ -44,8 +44,8 @@ assert(samples.every((y,i)=>i===0||y>=samples[i-1]-1),'Wheel reversed unexpected
 results.push({test:'Actual wheel eases progressively, real window scroll updates',status:'PASS',delta,distinctPositions:new Set(samples.map(Math.round)).size});
 // Existing chapter links use the same service and finish below sticky navigation.
 await jump('#about');await page.locator('.ae-nav-link[href="#how-i-work"]').click();
-await page.waitForFunction(()=>Math.abs(document.querySelector('#how-i-work').getBoundingClientRect().top-116)<3);
-assert(await page.locator('.ae-active').getAttribute('href')==='#how-i-work','Chapter tracker not synchronized');
+await page.waitForFunction(()=>Math.abs(document.querySelector('#how-i-work').getBoundingClientRect().top-parseFloat(getComputedStyle(document.querySelector('#about')).getPropertyValue('--ae-anchor-offset')))<3);
+await page.waitForFunction(()=>document.querySelector('.ae-active')?.getAttribute('href')==='#how-i-work');
 results.push({test:'Programmatic chapter navigation uses smooth controller and preserves tracker',status:'PASS'});
 // New manual wheel input must cancel a previous programmatic destination.
 await jump('#about');
@@ -107,7 +107,7 @@ const failedPage=await failedContext.newPage();failedPage.on('pageerror',e=>erro
 await failedPage.goto(server.baseUrl+'/');await failedPage.waitForSelector('.ae-section');
 await failedPage.waitForFunction(()=>document.documentElement.dataset.scrollEngine==='native');
 await failedPage.locator('.ae-nav-link[href="#why-me"]').click();
-await failedPage.waitForFunction(()=>Math.abs(document.querySelector('#why-me').getBoundingClientRect().top-116)<3);
+await failedPage.waitForFunction(()=>Math.abs(document.querySelector('#why-me').getBoundingClientRect().top-parseFloat(getComputedStyle(document.querySelector('#about')).getPropertyValue('--ae-anchor-offset')))<3);
 await failedContext.close();
 results.push({test:'Blocked smooth module falls back to working native anchor scrolling',status:'PASS'});
 assert(errors.length===0,'Browser exceptions '+errors.join(';'));

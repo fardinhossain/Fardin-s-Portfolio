@@ -3,7 +3,25 @@
   "cleanUrls": true,
   "trailingSlash": false,
   "rewrites": [
-    { "source": "/experience/flyrank-ai", "destination": "/index.html" },
-    { "source": "/journey", "destination": "/index.html" }
-  ]
+    {
+      "source": "/experience/flyrank-ai",
+      "destination": "/index.html"
+    },
+    {
+      "source": "/journey",
+      "destination": "/index.html"
+    }
+  ],
+  "framework": null,
+  "buildCommand": "npm run build",
+  "outputDirectory": "dist",
+  "functions": {
+    "api/*.js": {
+      "maxDuration": 30,
+      "includeFiles": [
+        "server/**",
+        "assets/js/data.js"
+      ]
+    }
+  }
 }

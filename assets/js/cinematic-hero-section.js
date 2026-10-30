@@ -1,15 +1,12 @@
-import React, { useEffect, useRef, useState } from "react";
+import React, { useEffect, useLayoutEffect, useRef, useState, useCallback } from "react";
+import { createPortal } from "react-dom";
 import { createHeroIntroTimeline } from "./hero-intro-timeline.js";
 import { PROFILE_DATA } from "./data.js";
 import { getCurrentTheme, subscribeTheme } from "./theme-manager.js";
+import { PortfolioAssistant } from "./assistant-chat.js";
 
 const h = React.createElement;
-const STRENGTHS = [
-  ["code", "Full-Stack", "Developer"],
-  ["chip", "AI & ML", "Enthusiast"],
-  ["target", "Problem", "Solver"],
-  ["book", "Continuous", "Learner"]
-];
+const STRENGTHS = [["code", "Full-Stack", "Developer"], ["chip", "AI & ML", "Enthusiast"], ["target", "Problem", "Solver"], ["book", "Continuous", "Learner"]];
 function StrengthIcon({ type }) {
   const paths = {
     code: ["M8 7 3 12l5 5M16 7l5 5-5 5M14 4l-4 16"],
@@ -19,56 +16,121 @@ function StrengthIcon({ type }) {
   };
   return h("svg", { viewBox: "0 0 24 24", fill: "none", stroke: "currentColor", strokeWidth: 1.4, strokeLinecap: "round", strokeLinejoin: "round", "aria-hidden": true }, paths[type].map((d, i) => h("path", { d, key: i })));
 }
+function ChatGlyph() {
+  return h("svg", { viewBox: "0 0 24 24", fill: "none", stroke: "currentColor", strokeWidth: 1.6, "aria-hidden": true }, h("rect", { x: 3, y: 5, width: 18, height: 14, rx: 5 }), h("path", { d: "M12 2v3M8 10v3m8-3v3m-7 3h6" }));
+}
 
-// The decorative renderer is downloaded only when this stage is visible and the
-// browser is idle. Semantic content never waits on WebGL or this import.
-export function HeroAuraFlyingRobot() {
+// The canvas is decorative; a tracked native button provides real interaction.
+// Callback values update refs/styles rather than scheduling React every frame.
+export function HeroAuraFlyingRobot({ onActivate, open = false, onRevealProgress, onPhase }) {
   const host = useRef(null);
+  const hitbox = useRef(null);
+  const controller = useRef(null);
+  const current = useRef({ onActivate, open, onRevealProgress, onPhase });
+  current.current = { onActivate, open, onRevealProgress, onPhase };
+  const activity = useRef({ hover: false, focus: false });
+  const syncPause = () => controller.current?.setPaused(current.current.open || activity.current.hover || activity.current.focus);
+  useEffect(() => { syncPause(); }, [open]);
   useEffect(() => {
     const el = host.current;
     if (!el) return;
     let cancelled = false;
     let started = false;
-    let controller;
     let idleHandle;
-    let timeoutHandle;
+    let timerHandle;
     const motion = window.matchMedia("(prefers-reduced-motion: reduce)");
-    const updateMotion = () => controller?.setReducedMotion(motion.matches);
-    motion.addEventListener?.("change", updateMotion);
+    const updateMotion = () => controller.current?.setReducedMotion(motion.matches);
+    motion.addEventListener("change", updateMotion);
+    const unavailable = () => { current.current.onRevealProgress?.(1); current.current.onPhase?.("unavailable"); };
     const load = () => {
       if (started || cancelled) return;
       started = true;
       import("./hero-orbit-scene.js").then(({ mountHeroOrbit }) => {
-        if (!cancelled) controller = mountHeroOrbit(el, { reducedMotion: motion.matches });
-      }).catch(() => { /* Portrait and all controls remain available without 3D. */ });
+        if (cancelled) return;
+        controller.current = mountHeroOrbit(el, {
+          reducedMotion: motion.matches,
+          onPhase: value => current.current.onPhase?.(value),
+          onRevealProgress: value => current.current.onRevealProgress?.(value),
+          onPosition: position => {
+            const button = hitbox.current;
+            if (!button) return;
+            const width = Math.max(44, position.width);
+            const height = Math.max(44, position.height);
+            button.style.width = `${width}px`;
+            button.style.height = `${height}px`;
+            button.style.left = `${Math.max(0, Math.min(el.clientWidth - width, position.x - (width - position.width) / 2))}px`;
+            button.style.top = `${Math.max(0, Math.min(el.clientHeight - height, position.y - (height - position.height) / 2))}px`;
+            button.style.visibility = position.visible ? "visible" : "hidden";
+            button.tabIndex = position.visible ? 0 : -1;
+          }
+        });
+        syncPause();
+      }).catch(unavailable);
     };
     const schedule = () => {
-      if ("requestIdleCallback" in window) idleHandle = window.requestIdleCallback(load, { timeout: 1200 });
-      else timeoutHandle = window.setTimeout(load, 160);
+      if ("requestIdleCallback" in window) idleHandle = window.requestIdleCallback(load, { timeout: 500 });
+      else timerHandle = window.setTimeout(load, 80);
     };
     let observer;
     if ("IntersectionObserver" in window) {
-      observer = new IntersectionObserver(([entry]) => {
-        if (entry.isIntersecting) { observer.disconnect(); schedule(); }
-      }, { threshold: 0.05 });
+      observer = new IntersectionObserver(([entry]) => { if (entry.isIntersecting) { observer.disconnect(); schedule(); } }, { threshold: 0.03 });
       observer.observe(el);
     } else schedule();
     return () => {
       cancelled = true;
       observer?.disconnect();
       if (idleHandle !== undefined) window.cancelIdleCallback?.(idleHandle);
-      window.clearTimeout(timeoutHandle);
-      motion.removeEventListener?.("change", updateMotion);
-      controller?.dispose();
+      window.clearTimeout(timerHandle);
+      motion.removeEventListener("change", updateMotion);
+      controller.current?.dispose();
+      controller.current = null;
     };
   }, []);
-  return h("div", { ref: host, className: "fh-orbit-host", "aria-hidden": true });
+  return h(React.Fragment, null,
+    h("div", { ref: host, className: "fh-orbit-host", "aria-hidden": true }),
+    h("button", {
+      ref: hitbox, className: "fh-robot-hitbox", type: "button", style: { visibility: "hidden" }, tabIndex: -1,
+      "aria-label": "Open Fardin's AI assistant", "aria-haspopup": "dialog", "aria-expanded": open,
+      onClick: event => current.current.onActivate?.(event.currentTarget),
+      onPointerEnter: () => { activity.current.hover = true; syncPause(); },
+      onPointerLeave: () => { activity.current.hover = false; syncPause(); },
+      onFocus: () => { activity.current.focus = true; syncPause(); },
+      onBlur: () => { activity.current.focus = false; syncPause(); }
+    }, h("span", { className: "fh-sr-only" }, "Ask about Fardin's work"))
+  );
 }
 
 export function CinematicHeroSection({ resumeUrl = PROFILE_DATA.resumeUrl, onNavigateContact }) {
   const root = useRef(null);
-  const [theme, setTheme] = useState(() => getCurrentTheme());
+  const [theme, setTheme] = useState(getCurrentTheme);
   const [mobileName, setMobileName] = useState(() => window.matchMedia("(max-width: 700px)").matches);
+  const [chatOpen, setChatOpen] = useState(false);
+  const lastLauncher = useRef(null);
+  const progress = useRef(0);
+  const revealed = useRef(false);
+  const revealName = useCallback(value => {
+    if (revealed.current && value < 1) return;
+    progress.current = value;
+    if (value >= 1) revealed.current = true;
+    root.current?.querySelectorAll(".fh-name-word").forEach((word, index) => {
+      const amount = Math.max(0, Math.min(1, value * 3 - index));
+      word.style.opacity = amount;
+      word.style.transform = `translateY(${(1 - amount) * 10}px)`;
+      word.style.clipPath = `inset(0 ${(1 - amount) * 100}% 0 0)`;
+    });
+    if (root.current) root.current.dataset.nameRevealed = value >= 1 ? "true" : "false";
+  }, []);
+  const phase = useCallback(value => { if (root.current) root.current.dataset.mascotPhase = value; }, []);
+  useLayoutEffect(() => {
+    const motion = window.matchMedia("(prefers-reduced-motion: reduce)");
+    revealName(motion.matches ? 1 : 0);
+    // Progressive-enhancement backstop: import/GPU/observer failure cannot hide identity.
+    const timer = window.setTimeout(() => revealName(1), 3600);
+    const changed = () => { if (motion.matches) revealName(1); };
+    motion.addEventListener("change", changed);
+    return () => { window.clearTimeout(timer); motion.removeEventListener("change", changed); };
+  }, []);
+  useLayoutEffect(() => { revealName(progress.current); }, [mobileName]);
   useEffect(() => {
     const media = window.matchMedia("(max-width: 700px)");
     const update = () => setMobileName(media.matches);
@@ -79,28 +141,23 @@ export function CinematicHeroSection({ resumeUrl = PROFILE_DATA.resumeUrl, onNav
   useEffect(() => {
     const el = root.current;
     const motion = window.matchMedia("(prefers-reduced-motion: reduce)");
-    const timeline = createHeroIntroTimeline({
-      elements: {
-        headlineLines: [...el.querySelectorAll(".fh-headline-line")],
-        nameWords: [el.querySelector(".fh-name")],
-        labelBadge: el.querySelector(".fh-kicker"),
-        portraitContainer: el.querySelector(".fh-portrait"),
-        haloAura: el.querySelector(".fh-halo"),
-        actions: el.querySelector(".fh-actions")
-      },
-      isReducedMotion: motion.matches
-    });
+    const timeline = createHeroIntroTimeline({ elements: {
+      headlineLines: [...el.querySelectorAll(".fh-headline-line")], nameWords: [],
+      labelBadge: el.querySelector(".fh-kicker"), portraitContainer: el.querySelector(".fh-portrait"), actions: el.querySelector(".fh-actions")
+    }, isReducedMotion: motion.matches });
     const change = () => { if (motion.matches) timeline.skip(); };
-    motion.addEventListener?.("change", change);
-    timeline.play();
-    return () => { motion.removeEventListener?.("change", change); timeline.kill(); };
+    motion.addEventListener("change", change); timeline.play();
+    return () => { motion.removeEventListener("change", change); timeline.kill(); };
   }, []);
-  const contact = (event) => {
-    if (onNavigateContact) { event.preventDefault(); onNavigateContact(); }
-  };
+  const contact = event => { if (onNavigateContact) { event.preventDefault(); onNavigateContact(); } };
+  const activate = element => { lastLauncher.current = element; setChatOpen(true); };
   const identity = h("p", { className: `fh-name${mobileName ? " fh-name-mobile" : ""}` },
-    h("span", null, "MD."), " ", h("span", { className: "fh-name-accent" }, "FARDIN"), " ", h("span", null, "HOSSAIN"));
-  const portraitWebp = theme === "light" ? "/assets/images/hero-portrait-light.webp" : "/assets/images/hero-portrait-dark.webp";
+    h("span", { className: "fh-sr-only" }, "MD. FARDIN HOSSAIN"),
+    h("span", { className: "fh-name-visual", "aria-hidden": true },
+      h("span", { className: "fh-name-word" }, "MD."), " ",
+      h("span", { className: "fh-name-word fh-name-accent" }, "FARDIN"), " ",
+      h("span", { className: "fh-name-word" }, "HOSSAIN")));
+  const portraitWebp = theme === "light" ? "/assets/images/hero-portrait-light.webp" : "/assets/images/hero-portrait-current.webp";
   const resumeHref = resumeUrl.startsWith("/") || /^https?:/.test(resumeUrl) ? resumeUrl : `/${resumeUrl}`;
   return h("section", { id: "home", ref: root, className: "fh-hero", "aria-labelledby": "fh-headline" },
     h("div", { className: "fh-atmosphere", "aria-hidden": true }),
@@ -111,33 +168,24 @@ export function CinematicHeroSection({ resumeUrl = PROFILE_DATA.resumeUrl, onNav
           h("h1", { id: "fh-headline", className: "fh-headline" },
             h("span", { className: "fh-headline-line" }, h("span", { className: "fh-bright" }, "BUILDING"), " THAT"), " ",
             h("span", { className: "fh-headline-line" }, "CREATES INTELLIGENT"), " ",
-            h("span", { className: "fh-headline-line" }, "IMPACT")
-          ),
+            h("span", { className: "fh-headline-line" }, "IMPACT")),
           !mobileName && identity,
           h("div", { className: "fh-actions" },
             h("a", { href: "#contact", className: "fh-contact", onClick: contact }, "LET’S TALK", h("span", { "aria-hidden": true }, "→")),
             h("a", { href: resumeHref, className: "fh-resume", target: "_blank", rel: "noopener noreferrer" },
-              h("svg", { viewBox: "0 0 24 24", fill: "none", stroke: "currentColor", strokeWidth: 1.6, "aria-hidden": true }, h("path", { d: "M12 3v12m-4-4 4 4 4-4M5 16v5h14v-5" })),
-              "View Résumé (PDF)"
-            )
-          )
-        ),
+              h("svg", { viewBox: "0 0 24 24", fill: "none", stroke: "currentColor", strokeWidth: 1.6, "aria-hidden": true }, h("path", { d: "M12 3v12m-4-4 4 4 4-4M5 16v5h14v-5" })), "View Résumé (PDF)"))),
         h("div", { className: "fh-visual" },
-          h("div", { className: "fh-portrait" },
-            h("picture", { "data-portrait-theme": theme },
-              h("source", { type: "image/webp", srcSet: portraitWebp }),
-              h("img", {
-                src: theme === "light" ? PROFILE_DATA.heroPortraitLight : PROFILE_DATA.heroPortraitDark,
-                alt: "Md. Fardin Hossain in a brown T-shirt with an orange halo",
-                width: theme === "light" ? 1087 : 1086, height: theme === "light" ? 1447 : 1448, loading: "eager", fetchPriority: "high", decoding: "async", draggable: false
-              }))),
-          h(HeroAuraFlyingRobot),
-          mobileName && identity
-        )
-      ),
+          h("div", { className: "fh-portrait" }, h("picture", { "data-portrait-theme": theme },
+            h("source", { type: "image/webp", srcSet: portraitWebp }),
+            h("img", { src: theme === "light" ? PROFILE_DATA.heroPortraitLight : "/assets/images/hero-portrait-current.png",
+              alt: "Md. Fardin Hossain in a brown T-shirt with an orange halo", width: 1087, height: 1447,
+              loading: "eager", fetchPriority: "high", decoding: "async", draggable: false }))),
+          h(HeroAuraFlyingRobot, { onActivate: activate, open: chatOpen, onRevealProgress: revealName, onPhase: phase }),
+          mobileName && identity)),
       h("ul", { className: "fh-strengths", "aria-label": "Areas of focus" }, STRENGTHS.map(([type, first, second]) =>
-        h("li", { key: type }, h("span", { className: "fh-strength-icon" }, h(StrengthIcon, { type })), h("span", null, first, h("br"), second))
-      ))
-    )
+        h("li", { key: type }, h("span", { className: "fh-strength-icon" }, h(StrengthIcon, { type })), h("span", null, first, h("br"), second))))),
+    createPortal(h("button", { className: "fh-chat-launcher", type: "button", "aria-label": "Ask Fardin's assistant", "aria-haspopup": "dialog", "aria-expanded": chatOpen,
+      onClick: event => activate(event.currentTarget) }, h(ChatGlyph), h("span", null, "Ask about my work")), document.body),
+    h(PortfolioAssistant, { open: chatOpen, onClose: () => setChatOpen(false), returnFocusRef: lastLauncher })
   );
 }

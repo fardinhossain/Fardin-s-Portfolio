@@ -1,50 +1,41 @@
-# Current Hero/About verification
+# Verification scope — latest implementation
 
-Date: 2026-10-29 UTC
-Environment: Chromium 141 / Playwright 1.56.1 / headless Linux / software WebGL.
-Target: actual source over loopback HTTP, not the unchanged production website.
+Environment: Node 24 executing Node-22-compatible source; Chromium 141 / Playwright 1.56.1 / Linux headless software WebGL. No AI provider key or live AI request was used.
 
-## 47 automated cases
+## Build and source checks
 
-### 16 responsive/theme cases
+- npm run lint: JavaScript syntax and JSON configuration validation.
+- npm run build: whitelisted static assets generated in dist.
+- No TypeScript source/configuration or type-check command exists.
+- Environment files and private server sources are excluded from static output. Real .env variants are ignored; only the blank example is tracked.
 
-Widths 320, 375, 390, 768, 1024, 1366, 1440, 1920 in both dark and light themes.
+## 14 native Node backend/build tests
 
-For each: portrait and fonts load; the correct newly supplied theme-specific WebP is selected; no extra CSS halo is rendered; the identity uses the requested condensed Anton face and on mobile sits in front of the lower portrait; exact headline, four chapters and five process stages are present; résumé path is correct; no document horizontal overflow or selected text/control clipping occurs.
+Vercel handler exports, missing-key/model behavior, configuration-only status with no credential leakage, methods, JSON/content-type/body and message bounds, role/client-configuration rejection, rate-limit TTL/bounds, provider request shape, server-only auth, profile context, HTTPS/redirect constraints, safe upstream failure, timeout/abort including stalled output, output/echo limits, native server route/MIME/private-file protections and public-build exclusions.
 
-Both the earlier small sans-serif name and concentric-circle assertions were intentionally replaced by the latest owner directions: the latest supplied images already include their halos and the owner requested replacing the old image/crop. Historical circle-avatar behavior is no longer the current design.
+All provider tests use injected mock responses. They do not prove live provider connectivity or model answer quality.
 
-### 5 interaction/renderer cases
+## 47 existing browser regression cases
 
-- Mobile and desktop: four chapter links, active tracking, sticky offsets, Home, reduced-motion static robot, actual theme toggle and synchronized light portrait, and contact CTA.
-- Actual Three.js scene: changing frames, reduced-motion stop, repeated disposal and no-WebGL fallback.
-- Full app without WebGL: Hero/About content and résumé link remain.
-- Exact introductory sentence/punctuation and seven rendered inter-word spaces; one semantic quote copy includes the separate visual opening mark.
+The eight requested widths (320,375,390,768,1024,1366,1440,1920) in both themes; correct image/theme/typography, no selected-element clipping or horizontal overflow, four chapters/five process stages, résumé path, chapter/Home/contact/theme navigation, reduced-motion static rendering, actual WebGL changes/disposal/fallback, literal quote spacing, all-chapter scenery, native wheel/keyboard/touch/nested-dialog behavior, interruptible smooth navigation, no project auto-follow, journey back-to-top and failed-enhancement fallback.
 
-### 26 background/scroll cases
+Checks were updated for the newly supplied dark portrait, measured chapter offsets, and coordinated name completion rather than expecting the previous fixed spacing.
 
-- 16 theme/width cases: optimized summitscape loads, the section-contained scenic layer spans the narrative, and no horizontal overflow occurs.
-- Actual wheel input eases through multiple real document positions.
-- Chapter link navigation and active tracking synchronize.
-- Manual wheel interrupts a programmatic destination, measured at actual event dispatch.
-- Nested native dialog scrolling does not move the underlying document.
-- Robot project delivery does not pull the viewport.
-- Live reduced-motion switching destroys/restores easing and instant/native behavior.
-- Mobile touchmove is not intercepted or given synthetic inertia.
-- Browser PageDown works.
-- Journey and back-to-top use the shared service.
-- Failed Lenis loading falls back to working native anchor navigation.
+## 24 new browser cases
 
-Final suite page exceptions: zero. npm ci for the isolated verification tooling reported zero vulnerabilities at run time. The complete suite is rerun from a clean extracted archive before delivery.
+- 16 theme/width cases: portrait aspect-ratio behavior, safe robot hitbox outside the conservative face box, accessible honest unconfigured dialog, initial input focus, keyboard containment, prompt population without fabricated reply, disabled Send, popup viewport bounds and Escape/focus restoration.
+- Two mobile theme cases: tracker remains sticky below the header through all four chapters; active marker and actual light/dark scenery remain correct through the final process chapter.
+- Actual Three.js phase transitions enter → reveal → orbit, with progressive intermediate name-word opacity observed in the actual DOM.
+- The tracked robot pauses for pointer interaction and opens/closes the dialog.
+- A short mobile/keyboard-sized viewport retains reachable close and send controls.
+- Local real server/client transport, loading and grounded system context tested with an explicit mock provider only.
+- Provider error handling preserves the question and hides upstream details.
+- Provider-supplied HTML is displayed as inert React text, not executed.
 
-## Other checks and limits
+The inspection preview is tested separately to ensure its chat makes no API requests and clearly explains its static-only state.
 
-- All authored application JavaScript, vendored runtime and verification JavaScript pass node --check.
-- git diff --check passes.
-- Real desktop/mobile screenshots in both themes are inspected.
-- The generated single-file preview is checked separately; its contact delivery is intentionally disabled.
-- No production build/lint/type scripts exist, so those are not reported as passing.
-- Responsive widths are not physical iOS/Android device certification. No hardware FPS/battery, complete-site WCAG compliance, external credential verification, contact delivery or live deployment is claimed.
-- Windows launcher execution is not tested on Windows here.
+## Limits
 
-Run npm test inside verification to reproduce both suites. Detailed output is written to verification/artifacts/results.json and scroll-background-results.json; latest delivered copies are last-run-results.json and last-scroll-background-results.json.
+These checks are not physical-device/Safari certification, hardware FPS/battery benchmarks, a complete-site accessibility audit, live credential/model validation or deployment verification. Grounding is implemented through an allowlisted professional context and server instructions; model factual accuracy must be reviewed after a real provider is configured. The limiter is best-effort process-local, not a shared production quota. Existing unrelated section animations were not rewritten.
+
+Generated results and screenshots live under verification/artifacts; delivered last-run JSON snapshots are included in verification. API setup, privacy and production considerations are in AI_ASSISTANT_SETUP.md.

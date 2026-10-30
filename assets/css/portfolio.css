@@ -5779,7 +5779,9 @@ body {
 /* Universal Mobile Shell & Viewport Center Alignment (<= 767px) */
 @media (max-width: 767px) {
   html, body {
-    overflow-x: hidden;
+    /* clip prevents horizontal overflow without creating a new scroll
+       container that breaks the navbar and About's sticky tracker. */
+    overflow-x: clip;
     max-width: 100%;
   }
 

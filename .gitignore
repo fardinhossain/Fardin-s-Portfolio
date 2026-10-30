@@ -63,3 +63,12 @@ desktop.ini
 
 # Generated standalone inspection preview
 /PREVIEW.html
+
+# Server secrets: only the blank configuration template is tracked
+/.env*
+!/.env.example
+
+# Any local environment variant and deployment metadata
+.env*
+!.env.example
+.vercel/

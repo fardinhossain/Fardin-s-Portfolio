@@ -3,7 +3,7 @@
   "version": "1.0.0",
   "description": "Browser regression checks for the static Hero and About redesign",
   "scripts": {
-    "test": "node verify.mjs && node scroll-background.mjs"
+    "test": "node verify.mjs && node scroll-background.mjs && node assistant-experience.mjs"
   },
   "keywords": [],
   "author": "",

@@ -6,6 +6,8 @@
   --ae-line: #d6d1c8;
   --ae-accent: #b8422c;
   --ae-wash: #ebe7df;
+  --ae-nav-top: 112px;
+  --ae-anchor-offset: 128px;
   position: relative;
   margin: 0;
   padding: clamp(11px, 1.5vw, 22px) 6vw 72px;
@@ -72,7 +74,7 @@
 .ae-quote-mark { position: absolute; top: -.04em; left: 0; color: var(--ae-accent); font: italic clamp(22px, 3vw, 43px)/1 Georgia, serif; }
 .ae-intro { margin-bottom: clamp(12px, 1.6vw, 24px); }
 .ae-layout { display: grid; grid-template-columns: 23vw minmax(0, 1fr); gap: 3vw; align-items: start; }
-.ae-sidebar { position: sticky; top: 112px; padding-right: 3vw; border-right: 1px solid var(--ae-line); }
+.ae-sidebar { position: sticky; top: var(--ae-nav-top); padding-right: 3vw; border-right: 1px solid var(--ae-line); }
 .ae-nav-caption { margin: 0 0 24px; color: var(--ae-muted); font-size: 11px; letter-spacing: .03em; }
 .ae-nav-links { position: relative; display: flex; flex-direction: column; }
 .ae-nav-links::before { content: ""; position: absolute; top: clamp(17px, 2.22vw, 32px); bottom: clamp(17px, 2.22vw, 32px); left: 6px; width: 1px; background: var(--ae-line); }
@@ -100,7 +102,7 @@
 .ae-active .ae-nav-title { font-weight: 700; }
 .ae-mobile-current { display: none; }
 .ae-content { min-width: 0; }
-.ae-chapter { padding: 0 0 48px; margin: 0 0 40px; border-bottom: 1px solid var(--ae-line); scroll-margin-top: 116px; }
+.ae-chapter { padding: 0 0 48px; margin: 0 0 40px; border-bottom: 1px solid var(--ae-line); scroll-margin-top: var(--ae-anchor-offset); }
 .ae-chapter:last-child { margin-bottom: 0; padding-bottom: 0; border-bottom: 0; }
 .ae-chapter-header { margin-bottom: clamp(8px, 1vw, 14px); }
 .ae-chapter-title { margin: 6px 0 0; color: var(--ae-ink); font-size: clamp(22px, 2.65vw, 38px); font-weight: 600; line-height: 1.2; letter-spacing: -.04em; }
@@ -133,22 +135,26 @@
 /* Readable even at the earliest animation frame: no hidden-until-observed state. */
 @keyframes ae-word-arrive { from { opacity: .75; } to { opacity: 1; } }
 @media (max-width: 700px) {
-  .ae-section { padding: 30px 22px 48px; }
+  .ae-section { --ae-nav-top: 64px; --ae-anchor-offset: 170px; padding: 30px 22px 48px; }
   .ae-title { margin-top: 0; font-size: clamp(40px, 10vw, 58px); }
   .ae-intro { margin-bottom: 28px; }
   .ae-quote-wrap { max-width: 460px; padding-left: 13px; }
   .ae-quote { font-size: clamp(26px, 6.5vw, 36px); }
   .ae-quote-mark { font-size: 30px; }
   .ae-layout { display: block; }
-  .ae-sidebar { top: 72px; z-index: 5; margin: 0 -6px 30px; padding: 10px 6px 12px; background: var(--ae-bg); border-bottom: 1px solid var(--ae-line); border-right: 0; }
+  /* The nav itself belongs to the full narrative layout, so no short aside
+     constrains sticky positioning near later chapters. */
+  .ae-sidebar { display: block; padding-right: 0; border-right: 0; }
+  .ae-nav { position: sticky; top: var(--ae-nav-top); z-index: 5; margin: 0 -6px 30px; padding: 10px 6px 12px; background: var(--ae-bg); border-bottom: 1px solid var(--ae-line); }
   .ae-nav-caption { display: none; }
   .ae-nav-links { flex-direction: row; justify-content: space-between; gap: 8px; }
   .ae-nav-links::before { left: 24px; right: 24px; top: 22px; bottom: auto; width: auto; height: 1px; }
   .ae-nav-link { min-height: 44px; min-width: 48px; padding: 0 8px; justify-content: center; gap: 8px; background: var(--ae-bg); }
   .ae-nav-dot { flex-basis: 9px; height: 9px; }
+  .ae-nav-number { font-size: 10px; }
   .ae-nav-title { display: none; }
   .ae-mobile-current { display: block; margin: 8px 0 0; color: var(--ae-accent); font-size: 12px; line-height: 1.5; font-weight: 600; }
-  .ae-chapter { scroll-margin-top: 176px; margin-bottom: 32px; padding-bottom: 32px; }
+  .ae-chapter { scroll-margin-top: var(--ae-anchor-offset); margin-bottom: 32px; padding-bottom: 32px; }
   .ae-chapter-title { font-size: 29px; }
   .ae-copy { font-size: 14px; line-height: 1.9; }
   .ae-capabilities { gap: 24px 20px; }
@@ -171,15 +177,18 @@
   .ae-nav-link { transition: none; }
 }
 
-/* The scenic viewport sticks ONLY within About. Its image retains its native
-   wide framing rather than covering a 2000px narrative and magnifying the peak. */
+/* The absolute track spans the entire section, independent of copy height.
+   Only the viewport-sized frame sticks; never stretch a landscape over the
+   narrative's multi-thousand-pixel height. No fixed layers or scroll hijacks. */
 .ae-scenery { position: absolute; inset: 0; z-index: -1; pointer-events: none; }
-.ae-scenery-frame { position: sticky; top: 0; width: 100%; height: clamp(340px, 44vw, 700px); overflow: hidden; background: var(--ae-bg); }
-.ae-scenery picture { display: block; position: absolute; top: -5vw; left: 0; width: 100%; mask-image: linear-gradient(#000 78%, transparent); }
-.ae-scenery img { display: block; width: 100%; height: auto; opacity: .9; }
-.ae-scenery-frame::after { content: ""; position: absolute; inset: 0; background: linear-gradient(90deg, #f5f3eef0, #f5f3eec9 60%, #f5f3ee99), linear-gradient(0deg, var(--ae-bg), transparent 40%); }
+.ae-scenery-frame { position: sticky; top: 0; width: 100%; height: 100vh; height: 100svh; overflow: hidden; background: var(--ae-bg); }
+.ae-scenery picture { display: block; position: absolute; inset: 0; width: 100%; height: 100%; }
+.ae-scenery img { display: block; width: 100%; height: 100%; max-width: none; object-fit: cover; object-position: right bottom; }
+/* Contrast washes tint an actual theme-specific picture, not a recolored dark
+   image. The small edge fades connect the neighboring charcoal/warm-white. */
+.ae-scenery-frame::after { content: ""; position: absolute; inset: 0; background: linear-gradient(90deg, #f5f3eeed, #f5f3ee9c 60%, #f5f3ee26), linear-gradient(0deg, var(--ae-bg), transparent 9%, transparent 93%, var(--ae-bg)); }
 [data-theme="dark"] .ae-section { --ae-tile: #11161bc9; }
-[data-theme="dark"] .ae-scenery-frame::after { background: linear-gradient(90deg, #0b0d0f80, #0b0d0f4d 62%, #0b0d0f22), linear-gradient(0deg, var(--ae-bg) 0%, transparent 38%); }
+[data-theme="dark"] .ae-scenery-frame::after { background: linear-gradient(90deg, #0b0d0fdb, #0b0d0fa6 62%, #0b0d0f44), linear-gradient(0deg, var(--ae-bg), transparent 9%, transparent 93%, var(--ae-bg)); }
 .ae-ghost-robot { position: absolute; z-index: 1; top: 5%; right: 6%; width: clamp(150px, 14vw, 200px); aspect-ratio: 1; opacity: .08; pointer-events: none; }
 [data-theme="dark"] .ae-ghost-robot { opacity: .16; }
 .ae-ghost-robot canvas { display: block; width: 100%; height: 100%; pointer-events: none; }
@@ -188,11 +197,8 @@
 .ae-label:nth-child(3) .ae-icon { color: #e2b53b; }
 .ae-label:nth-child(4) .ae-icon { color: #39b59d; }
 @media (max-width: 700px) {
-  .ae-scenery-frame { height: 100svh; }
-  .ae-scenery picture { top: 0; left: auto; right: -16%; width: auto; height: 100%; mask-image: none; }
-  .ae-scenery img { width: auto; height: 100%; max-width: none; }
-  .ae-scenery-frame::after { background: linear-gradient(90deg, #f5f3eef0, #f5f3eed9); }
-  [data-theme="dark"] .ae-scenery-frame::after { background: linear-gradient(90deg, #0b0d0fe6, #0b0d0f99); }
+  .ae-scenery-frame::after { background: linear-gradient(90deg, #f5f3eee8, #f5f3eeb3), linear-gradient(0deg, var(--ae-bg), transparent 8%, transparent 94%, var(--ae-bg)); }
+  [data-theme="dark"] .ae-scenery-frame::after { background: linear-gradient(90deg, #0b0d0fe0, #0b0d0f9c), linear-gradient(0deg, var(--ae-bg), transparent 8%, transparent 94%, var(--ae-bg)); }
   .ae-ghost-robot { width: 120px; right: 3%; top: 3%; }
   .ae-labels { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); }
   .ae-label { font-size: 11px; padding: 10px; }

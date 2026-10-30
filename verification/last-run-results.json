@@ -1,5 +1,5 @@
 {
-  "testedAt": "2026-10-29T20:22:35.230Z",
+  "testedAt": "2026-10-30T07:35:35.408Z",
   "browser": "Chromium 141 / Playwright 1.56.1 / software WebGL",
   "results": [
     {
@@ -16,7 +16,7 @@
         "bottom": 414
       },
       "portraitTheme": "dark",
-      "portraitSource": "http://127.0.0.1:45573/assets/images/hero-portrait-dark.webp",
+      "portraitSource": "http://127.0.0.1:37223/assets/images/hero-portrait-current.webp",
       "extraHalo": false,
       "nameFont": "Anton, Oswald, sans-serif",
       "mobileNameOverlay": true,
@@ -30,9 +30,9 @@
       },
       "name": {
         "x": 20.46875,
-        "y": 339.953125,
+        "y": 334.9375,
         "width": 279.0625,
-        "height": 66.046875,
+        "height": 71.0625,
         "right": 299.53125,
         "bottom": 406
       },
@@ -54,7 +54,7 @@
       },
       "overflows": [],
       "headText": "BUILDING THAT CREATES INTELLIGENT IMPACT",
-      "nameText": "MD. FARDIN HOSSAIN",
+      "nameText": "MD. FARDIN HOSSAINMD. FARDIN HOSSAIN",
       "quote": "I turn complex problems into practical digital experiences.”",
       "stages": [
         "Understand",
@@ -80,7 +80,7 @@
         "bottom": 439
       },
       "portraitTheme": "dark",
-      "portraitSource": "http://127.0.0.1:45573/assets/images/hero-portrait-dark.webp",
+      "portraitSource": "http://127.0.0.1:37223/assets/images/hero-portrait-current.webp",
       "extraHalo": false,
       "nameFont": "Anton, Oswald, sans-serif",
       "mobileNameOverlay": true,
@@ -94,9 +94,9 @@
       },
       "name": {
         "x": 24,
-        "y": 361.5,
+        "y": 353.75,
         "width": 327,
-        "height": 69.5,
+        "height": 77.25,
         "right": 351,
         "bottom": 431
       },
@@ -118,7 +118,7 @@
       },
       "overflows": [],
       "headText": "BUILDING THAT CREATES INTELLIGENT IMPACT",
-      "nameText": "MD. FARDIN HOSSAIN",
+      "nameText": "MD. FARDIN HOSSAINMD. FARDIN HOSSAIN",
       "quote": "I turn complex problems into practical digital experiences.”",
       "stages": [
         "Understand",
@@ -144,7 +144,7 @@
         "bottom": 454
       },
       "portraitTheme": "dark",
-      "portraitSource": "http://127.0.0.1:45573/assets/images/hero-portrait-dark.webp",
+      "portraitSource": "http://127.0.0.1:37223/assets/images/hero-portrait-current.webp",
       "extraHalo": false,
       "nameFont": "Anton, Oswald, sans-serif",
       "mobileNameOverlay": true,
@@ -158,9 +158,9 @@
       },
       "name": {
         "x": 24.953125,
-        "y": 375.125,
+        "y": 367.0625,
         "width": 340.09375,
-        "height": 70.875,
+        "height": 78.9375,
         "right": 365.046875,
         "bottom": 446
       },
@@ -182,7 +182,7 @@
       },
       "overflows": [],
       "headText": "BUILDING THAT CREATES INTELLIGENT IMPACT",
-      "nameText": "MD. FARDIN HOSSAIN",
+      "nameText": "MD. FARDIN HOSSAINMD. FARDIN HOSSAIN",
       "quote": "I turn complex problems into practical digital experiences.”",
       "stages": [
         "Understand",
@@ -208,25 +208,25 @@
         "bottom": 550
       },
       "portraitTheme": "dark",
-      "portraitSource": "http://127.0.0.1:45573/assets/images/hero-portrait-dark.webp",
+      "portraitSource": "http://127.0.0.1:37223/assets/images/hero-portrait-current.webp",
       "extraHalo": false,
       "nameFont": "Anton, Oswald, sans-serif",
       "mobileNameOverlay": false,
       "headline": {
         "x": 49.140625,
-        "y": 215.046875,
+        "y": 209.875,
         "width": 318.90625,
         "height": 100.453125,
         "right": 368.046875,
-        "bottom": 315.5
+        "bottom": 310.328125
       },
       "name": {
         "x": 49.140625,
-        "y": 345.5,
+        "y": 340.328125,
         "width": 318.90625,
-        "height": 31.046875,
+        "height": 41.390625,
         "right": 368.046875,
-        "bottom": 376.546875
+        "bottom": 381.71875
       },
       "hero": {
         "x": 0,
@@ -246,7 +246,7 @@
       },
       "overflows": [],
       "headText": "BUILDING THAT CREATES INTELLIGENT IMPACT",
-      "nameText": "MD. FARDIN HOSSAIN",
+      "nameText": "MD. FARDIN HOSSAINMD. FARDIN HOSSAIN",
       "quote": "I turn complex problems into practical digital experiences.”",
       "stages": [
         "Understand",
@@ -272,25 +272,25 @@
         "bottom": 550
       },
       "portraitTheme": "dark",
-      "portraitSource": "http://127.0.0.1:45573/assets/images/hero-portrait-dark.webp",
+      "portraitSource": "http://127.0.0.1:37223/assets/images/hero-portrait-current.webp",
       "extraHalo": false,
       "nameFont": "Anton, Oswald, sans-serif",
       "mobileNameOverlay": false,
       "headline": {
         "x": 65.53125,
-        "y": 198.28125,
+        "y": 187.65625,
         "width": 425.203125,
         "height": 133.96875,
         "right": 490.734375,
-        "bottom": 332.25
+        "bottom": 321.625
       },
       "name": {
         "x": 65.53125,
-        "y": 362.25,
+        "y": 351.625,
         "width": 425.203125,
-        "height": 31.046875,
+        "height": 52.3125,
         "right": 490.734375,
-        "bottom": 393.296875
+        "bottom": 403.9375
       },
       "hero": {
         "x": 0,
@@ -310,7 +310,7 @@
       },
       "overflows": [],
       "headText": "BUILDING THAT CREATES INTELLIGENT IMPACT",
-      "nameText": "MD. FARDIN HOSSAIN",
+      "nameText": "MD. FARDIN HOSSAINMD. FARDIN HOSSAIN",
       "quote": "I turn complex problems into practical digital experiences.”",
       "stages": [
         "Understand",
@@ -336,25 +336,25 @@
         "bottom": 708.359375
       },
       "portraitTheme": "dark",
-      "portraitSource": "http://127.0.0.1:45573/assets/images/hero-portrait-dark.webp",
+      "portraitSource": "http://127.0.0.1:37223/assets/images/hero-portrait-current.webp",
       "extraHalo": false,
       "nameFont": "Anton, Oswald, sans-serif",
       "mobileNameOverlay": false,
       "headline": {
         "x": 87.421875,
-        "y": 236.5,
+        "y": 221.171875,
         "width": 567.203125,
         "height": 178.6875,
         "right": 654.625,
-        "bottom": 415.1875
+        "bottom": 399.859375
       },
       "name": {
         "x": 87.421875,
-        "y": 445.1875,
+        "y": 429.859375,
         "width": 567.203125,
-        "height": 39.125,
+        "height": 69.78125,
         "right": 654.625,
-        "bottom": 484.3125
+        "bottom": 499.640625
       },
       "hero": {
         "x": 0,
@@ -374,7 +374,7 @@
       },
       "overflows": [],
       "headText": "BUILDING THAT CREATES INTELLIGENT IMPACT",
-      "nameText": "MD. FARDIN HOSSAIN",
+      "nameText": "MD. FARDIN HOSSAINMD. FARDIN HOSSAIN",
       "quote": "I turn complex problems into practical digital experiences.”",
       "stages": [
         "Understand",
@@ -400,25 +400,25 @@
         "bottom": 730
       },
       "portraitTheme": "dark",
-      "portraitSource": "http://127.0.0.1:45573/assets/images/hero-portrait-dark.webp",
+      "portraitSource": "http://127.0.0.1:37223/assets/images/hero-portrait-current.webp",
       "extraHalo": false,
       "nameFont": "Anton, Oswald, sans-serif",
       "mobileNameOverlay": false,
       "headline": {
         "x": 92,
-        "y": 241.828125,
+        "y": 225.671875,
         "width": 598.09375,
         "height": 188.4375,
         "right": 690.09375,
-        "bottom": 430.265625
+        "bottom": 414.109375
       },
       "name": {
         "x": 92,
-        "y": 460.265625,
+        "y": 444.109375,
         "width": 598.09375,
-        "height": 41.265625,
+        "height": 73.59375,
         "right": 690.09375,
-        "bottom": 501.53125
+        "bottom": 517.703125
       },
       "hero": {
         "x": 0,
@@ -438,7 +438,7 @@
       },
       "overflows": [],
       "headText": "BUILDING THAT CREATES INTELLIGENT IMPACT",
-      "nameText": "MD. FARDIN HOSSAIN",
+      "nameText": "MD. FARDIN HOSSAINMD. FARDIN HOSSAIN",
       "quote": "I turn complex problems into practical digital experiences.”",
       "stages": [
         "Understand",
@@ -464,25 +464,25 @@
         "bottom": 730
       },
       "portraitTheme": "dark",
-      "portraitSource": "http://127.0.0.1:45573/assets/images/hero-portrait-dark.webp",
+      "portraitSource": "http://127.0.0.1:37223/assets/images/hero-portrait-current.webp",
       "extraHalo": false,
       "nameFont": "Anton, Oswald, sans-serif",
       "mobileNameOverlay": false,
       "headline": {
         "x": 332,
-        "y": 241.828125,
+        "y": 225.671875,
         "width": 598.09375,
         "height": 188.4375,
         "right": 930.09375,
-        "bottom": 430.265625
+        "bottom": 414.109375
       },
       "name": {
         "x": 332,
-        "y": 460.265625,
+        "y": 444.109375,
         "width": 598.09375,
-        "height": 41.265625,
+        "height": 73.59375,
         "right": 930.09375,
-        "bottom": 501.53125
+        "bottom": 517.703125
       },
       "hero": {
         "x": 0,
@@ -502,7 +502,7 @@
       },
       "overflows": [],
       "headText": "BUILDING THAT CREATES INTELLIGENT IMPACT",
-      "nameText": "MD. FARDIN HOSSAIN",
+      "nameText": "MD. FARDIN HOSSAINMD. FARDIN HOSSAIN",
       "quote": "I turn complex problems into practical digital experiences.”",
       "stages": [
         "Understand",
@@ -528,7 +528,7 @@
         "bottom": 414
       },
       "portraitTheme": "light",
-      "portraitSource": "http://127.0.0.1:45573/assets/images/hero-portrait-light.webp",
+      "portraitSource": "http://127.0.0.1:37223/assets/images/hero-portrait-light.webp",
       "extraHalo": false,
       "nameFont": "Anton, Oswald, sans-serif",
       "mobileNameOverlay": true,
@@ -542,9 +542,9 @@
       },
       "name": {
         "x": 20.46875,
-        "y": 339.953125,
+        "y": 334.9375,
         "width": 279.0625,
-        "height": 66.046875,
+        "height": 71.0625,
         "right": 299.53125,
         "bottom": 406
       },
@@ -566,7 +566,7 @@
       },
       "overflows": [],
       "headText": "BUILDING THAT CREATES INTELLIGENT IMPACT",
-      "nameText": "MD. FARDIN HOSSAIN",
+      "nameText": "MD. FARDIN HOSSAINMD. FARDIN HOSSAIN",
       "quote": "I turn complex problems into practical digital experiences.”",
       "stages": [
         "Understand",
@@ -592,7 +592,7 @@
         "bottom": 439
       },
       "portraitTheme": "light",
-      "portraitSource": "http://127.0.0.1:45573/assets/images/hero-portrait-light.webp",
+      "portraitSource": "http://127.0.0.1:37223/assets/images/hero-portrait-light.webp",
       "extraHalo": false,
       "nameFont": "Anton, Oswald, sans-serif",
       "mobileNameOverlay": true,
@@ -606,9 +606,9 @@
       },
       "name": {
         "x": 24,
-        "y": 361.5,
+        "y": 353.75,
         "width": 327,
-        "height": 69.5,
+        "height": 77.25,
         "right": 351,
         "bottom": 431
       },
@@ -630,7 +630,7 @@
       },
       "overflows": [],
       "headText": "BUILDING THAT CREATES INTELLIGENT IMPACT",
-      "nameText": "MD. FARDIN HOSSAIN",
+      "nameText": "MD. FARDIN HOSSAINMD. FARDIN HOSSAIN",
       "quote": "I turn complex problems into practical digital experiences.”",
       "stages": [
         "Understand",
@@ -656,7 +656,7 @@
         "bottom": 454
       },
       "portraitTheme": "light",
-      "portraitSource": "http://127.0.0.1:45573/assets/images/hero-portrait-light.webp",
+      "portraitSource": "http://127.0.0.1:37223/assets/images/hero-portrait-light.webp",
       "extraHalo": false,
       "nameFont": "Anton, Oswald, sans-serif",
       "mobileNameOverlay": true,
@@ -670,9 +670,9 @@
       },
       "name": {
         "x": 24.953125,
-        "y": 375.125,
+        "y": 367.0625,
         "width": 340.09375,
-        "height": 70.875,
+        "height": 78.9375,
         "right": 365.046875,
         "bottom": 446
       },
@@ -694,7 +694,7 @@
       },
       "overflows": [],
       "headText": "BUILDING THAT CREATES INTELLIGENT IMPACT",
-      "nameText": "MD. FARDIN HOSSAIN",
+      "nameText": "MD. FARDIN HOSSAINMD. FARDIN HOSSAIN",
       "quote": "I turn complex problems into practical digital experiences.”",
       "stages": [
         "Understand",
@@ -720,25 +720,25 @@
         "bottom": 550
       },
       "portraitTheme": "light",
-      "portraitSource": "http://127.0.0.1:45573/assets/images/hero-portrait-light.webp",
+      "portraitSource": "http://127.0.0.1:37223/assets/images/hero-portrait-light.webp",
       "extraHalo": false,
       "nameFont": "Anton, Oswald, sans-serif",
       "mobileNameOverlay": false,
       "headline": {
         "x": 49.140625,
-        "y": 215.046875,
+        "y": 209.875,
         "width": 318.90625,
         "height": 100.453125,
         "right": 368.046875,
-        "bottom": 315.5
+        "bottom": 310.328125
       },
       "name": {
         "x": 49.140625,
-        "y": 345.5,
+        "y": 340.328125,
         "width": 318.90625,
-        "height": 31.046875,
+        "height": 41.390625,
         "right": 368.046875,
-        "bottom": 376.546875
+        "bottom": 381.71875
       },
       "hero": {
         "x": 0,
@@ -758,7 +758,7 @@
       },
       "overflows": [],
       "headText": "BUILDING THAT CREATES INTELLIGENT IMPACT",
-      "nameText": "MD. FARDIN HOSSAIN",
+      "nameText": "MD. FARDIN HOSSAINMD. FARDIN HOSSAIN",
       "quote": "I turn complex problems into practical digital experiences.”",
       "stages": [
         "Understand",
@@ -784,25 +784,25 @@
         "bottom": 550
       },
       "portraitTheme": "light",
-      "portraitSource": "http://127.0.0.1:45573/assets/images/hero-portrait-light.webp",
+      "portraitSource": "http://127.0.0.1:37223/assets/images/hero-portrait-light.webp",
       "extraHalo": false,
       "nameFont": "Anton, Oswald, sans-serif",
       "mobileNameOverlay": false,
       "headline": {
         "x": 65.53125,
-        "y": 198.28125,
+        "y": 187.65625,
         "width": 425.203125,
         "height": 133.96875,
         "right": 490.734375,
-        "bottom": 332.25
+        "bottom": 321.625
       },
       "name": {
         "x": 65.53125,
-        "y": 362.25,
+        "y": 351.625,
         "width": 425.203125,
-        "height": 31.046875,
+        "height": 52.3125,
         "right": 490.734375,
-        "bottom": 393.296875
+        "bottom": 403.9375
       },
       "hero": {
         "x": 0,
@@ -822,7 +822,7 @@
       },
       "overflows": [],
       "headText": "BUILDING THAT CREATES INTELLIGENT IMPACT",
-      "nameText": "MD. FARDIN HOSSAIN",
+      "nameText": "MD. FARDIN HOSSAINMD. FARDIN HOSSAIN",
       "quote": "I turn complex problems into practical digital experiences.”",
       "stages": [
         "Understand",
@@ -848,25 +848,25 @@
         "bottom": 708.359375
       },
       "portraitTheme": "light",
-      "portraitSource": "http://127.0.0.1:45573/assets/images/hero-portrait-light.webp",
+      "portraitSource": "http://127.0.0.1:37223/assets/images/hero-portrait-light.webp",
       "extraHalo": false,
       "nameFont": "Anton, Oswald, sans-serif",
       "mobileNameOverlay": false,
       "headline": {
         "x": 87.421875,
-        "y": 236.5,
+        "y": 221.171875,
         "width": 567.203125,
         "height": 178.6875,
         "right": 654.625,
-        "bottom": 415.1875
+        "bottom": 399.859375
       },
       "name": {
         "x": 87.421875,
-        "y": 445.1875,
+        "y": 429.859375,
         "width": 567.203125,
-        "height": 39.125,
+        "height": 69.78125,
         "right": 654.625,
-        "bottom": 484.3125
+        "bottom": 499.640625
       },
       "hero": {
         "x": 0,
@@ -886,7 +886,7 @@
       },
       "overflows": [],
       "headText": "BUILDING THAT CREATES INTELLIGENT IMPACT",
-      "nameText": "MD. FARDIN HOSSAIN",
+      "nameText": "MD. FARDIN HOSSAINMD. FARDIN HOSSAIN",
       "quote": "I turn complex problems into practical digital experiences.”",
       "stages": [
         "Understand",
@@ -912,25 +912,25 @@
         "bottom": 730
       },
       "portraitTheme": "light",
-      "portraitSource": "http://127.0.0.1:45573/assets/images/hero-portrait-light.webp",
+      "portraitSource": "http://127.0.0.1:37223/assets/images/hero-portrait-light.webp",
       "extraHalo": false,
       "nameFont": "Anton, Oswald, sans-serif",
       "mobileNameOverlay": false,
       "headline": {
         "x": 92,
-        "y": 241.828125,
+        "y": 225.671875,
         "width": 598.09375,
         "height": 188.4375,
         "right": 690.09375,
-        "bottom": 430.265625
+        "bottom": 414.109375
       },
       "name": {
         "x": 92,
-        "y": 460.265625,
+        "y": 444.109375,
         "width": 598.09375,
-        "height": 41.265625,
+        "height": 73.59375,
         "right": 690.09375,
-        "bottom": 501.53125
+        "bottom": 517.703125
       },
       "hero": {
         "x": 0,
@@ -950,7 +950,7 @@
       },
       "overflows": [],
       "headText": "BUILDING THAT CREATES INTELLIGENT IMPACT",
-      "nameText": "MD. FARDIN HOSSAIN",
+      "nameText": "MD. FARDIN HOSSAINMD. FARDIN HOSSAIN",
       "quote": "I turn complex problems into practical digital experiences.”",
       "stages": [
         "Understand",
@@ -976,25 +976,25 @@
         "bottom": 730
       },
       "portraitTheme": "light",
-      "portraitSource": "http://127.0.0.1:45573/assets/images/hero-portrait-light.webp",
+      "portraitSource": "http://127.0.0.1:37223/assets/images/hero-portrait-light.webp",
       "extraHalo": false,
       "nameFont": "Anton, Oswald, sans-serif",
       "mobileNameOverlay": false,
       "headline": {
         "x": 332,
-        "y": 241.828125,
+        "y": 225.671875,
         "width": 598.09375,
         "height": 188.4375,
         "right": 930.09375,
-        "bottom": 430.265625
+        "bottom": 414.109375
       },
       "name": {
         "x": 332,
-        "y": 460.265625,
+        "y": 444.109375,
         "width": 598.09375,
-        "height": 41.265625,
+        "height": 73.59375,
         "right": 930.09375,
-        "bottom": 501.53125
+        "bottom": 517.703125
       },
       "hero": {
         "x": 0,
@@ -1014,7 +1014,7 @@
       },
       "overflows": [],
       "headText": "BUILDING THAT CREATES INTELLIGENT IMPACT",
-      "nameText": "MD. FARDIN HOSSAIN",
+      "nameText": "MD. FARDIN HOSSAINMD. FARDIN HOSSAIN",
       "quote": "I turn complex problems into practical digital experiences.”",
       "stages": [
         "Understand",

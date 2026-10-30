@@ -1,10 +1,10 @@
 /* Theme-specific supplied portraits; restrained, flat Portix-reference layout. */
 :root, [data-theme="light"] {
-  --folio-ground: #f3f3f1; --folio-ink: #232323; --folio-muted: #656565;
+  --folio-ground: #f5f3ee; --folio-ink: #232323; --folio-muted: #656565;
   --folio-line: #d6d6d2; --folio-coral: #c14d30;
 }
 [data-theme="dark"] {
-  --folio-ground: #202020; --folio-ink: #f7f5f1; --folio-muted: #969696;
+  --folio-ground: #0b0d0f; --folio-ink: #f7f5f1; --folio-muted: #969696;
   --folio-line: #393939; --folio-coral: #e76440;
 }
 html { scroll-padding-top: 88px; }
@@ -37,7 +37,7 @@ body { background: var(--folio-ground); }
 .fh-headline-line { display: block; white-space: nowrap; }
 .fh-bright { color: var(--folio-ink); }
 /* Reference identity: compact condensed capitals with a coral middle name. */
-.fh-name { position: relative; margin: 30px 0 0; font-family: 'Anton', 'Oswald', sans-serif; font-size: clamp(27px, 6cqw, 39px); line-height: 1.15; font-weight: 400; letter-spacing: -.01em; color: var(--folio-ink); white-space: nowrap; }
+.fh-name { position: relative; margin: 30px 0 0; font-family: 'Anton', 'Oswald', sans-serif; font-size: clamp(36px, 10.7cqw, 72px); line-height: 1.15; font-weight: 400; letter-spacing: -.01em; color: var(--folio-ink); white-space: nowrap; }
 .fh-name::before { content: ""; position: absolute; top: -12px; left: 0; width: 32px; height: 3px; background: #e76b48; }
 .fh-name-accent { color: var(--folio-coral); }
 .fh-actions { display: flex; align-items: center; flex-wrap: wrap; gap: 15px 24px; margin-top: 22px; }
@@ -52,8 +52,8 @@ body { background: var(--folio-ground); }
 /* Both supplied photographs already include their halo. No extra circle,
    circular crop or old cutout is layered over these complete compositions. */
 .fh-portrait { position: absolute; inset: -24px -4% 0 -6%; z-index: 2; mask-image: linear-gradient(90deg, transparent, #000 18%, #000 94%, transparent), linear-gradient(transparent, #000 10%, #000 88%, transparent); mask-composite: intersect; -webkit-mask-composite: source-in; }
-.fh-portrait picture, .fh-portrait img { display: block; width: 100%; height: 100%; }
-.fh-portrait img { max-width: none; object-fit: cover; object-position: center top; }
+.fh-portrait picture { display: flex; justify-content: center; align-items: flex-end; width: 100%; height: 100%; }
+.fh-portrait img { display: block; width: auto; height: 100%; max-width: 100%; object-fit: contain; object-position: center bottom; mask-image: linear-gradient(90deg, transparent, #000 10%, #000 92%, transparent), linear-gradient(#000 88%, transparent); mask-composite: intersect; -webkit-mask-composite: source-in; }
 .fh-orbit-host { position: absolute; inset: 0; z-index: 3; pointer-events: none; }
 .fh-strengths { position: relative; z-index: 4; display: grid; grid-template-columns: repeat(4,minmax(0,1fr)); width: min(920px,100%); margin: 0; padding: 18px 0 24px; border-top: 1px solid var(--folio-line); list-style: none; }
 .fh-strengths li { display: flex; align-items: center; gap: 12px; padding: 0 20px; border-right: 1px solid var(--folio-line); font-family: var(--font-sans); font-size: 10px; line-height: 1.6; }
@@ -80,7 +80,7 @@ body { background: var(--folio-ground); }
   .fh-copy { padding: 20px 0 30px; }
   .fh-kicker { font-size: clamp(9px,2.25cqw,12px); margin-bottom: 17px; }
   .fh-headline { font-size: 10.3cqw; }
-  .fh-name-mobile { position: absolute; z-index: 4; left: 0; right: 0; bottom: 8px; margin: 0; padding: 22px 10px 13px; font-size: clamp(27px, 8vw, 34px); color: #fff; text-shadow: 0 2px 8px #0009; background: linear-gradient(transparent, #111318ba); }
+  .fh-name-mobile { position: absolute; z-index: 4; left: 0; right: 0; bottom: 8px; margin: 0; padding: 22px 10px 13px; font-size: clamp(29px, 9.8vw, 42px); color: #fff; text-shadow: 0 2px 8px #0009; background: linear-gradient(transparent, #111318ba); }
   .fh-name-mobile::before { left: 10px; top: 10px; }
   .fh-name-mobile .fh-name-accent { color: #ff7952; }
   .fh-actions { gap: 10px 18px; }
@@ -89,3 +89,21 @@ body { background: var(--folio-ground); }
   .fh-strengths li { flex-direction: column; align-items: flex-start; gap: 6px; padding: 0; border: 0; font-size: 9px; }
 }
 @media (prefers-reduced-motion:reduce) { .fh-hero *, .fh-hero *::before, .fh-hero *::after { animation:none !important; transition:none !important; } html { scroll-behavior:auto; } }
+
+/* A shared scenic register links the Hero and all About chapters. */
+.fh-atmosphere { background-image: linear-gradient(90deg, #f5f3eeeb 0%, #f5f3eeb0 55%, #f5f3ee66), url('/assets/images/about-summitscape-light.webp'); background-size: cover; background-position: right bottom; }
+[data-theme="dark"] .fh-atmosphere { background-image: linear-gradient(90deg, #0b0d0fe6 0%, #0b0d0fa6 55%, #0b0d0f66), url('/assets/images/about-summitscape.webp'); }
+.fh-sr-only { position: absolute; width: 1px; height: 1px; margin: -1px; padding: 0; border: 0; overflow: hidden; clip: rect(0,0,0,0); white-space: nowrap; }
+.fh-name-visual { display: inline; }
+.fh-name-word { display: inline-block; will-change: opacity, transform; }
+.fh-robot-hitbox { pointer-events: auto; position: absolute; z-index: 5; min-width: 44px; min-height: 44px; padding: 0; margin: 0; border: 0; border-radius: 22px; background: transparent; cursor: pointer; touch-action: manipulation; }
+.fh-robot-hitbox:focus-visible { outline: 2px solid var(--folio-coral); outline-offset: 3px; }
+.fh-chat-launcher { position: fixed; z-index: 850; right: 24px; bottom: 24px; display: flex; align-items: center; gap: 10px; min-height: 48px; padding: 12px 17px; border: 1px solid var(--folio-line); border-radius: 24px; background: var(--folio-ground); color: var(--folio-ink); box-shadow: 0 8px 26px #0003; font: 600 11px/1.4 var(--font-sans); cursor: pointer; }
+.fh-chat-launcher svg { width: 22px; height: 22px; color: var(--folio-coral); }
+.fh-chat-launcher:hover { border-color: var(--folio-coral); }
+.fh-chat-launcher:focus-visible { outline: 2px solid var(--folio-coral); outline-offset: 3px; }
+@media (max-width:700px) {
+ .fh-chat-launcher { right: 15px; bottom: calc(80px + env(safe-area-inset-bottom, 0px)); width: 48px; padding: 11px; }
+ .fh-chat-launcher > span { display: none; }
+}
+@media (prefers-reduced-motion:reduce) { .fh-name-word { will-change: auto; } }

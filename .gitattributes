@@ -1,0 +1,3 @@
+# Preserve platform-appropriate launcher line endings.
+*.bat text eol=crlf
+*.sh text eol=lf

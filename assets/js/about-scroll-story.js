@@ -1,5 +1,6 @@
 import React, { useEffect, useRef, useState } from "react";
 import { scrollToTarget } from "./smooth-scroll.js";
+import { getCurrentTheme, subscribeTheme } from "./theme-manager.js";
 
 const h = React.createElement;
 const motionQuery = "(prefers-reduced-motion: reduce)";
@@ -122,7 +123,25 @@ export function AboutGhostRobot() {
 export function AboutScrollStory() {
   const [active, setActive] = useState(0);
   const refs = useRef([]);
+  const sectionRef = useRef(null);
+  const navRef = useRef(null);
+  const [theme, setTheme] = useState(getCurrentTheme);
   const reduced = useReducedMotion();
+
+  useEffect(() => {
+    const unsubscribe = subscribeTheme(setTheme);
+    setTheme(getCurrentTheme());
+    return unsubscribe;
+  }, []);
+
+  // One geometry contract for tracker selection, clicks and native anchors.
+  // The tracker itself is a direct sticky layout child (no short wrapper),
+  // so its containing block includes every chapter rather than a short aside.
+  const anchorOffset = () => {
+    const section = sectionRef.current;
+    const top = section ? parseFloat(getComputedStyle(section).getPropertyValue("--ae-nav-top")) || 0 : 64;
+    return top + (window.matchMedia("(max-width: 700px)").matches ? navRef.current?.offsetHeight || 90 : 0) + 16;
+  };
 
   // Deterministic chapter selection: last heading above a viewport anchor wins.
   // Unlike intersection-entry order, this also works for tall chapters and jumps.
@@ -130,10 +149,11 @@ export function AboutScrollStory() {
     let frame = 0;
     const measure = () => {
       frame = 0;
-      const anchor = Math.min(220, Math.max(120, window.innerHeight * 0.28));
+      const anchor = anchorOffset();
+      sectionRef.current?.style.setProperty("--ae-anchor-offset", `${anchor}px`);
       let next = 0;
       refs.current.forEach((el, index) => {
-        if (el && el.getBoundingClientRect().top <= anchor) next = index;
+        if (el && el.getBoundingClientRect().top <= anchor + 2) next = index;
       });
       setActive(previous => previous === next ? previous : next);
     };
@@ -142,6 +162,8 @@ export function AboutScrollStory() {
     window.addEventListener("resize", schedule);
     const observer = typeof ResizeObserver !== "undefined" ? new ResizeObserver(schedule) : null;
     refs.current.forEach(el => { if (el) observer?.observe(el); });
+    if (navRef.current) observer?.observe(navRef.current);
+    if (sectionRef.current) observer?.observe(sectionRef.current);
     const reveals = typeof IntersectionObserver !== "undefined" ? new IntersectionObserver(entries => {
       entries.forEach(entry => { if (entry.isIntersecting) { entry.target.classList.add("ae-entered"); reveals.unobserve(entry.target); } });
     }, { threshold: 0.08 }) : null;
@@ -158,11 +180,11 @@ export function AboutScrollStory() {
 
   const navigate = (event, index) => {
     const target = refs.current[index];
-    if (!target || event.metaKey || event.ctrlKey || event.shiftKey || event.altKey) return;
+    if (!target || event.button !== 0 || event.metaKey || event.ctrlKey || event.shiftKey || event.altKey) return;
     event.preventDefault();
     // Explicit instant bypasses any global CSS smooth scrolling in reduced mode.
-    const top = target.getBoundingClientRect().top + window.scrollY - (window.innerWidth <= 700 ? 176 : 116);
-    scrollToTarget(top, { immediate: reduced });
+    scrollToTarget(target, { offset: -anchorOffset(), immediate: reduced });
+    history.pushState(history.state, "", `#${chapters[index].id}`);
     target.focus({ preventScroll: true });
   };
   const article = (index, ...content) => h("article", {
@@ -174,12 +196,12 @@ export function AboutScrollStory() {
     h("h3", { id: `ae-heading-${index}`, className: "ae-chapter-title" }, chapters[index].title)), ...content);
   const paragraph = text => h(ScrollWordReveal, { text, className: "ae-copy" });
 
-  return h("section", { id: "about", className: "ae-section", "aria-labelledby": "ae-title" },
+  return h("section", { ref: sectionRef, id: "about", className: "ae-section", "aria-labelledby": "ae-title" },
     h("div", { className: "ae-scenery", "aria-hidden": "true" },
       h("div", { className: "ae-scenery-frame" },
         h("picture", null,
-          h("source", { srcSet: "/assets/images/about-summitscape.webp", type: "image/webp" }),
-          h("img", { src: "/assets/images/about-summitscape.png", alt: "", width: 1568, height: 627, loading: "lazy", decoding: "async" })),
+          h("source", { srcSet: theme === "light" ? "/assets/images/about-summitscape-light.webp" : "/assets/images/about-summitscape.webp", type: "image/webp" }),
+          h("img", { src: theme === "light" ? "/assets/images/about-summitscape-light.png" : "/assets/images/about-summitscape.png", alt: "", width: 1568, height: 627, loading: "lazy", decoding: "async" })),
         h(AboutGhostRobot))),
     h("div", { className: "ae-inner" },
       h("header", { className: "ae-intro" },
@@ -192,8 +214,7 @@ export function AboutScrollStory() {
             highlights: ["complex problems", "digital experiences"]
           }))),
       h("div", { className: "ae-layout" },
-        h("aside", { className: "ae-sidebar" },
-          h("nav", { className: "ae-nav", "aria-label": "About chapters" },
+        h("nav", { ref: navRef, className: "ae-nav ae-sidebar", "aria-label": "About chapters" },
             h("div", { className: "ae-nav-links", style: { "--ae-progress": active / 3 } }, h("span", { className: "ae-nav-progress", "aria-hidden": "true" }), chapters.map((chapter, index) =>
               h("a", { key: chapter.id, href: `#${chapter.id}`, className: `ae-nav-link${index === active ? " ae-active" : ""}`,
                 "aria-current": active === index ? "location" : undefined,
@@ -201,7 +222,7 @@ export function AboutScrollStory() {
                 h("span", { className: "ae-nav-dot", "aria-hidden": "true" }),
                 h("span", { className: "ae-nav-number", "aria-hidden": "true" }, chapter.number),
                 h("span", { className: "ae-nav-title" }, chapter.title)))),
-            h("p", { className: "ae-mobile-current" }, `${chapters[active].number} / ${chapters[active].title}`))),
+            h("p", { className: "ae-mobile-current" }, `${chapters[active].number} / ${chapters[active].title}`)),
         h("div", { className: "ae-content" },
           article(0,
             paragraph("I’m a Computer Science and Engineering student and full-stack developer who enjoys turning ideas into reliable, user-friendly software. I build web applications, connect frontend experiences with backend services and databases, and focus on writing maintainable code."),

@@ -1,21 +1,40 @@
 import * as THREE from 'three';
 
 /**
- * Mount a self-contained, transparent portrait-stage overlay (no React).
- * host must have a measurable size and be positioned by its owner. The canvas
- * is pointer-inert and aria-hidden. No assets, external state, or shared Three
- * resources are used. API: { dispose(), setReducedMotion(boolean) }.
- *
- * Desktop: full ellipse around the halo; the rear arc passes BEHIND the
- * portrait via the host stacking order, so the robot cannot cover the face.
- * A conservative face exclusion rectangle includes the model's full envelope.
- * Mobile/narrow stages: a smaller right-perimeter ellipse restricts movement.
- * All coordinates are stage-relative, never viewport-relative. The stage must
- * sit only in the portrait column; the craft cannot enter the text column.
+ * Transparent procedural Three.js portrait companion; no external assets.
+ * mountHeroOrbit(host, { reducedMotion=false, stationary=false, modelScale=1,
+ *   onPhase, onRevealProgress, onPosition }) returns
+ * { dispose(), setReducedMotion(boolean), setPaused(boolean) }.
+ * Phases: enter (1s), reveal (1.1s), orbit; stationary/reduced => static.
+ * onRevealProgress receives 0..1 (only during reveal, plus settling updates).
+ * onPosition receives a conservative FULL model envelope in host CSS pixels:
+ * { x, y, width, height, visible }. x/y are top-left, not model center.
+ * Use refs/styles, not React state, for this per-draw tracking callback.
+ * visible=false on rear/occluded arcs, offstage, hidden, paused-offscreen,
+ * disposal and GPU failure. The parent owns the accessible interactive hitbox.
+ * Host must be positioned in the portrait column. Its z-index switches 1/3
+ * around portrait z-index 2. Every face-intersecting envelope stays BEHIND it.
+ * Narrow stages (<460px) use a smaller upper-right perimeter, DPR <=1.5.
+ * Explicit pause freezes the current pose and redraws without scheduling RAF;
+ * visibility/intersection suspend the clock as well. Resume never catches up.
+ * Unavailable WebGL settles progress=1 and phase=unavailable, returning no-ops.
  */
 export function mountHeroOrbit(host, options = {}) {
-  const noop = { dispose() {}, setReducedMotion() {} };
-  if (!host || typeof document === 'undefined' || typeof window === 'undefined') return noop;
+  function notify(name, value) {
+    // Consumer callback errors must never kill rendering or resource cleanup.
+    try { if (typeof options[name] === 'function') options[name](value); } catch (_) { /* consumer-owned */ }
+  }
+  const emptyPosition = { x: 0, y: 0, width: 0, height: 0, visible: false };
+  const noop = { dispose() {}, setReducedMotion() {}, setPaused() {} };
+  function unavailable() {
+    notify('onRevealProgress', 1);
+    notify('onPhase', 'unavailable');
+    notify('onPosition', { ...emptyPosition });
+  }
+  if (!host || typeof document === 'undefined' || typeof window === 'undefined') {
+    unavailable();
+    return noop;
+  }
 
   let renderer;
   try {
@@ -27,11 +46,19 @@ export function mountHeroOrbit(host, options = {}) {
       stencil: false,
     });
   } catch (_) {
+    unavailable();
     return noop;
   }
 
   let disposed = false;
   let reduced = Boolean(options.reducedMotion);
+  let paused = false;
+  let phase = '';
+  let revealProgress = -1;
+  const stationary = Boolean(options.stationary);
+  const modelScale = Number.isFinite(options.modelScale) && options.modelScale > 0 ? options.modelScale : 1;
+  const entranceDuration = 1;
+  const revealDuration = 1.1;
   let inView = false;
   let width = 0;
   let height = 0;
@@ -50,6 +77,16 @@ export function mountHeroOrbit(host, options = {}) {
   camera.position.z = 1000;
   const robot = new THREE.Group();
   const flames = [];
+  const gestureArms = [];
+  // Includes antenna, banked arms, pulsing exhaust AND the entire glow sprites.
+  const envelope = new THREE.Box3(new THREE.Vector3(-1.5, -1.75, -0.85), new THREE.Vector3(1.5, 2.3, 0.95));
+  const projected = new THREE.Vector3();
+  const corners = [];
+  for (const x of [envelope.min.x, envelope.max.x]) {
+    for (const y of [envelope.min.y, envelope.max.y]) {
+      for (const z of [envelope.min.z, envelope.max.z]) corners.push(new THREE.Vector3(x, y, z));
+    }
+  }
   scene.add(robot);
 
   function geometry(value) { geometries.add(value); return value; }
@@ -89,40 +126,110 @@ export function mountHeroOrbit(host, options = {}) {
     renderer.dispose();
     canvas.remove();
     host.style.zIndex = originalZIndex;
+    notify('onPosition', { ...emptyPosition });
   }
 
   function contextLost(event) {
     // Fail closed rather than retrying GPU work or affecting the portrait.
     event.preventDefault();
     dispose();
+    unavailable();
   }
 
   function canRender() {
     return !disposed && inView && !document.hidden && width > 0 && height > 0;
   }
 
+  function setPhase(value) {
+    if (phase === value) return;
+    phase = value;
+    notify('onPhase', value);
+  }
+
+  function setReveal(value) {
+    const next = Math.max(0, Math.min(1, value));
+    if (next === revealProgress) return;
+    revealProgress = next;
+    notify('onRevealProgress', next);
+  }
+
+  const smooth = (t) => t * t * (3 - 2 * t);
+  const mix = (a, b, t) => a + (b - a) * t;
+
+  function boundsForRobot() {
+    robot.updateMatrixWorld(true);
+    let left = Infinity, top = Infinity, right = -Infinity, bottom = -Infinity;
+    for (const corner of corners) {
+      projected.copy(corner).applyMatrix4(robot.matrixWorld).project(camera);
+      const x = (projected.x + 1) * width / 2;
+      const y = (1 - projected.y) * height / 2;
+      left = Math.min(left, x); right = Math.max(right, x);
+      top = Math.min(top, y); bottom = Math.max(bottom, y);
+    }
+    return { x: left, y: top, width: right - left, height: bottom - top, visible: false };
+  }
+
   function pose() {
-    const angle = -0.65 + elapsed * (Math.PI * 2 / 21);
-    const depth = Math.sin(angle);
-    const stationary = Boolean(options.stationary);
     const narrow = width < 460;
-    // Reference hero robot is deliberately legible rather than a tiny glyph.
+    const isStatic = reduced || stationary;
+    let angle = 0;
+    let x = narrow ? 0.91 : 0.12;
+    let y = narrow ? 0.25 : 0.58;
+    let gesture = 0;
+    if (isStatic) {
+      setPhase('static');
+      setReveal(1);
+      if (stationary) { x = 0.5; y = 0.56; }
+    } else if (elapsed < entranceDuration) {
+      setPhase('enter');
+      setReveal(0);
+      const t = smooth(elapsed / entranceDuration);
+      // The desktop transit crosses the portrait only behind its stacking layer.
+      x = mix(1.22, x, t);
+      y = mix(-0.32, y, t);
+    } else if (elapsed < entranceDuration + revealDuration) {
+      setPhase('reveal');
+      const t = (elapsed - entranceDuration) / revealDuration;
+      setReveal(smooth(t));
+      gesture = Math.sin(Math.PI * t) ** 2;
+    } else {
+      setPhase('orbit');
+      setReveal(1);
+      const t = elapsed - entranceDuration - revealDuration;
+      // Integrate a velocity ramp: exact reveal endpoint with zero initial
+      // velocity, then smoothly reach the familiar 21-second orbit speed.
+      const ramp = 0.8;
+      const orbitTime = t < ramp ? t ** 3 / (3 * ramp ** 2) : t - 2 * ramp / 3;
+      angle = orbitTime * Math.PI * 2 / 21;
+      if (narrow) {
+        x = 0.91 - 0.025 * Math.sin(angle);
+        y = 0.25 + 0.065 * Math.sin(angle);
+      } else {
+        x = 0.49 - 0.37 * Math.cos(angle);
+        y = 0.43 + 0.15 * Math.cos(angle) + 0.23 * Math.sin(angle);
+      }
+    }
+    const depth = Math.sin(angle);
+    // Safe envelope rather than just the torso governs size. Mobile is kept
+    // outside the right edge of the expanded face box, even at full bank.
     const scale = stationary
-      ? Math.min(width * 0.82 / 2.9, height * 0.84 / 4.6)
-      : Math.min(width * (narrow ? 0.14 : 0.24) / 2.9, height * (narrow ? 0.28 : 0.36) / 4.6);
-    const depthScale = stationary ? 1 : 0.94 + 0.06 * depth;
-    robot.scale.setScalar(scale * depthScale * (options.modelScale || 1));
-    const x = stationary ? 0.5 : narrow ? 0.90 + 0.035 * Math.cos(angle) : 0.49 + 0.40 * Math.cos(angle);
-    const y = stationary ? 0.56 : narrow ? 0.28 + 0.17 * Math.sin(angle) : 0.42 + 0.30 * Math.sin(angle);
+      ? Math.min(width * 0.82 / 2.9, height * 0.84 / 4.6) * modelScale
+      : Math.min(width * (narrow ? 0.078 : 0.22) / 2.9, height * (narrow ? 0.17 : 0.32) / 4.6) * Math.min(modelScale, narrow ? 1.05 : 1.15);
+    robot.scale.setScalar(scale * (stationary ? 1 : 0.97 + 0.03 * Math.cos(angle)));
     robot.position.set(width * (x - 0.5), height * (0.5 - y), depth * 24);
-    // Expanded face exclusion: the enlarged craft is occluded by the actual
-    // portrait on the rear arc instead of passing across facial features.
-    const behindPortrait = !stationary && !narrow && x > 0.17 && x < 0.86 && y > 0.30 && y < 0.80;
-    host.style.zIndex = behindPortrait ? '1' : '3';
-    // Always front-facing: only a gentle bank and small head-on yaw.
-    robot.rotation.set(0.04 * Math.cos(angle), -0.12 + depth * 0.10, -0.06 + 0.07 * Math.cos(angle));
-    const pulse = reduced ? 1 : 1 + 0.06 * Math.sin(elapsed * 5.5);
+    const motionTime = isStatic ? 0 : elapsed;
+    robot.rotation.set(0.035 * Math.sin(motionTime * 0.7), -0.10 + depth * 0.08, 0.045 * Math.sin(motionTime * 0.9));
+    for (const arm of gestureArms) arm.rotation.z = arm.userData.rest + arm.userData.side * gesture * 0.38;
+    const pulse = isStatic ? 1 : 1 + 0.045 * Math.sin(motionTime * 5.5);
     for (const flame of flames) flame.scale.y = flame.userData.baseY * pulse;
+    const bounds = boundsForRobot();
+    const intersectsFace = bounds.x < width * 0.80 && bounds.x + bounds.width > width * 0.27
+      && bounds.y < height * 0.66 && bounds.y + bounds.height > height * 0.13;
+    const behind = !stationary && (intersectsFace || (!narrow && phase === 'enter'));
+    host.style.zIndex = behind ? '1' : '3';
+    bounds.visible = !behind && bounds.x + bounds.width > 0 && bounds.x < width
+      && bounds.y + bounds.height > 0 && bounds.y < height;
+    notify('onPosition', bounds);
   }
 
   function draw() {
@@ -132,23 +239,27 @@ export function mountHeroOrbit(host, options = {}) {
       renderer.render(scene, camera);
     } catch (_) {
       dispose();
+      unavailable();
     }
   }
 
   function tick(time) {
     frame = 0;
-    if (!canRender() || reduced) { previousTime = 0; return; }
-    if (previousTime) elapsed += Math.min((time - previousTime) / 1000, 0.05);
+    if (!canRender() || reduced || stationary || paused) { previousTime = 0; return; }
+    if (previousTime) elapsed += Math.min(Math.max((time - previousTime) / 1000, 0), 0.05);
     previousTime = time;
     draw();
-    if (canRender() && !reduced) frame = window.requestAnimationFrame(tick);
+    if (canRender() && !reduced && !stationary && !paused) frame = window.requestAnimationFrame(tick);
   }
 
   function sync() {
     stop();
-    if (!canRender()) return;
+    if (!canRender()) {
+      notify('onPosition', { ...emptyPosition });
+      return;
+    }
     draw();
-    if (!reduced && !disposed) frame = window.requestAnimationFrame(tick);
+    if (!reduced && !stationary && !paused && !disposed) frame = window.requestAnimationFrame(tick);
   }
 
   function resize() {
@@ -201,7 +312,7 @@ export function mountHeroOrbit(host, options = {}) {
     mesh(sphere, trim, robot, [0, 1.12, 0.36], [0.704, 0.426, 0.30]);
     mesh(sphere, visor, robot, [0, 1.13, 0.43], [0.67, 0.39, 0.255]);
     for (const side of [-1, 1]) {
-      mesh(sphere, led, robot, [side * 0.24, 1.17, 0.672], [0.092, 0.13, 0.032]);
+      mesh(sphere, led, robot, [side * 0.24, 1.17, 0.672], [0.105, 0.145, 0.035]);
       // Little ear pods are cylinders along the X axis.
       const ear = mesh(cylinder, charcoal, robot, [side * 0.84, 1.10, 0], [0.26, 0.18, 0.26]);
       ear.rotation.z = Math.PI / 2;
@@ -209,10 +320,18 @@ export function mountHeroOrbit(host, options = {}) {
       cap.rotation.z = Math.PI / 2;
       mesh(sphere, led, robot, [side * 0.994, 1.1, 0.03], [0.025, 0.08, 0.08]);
       mesh(sphere, charcoal, robot, [side * 0.62, 0.10, 0], [0.18, 0.19, 0.19]);
-      const arm = mesh(sphere, enamel, robot, [side * 0.81, -0.16, 0.02], [0.20, 0.37, 0.22]);
+      // Shoulder pivot carries the whole limb, including its hand: a real
+      // readable invitation gesture rather than a disconnected forearm wobble.
+      const limb = new THREE.Group();
+      limb.position.set(side * 0.62, 0.10, 0);
+      robot.add(limb);
+      const arm = mesh(sphere, enamel, limb, [side * 0.19, -0.26, 0.02], [0.20, 0.37, 0.22]);
       arm.rotation.z = side * 0.38;
-      mesh(sphere, charcoal, robot, [side * 0.92, -0.48, 0.10], [0.17, 0.19, 0.17]);
-      mesh(sphere, enamel, robot, [side * 0.94, -0.59, 0.13], [0.19, 0.21, 0.20]);
+      mesh(sphere, charcoal, limb, [side * 0.30, -0.58, 0.10], [0.17, 0.19, 0.17]);
+      mesh(sphere, enamel, limb, [side * 0.32, -0.69, 0.13], [0.19, 0.21, 0.20]);
+      limb.userData.rest = 0;
+      limb.userData.side = side;
+      gestureArms.push(limb);
       const nozzle = mesh(cylinder, charcoal, robot, [side * 0.31, -0.79, 0], [0.21, 0.29, 0.21]);
       const lip = mesh(ring, trim, robot, [side * 0.31, -0.95, 0], [0.19, 0.19, 0.19]);
       lip.rotation.x = Math.PI / 2;
@@ -268,9 +387,13 @@ export function mountHeroOrbit(host, options = {}) {
     } else {
       inView = true;
     }
+    // Settle semantics immediately, even if the stage starts offscreen/zero size.
+    setPhase(reduced || stationary ? 'static' : 'enter');
+    setReveal(reduced || stationary ? 1 : 0);
     resize();
   } catch (_) {
     dispose();
+    unavailable();
     return noop;
   }
 
@@ -281,6 +404,16 @@ export function mountHeroOrbit(host, options = {}) {
       const next = Boolean(value);
       if (next === reduced) return;
       reduced = next;
+      // Opting out completes the reveal permanently; opting back in starts at
+      // the orbit anchor, never replays or re-hides the semantic name.
+      elapsed = Math.max(elapsed, entranceDuration + revealDuration);
+      setReveal(1);
+      setPhase(reduced || stationary ? 'static' : 'orbit');
+      sync();
+    },
+    setPaused(value) {
+      if (disposed) return;
+      paused = Boolean(value);
       sync();
     },
   };

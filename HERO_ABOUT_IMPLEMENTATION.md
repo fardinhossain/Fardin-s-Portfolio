@@ -1,64 +1,41 @@
-# Portfolio Hero/About — implementation and local preview
+# Current implementation notes
 
-## Current design
+## Source and boundaries
 
-Latest update uses the owner's two newly supplied portraits, not the earlier cutout:
+Working tree: Fardin-s-Portfolio, based on main commit 02cd330a388e765261e49c6fa10a32d509a7da35. The latest Hero/About/robot/assistant work is implemented in this working source. It is not claimed pushed/deployed until a separate verified publication step.
 
-- Light theme: Modern Portrait with Warm Gradient Halo → assets/images/hero-portrait-light.png and optimized WebP.
-- Dark theme: Cinematic Portrait with Warm Halo → assets/images/hero-portrait-dark.png and optimized WebP.
+Existing project data, experience/certification presentation, internship journey, theme service, résumé and contact functionality are retained. The mobile overflow rule in the shared stylesheet is changed from hidden to clip because hidden created a scroll container that broke sticky navigation. That is a functional fix, not an unrelated redesign.
 
-The originals are retained without retouching. Each image already contains its halo. The old standalone circle, circular avatar clip, oversized condensed name, and old Hero cutout are no longer rendered. The latest owner reference restores a compact condensed uppercase identity: MD. FARDIN HOSSAIN, with FARDIN in coral. It is not the previous oversized display block. On mobile this single identity element moves into the lower portrait foreground over a restrained readability gradient; desktop keeps it below the headline. The headline and personal content remain genuine and unchanged.
+## Hero
 
-The latest navbar follows the supplied PORTIX-style reference: flat canvas, condensed wordmark, centered uppercase WORKS / ABOUT / EXPERIENCE / CONTACT links, a compact accessible theme control, and an outlined contact button with a coral arrow square on the left. Home remains available through the brand link. Other section links remain in the existing drawer, mobile tabs and footer. The reference's unrelated person, name and UI-designer role were not copied.
+The newly supplied Confident Portrait with Orange Halo is stored as hero-portrait-current.png plus an optimized WebP. Its original proportions are preserved using contain sizing and feathered bounds. The existing supplied light portrait remains for light mode. Original image files are retained. No generic person or newly invented profile content is used.
 
-## Run the actual source locally
+The dark scene uses the existing user-supplied wireframe landscape; the latest attachment set supplies a new portrait, Hero-layout screenshot, tracker screenshot and light landscape, rather than a separate additional raw dark landscape. The actual new light landscape is used, not a white filter over the dark one.
 
-This is a static browser-ESM React site. No production npm installation/build is needed. Python 3 is required for the included launchers.
+Name typography is enlarged and responsive. The semantic name remains available to assistive technology while visual words reveal in sequence. On mobile the name stays in the lower portrait foreground. A 3.6-second enhancement backstop, renderer/import failure handling and reduced-motion paths guarantee the identity is not left visually hidden.
 
-- Windows: extract the ZIP, double-click START_PREVIEW.bat.
-- macOS/Linux: run sh start-preview.sh in the extracted folder.
-- Open http://localhost:4175 and keep the server window open.
+## Robot and interaction
 
-The server binds only 127.0.0.1. The address refers to the computer running it; the assistant's sandbox localhost is not a public preview URL. Stop any existing server on port 4175 first.
+hero-orbit-scene.js constructs actual Three.js geometry. Normal sequence: 1.0-second entry, 1.1-second gestural reveal, then a smoothly ramped orbit. The camera/geometry size and safe flight area shrink on narrow stages. Conservative full-model bounds determine face occlusion and a separate native button's tracked position. Canvas remains decorative; the native button supplies keyboard/pointer semantics and pauses movement during hover/focus/chat.
 
-Alternatively, open PREVIEW.html directly for inspection without a server. This is a generated snapshot of the same source with inspection-only adapters: contact submission is disabled and route changes use hashes. The actual index.html/source keeps its original contact functionality. The immediate browser-preview artifact in the conversation is the same inspection output.
+The persistent assistant launcher is a body portal so the isolated/clipped Hero cannot trap it under later sections. It also remains usable if WebGL is unavailable. The chat itself is a body-portal native dialog with focus containment/restoration and Escape/close support. Large and short mobile viewports constrain the dock without clipping its controls.
 
-Internet is required for the existing esm.sh React/Framer Motion/Three.js/GSAP imports and Google Fonts. The standalone snapshot embeds new imagery and authored modules/styles; unchanged public images/documents use the existing production origin. It is not an offline website.
+The renderer supports explicit pause/reduced motion, stops scheduling frames offscreen/hidden, safely handles unavailable/context-lost WebGL, and releases its geometry/material/texture/observer/listener resources. Reduced motion displays a static robot/name with no continuous scene RAF.
 
-## Source map
+## About
 
-- assets/js/cinematic-hero-section.js: Hero composition, theme subscription, reactive light/dark picture/source selection, contact/résumé links and lazy robot mounting.
-- assets/js/hero-intro-timeline.js: scoped GSAP entrance; ordinary identity line rather than decorative name words; cleanup restores interrupted animation styles.
-- assets/css/hero-editorial.css: flat light/dark canvas, reference-style navbar, typography and responsive photo composition. Feathered outer bounds blend the complete supplied images into the page without a second circle or avatar crop.
-- assets/js/data.js: profile and project data, including the two theme-image URLs.
-- assets/js/hero-orbit-scene.js: procedural Three.js robot, smaller safe mobile orbit, portrait occlusion on rear paths, DPR cap, offscreen/hidden pause, reduced-motion static rendering and idempotent disposal. About's watermark uses its stationary option.
-- assets/js/about-scroll-story.js and assets/css/about-editorial.css: four natural-flow editorial chapters, whitespace-preserving word reveals, chapter progress rail, compact identity/capability items, five-stage process and a faint robot. The owner's summitscape remains a section-contained scenic backdrop with wide framing in both themes.
-- assets/js/smooth-scroll.js, assets/css/smooth-scroll.css and assets/js/vendor/: locally pinned Lenis 1.3.11 (MIT license included), driven by the existing GSAP ticker. Touch and keyboard remain native. Nested dialog/textarea scrolling bypasses wheel smoothing. Manual intent cancels a programmatic destination. Live reduced-motion changes disable/re-enable enhancement safely.
-- assets/js/app.js and journey-view.js: shared scroll service, contact callback, route/deep-link controls and preserved surrounding application.
-- Project/certification delivery modules: visual delivery remains, autonomous viewport-following is removed.
-- HTML entrypoints: shared styles/fonts; consistent validated theme bootstrap.
+All four chapters and genuine existing copy remain. Dark and light source images react to the shared theme service. A section-contained scenic viewport, not a giant section-height stretched image, covers the narrative and remains behind the final chapter. Text washes maintain readability and fade into matching theme colors.
 
-Existing portrait/social/attachment assets not used by the Hero are retained for their separate uses; removing the old Hero image from rendering does not delete unrelated images or documents.
+The chapter nav is a direct child of the full narrative layout: desktop vertical rail, mobile sticky horizontal 01–04 tracker and active label below the 64px header. Its height is measured for click offsets and deterministic active-chapter selection. Explicit whitespace text nodes, punctuation and one semantic copy preserve word spacing/accessibility. Chapter and workflow reveals remain progressive and honor live motion preferences.
 
-## Motion/accessibility
+## Assistant/backend
 
-No transformed whole-page wrapper, forced scroll, fake metrics, static robot emoji or generic replacement person is introduced. Copy remains readable before animation. Animated words use real whitespace nodes with punctuation/newlines preserved; the visual copy is aria-hidden and one semantic text copy is exposed to assistive technology. Buttons/links remain native, and chapter focus targets and media-preference cleanup are handled.
+See AI_ASSISTANT_SETUP.md. Native Node 22+ local server and Vercel API adapters provide real server-only provider transport when configured. No AI key is present, no live provider request was made, and no live answer/connection is claimed. The unconfigured UI does not fabricate responses. Backend and UI error/success transport tests use explicit fixtures only.
 
-The robot is actual Three.js geometry. WebGL failure does not remove the portrait, content or actions. This does not claim to fix every pre-existing accessibility or animation limitation in unrelated page sections.
+Professional context imports website data and an allowlist extracted from the supplied résumé. It excludes unrelated private personal details and instructs the model to acknowledge unknown information and attribute claims. A future real model still needs factual-response review after key/model configuration.
 
-## Verification
+## Running/building
 
-```sh
-cd verification
-npm ci
-npx playwright install chromium
-npm test
-```
+Node 22+; npm run dev → http://localhost:4175. Launchers start this same loopback server. .env.example is blank; populated .env variants are ignored and refused by the local server. Static dist is whitelisted and excludes server/env files. No transpilation or production dependency installation is required; browser libraries/fonts remain on their pinned CDNs.
 
-The optional verification tooling is separate from the no-build production site. It starts its own loopback server on an ephemeral port and writes screenshots/results under verification/artifacts. Dependency lockfile, test scripts and latest delivered results are included.
-
-The combined suite has 47 cases: 21 Hero/About regression cases plus 26 scenery/scrolling cases. All requested widths (320,375,390,768,1024,1366,1440,1920) are checked in both themes. Current assertions check the correct supplied image, theme-switch image synchronization, absence of the old extra halo, reference condensed name font and mobile lower-portrait placement, text/controls, overflow, WebGL behavior, chapter links and scroll preferences. See HERO_ABOUT_TEST_RESULTS.md.
-
-The original project defines no production build, lint or type-check scripts. JavaScript syntax checks, git diff --check, actual Chromium checks and clean ZIP extraction are used instead. The Windows batch file has not been run on Windows in this Linux environment.
-
-Regenerate the standalone inspection page with python3 verification/build-browser-preview.py PREVIEW.html. No production deployment or GitHub push has been performed.
+The inspection-only PREVIEW.html embeds the new assets/client source, marks itself as an inspection preview, makes no assistant API calls and disables contact submission. It is not a live backend. Root README contains commands and architecture; tests explain what was and was not verified.

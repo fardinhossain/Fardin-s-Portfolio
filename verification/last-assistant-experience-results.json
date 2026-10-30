@@ -1,0 +1,207 @@
+{
+  "testedAt": "2026-10-30T07:37:11.717Z",
+  "provider": "No live AI call; explicit fixture only where configured",
+  "results": [
+    {
+      "test": "Hero/photo safety and accessible unconfigured chat",
+      "theme": "dark",
+      "width": 320,
+      "status": "PASS",
+      "overlaps": false,
+      "portraitFit": "contain",
+      "nameSize": 31.36,
+      "horizontal": false
+    },
+    {
+      "test": "Hero/photo safety and accessible unconfigured chat",
+      "theme": "dark",
+      "width": 375,
+      "status": "PASS",
+      "overlaps": false,
+      "portraitFit": "contain",
+      "nameSize": 36.75,
+      "horizontal": false
+    },
+    {
+      "test": "Hero/photo safety and accessible unconfigured chat",
+      "theme": "dark",
+      "width": 390,
+      "status": "PASS",
+      "overlaps": false,
+      "portraitFit": "contain",
+      "nameSize": 38.22,
+      "horizontal": false
+    },
+    {
+      "test": "Hero/photo safety and accessible unconfigured chat",
+      "theme": "dark",
+      "width": 768,
+      "status": "PASS",
+      "overlaps": false,
+      "portraitFit": "contain",
+      "nameSize": 36,
+      "horizontal": false
+    },
+    {
+      "test": "Hero/photo safety and accessible unconfigured chat",
+      "theme": "dark",
+      "width": 1024,
+      "status": "PASS",
+      "overlaps": false,
+      "portraitFit": "contain",
+      "nameSize": 45.4967,
+      "horizontal": false
+    },
+    {
+      "test": "Hero/photo safety and accessible unconfigured chat",
+      "theme": "dark",
+      "width": 1366,
+      "status": "PASS",
+      "overlaps": false,
+      "portraitFit": "contain",
+      "nameSize": 60.6907,
+      "horizontal": false
+    },
+    {
+      "test": "Hero/photo safety and accessible unconfigured chat",
+      "theme": "dark",
+      "width": 1440,
+      "status": "PASS",
+      "overlaps": false,
+      "portraitFit": "contain",
+      "nameSize": 63.996,
+      "horizontal": false
+    },
+    {
+      "test": "Hero/photo safety and accessible unconfigured chat",
+      "theme": "dark",
+      "width": 1920,
+      "status": "PASS",
+      "overlaps": false,
+      "portraitFit": "contain",
+      "nameSize": 63.996,
+      "horizontal": false
+    },
+    {
+      "test": "Hero/photo safety and accessible unconfigured chat",
+      "theme": "light",
+      "width": 320,
+      "status": "PASS",
+      "overlaps": false,
+      "portraitFit": "contain",
+      "nameSize": 31.36,
+      "horizontal": false
+    },
+    {
+      "test": "Hero/photo safety and accessible unconfigured chat",
+      "theme": "light",
+      "width": 375,
+      "status": "PASS",
+      "overlaps": false,
+      "portraitFit": "contain",
+      "nameSize": 36.75,
+      "horizontal": false
+    },
+    {
+      "test": "Hero/photo safety and accessible unconfigured chat",
+      "theme": "light",
+      "width": 390,
+      "status": "PASS",
+      "overlaps": false,
+      "portraitFit": "contain",
+      "nameSize": 38.22,
+      "horizontal": false
+    },
+    {
+      "test": "Hero/photo safety and accessible unconfigured chat",
+      "theme": "light",
+      "width": 768,
+      "status": "PASS",
+      "overlaps": false,
+      "portraitFit": "contain",
+      "nameSize": 36,
+      "horizontal": false
+    },
+    {
+      "test": "Hero/photo safety and accessible unconfigured chat",
+      "theme": "light",
+      "width": 1024,
+      "status": "PASS",
+      "overlaps": false,
+      "portraitFit": "contain",
+      "nameSize": 45.4967,
+      "horizontal": false
+    },
+    {
+      "test": "Hero/photo safety and accessible unconfigured chat",
+      "theme": "light",
+      "width": 1366,
+      "status": "PASS",
+      "overlaps": false,
+      "portraitFit": "contain",
+      "nameSize": 60.6907,
+      "horizontal": false
+    },
+    {
+      "test": "Hero/photo safety and accessible unconfigured chat",
+      "theme": "light",
+      "width": 1440,
+      "status": "PASS",
+      "overlaps": false,
+      "portraitFit": "contain",
+      "nameSize": 63.996,
+      "horizontal": false
+    },
+    {
+      "test": "Hero/photo safety and accessible unconfigured chat",
+      "theme": "light",
+      "width": 1920,
+      "status": "PASS",
+      "overlaps": false,
+      "portraitFit": "contain",
+      "nameSize": 63.996,
+      "horizontal": false
+    },
+    {
+      "test": "Sticky mobile tracker and continuous scenery across all chapters",
+      "theme": "dark",
+      "status": "PASS"
+    },
+    {
+      "test": "Sticky mobile tracker and continuous scenery across all chapters",
+      "theme": "light",
+      "status": "PASS"
+    },
+    {
+      "test": "Real Three.js entrance/reveal/orbit and progressive name",
+      "status": "PASS",
+      "phases": [
+        "enter",
+        "reveal",
+        "orbit"
+      ],
+      "progressive": true
+    },
+    {
+      "test": "Tracked robot button pauses and opens/closes chat",
+      "status": "PASS"
+    },
+    {
+      "test": "Short mobile viewport keeps chat controls reachable",
+      "status": "PASS"
+    },
+    {
+      "test": "Configured local transport, loading state and server profile grounding (mock provider only)",
+      "status": "PASS"
+    },
+    {
+      "test": "Real server error path restores draft and hides upstream internals",
+      "status": "PASS"
+    },
+    {
+      "test": "Provider-supplied HTML remains inert text",
+      "status": "PASS"
+    }
+  ],
+  "pageErrors": []
+}

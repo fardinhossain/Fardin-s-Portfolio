@@ -24,6 +24,7 @@ async function load(width,theme='dark',motion='no-preference') {
  await page.evaluate(()=>document.fonts.ready);
  await page.waitForFunction(()=>document.querySelector('.fh-portrait img').complete && document.querySelector('.fh-portrait img').naturalWidth>0);
  await page.waitForFunction(()=>Number(getComputedStyle(document.querySelector('.fh-actions')).opacity)>.99);
+ await page.waitForFunction(()=>document.querySelector('#home').dataset.nameRevealed==='true');
 }
 for(const theme of ['dark','light']) for(const width of widths) {
  await load(width,theme);
@@ -34,7 +35,7 @@ for(const theme of ['dark','light']) for(const width of widths) {
   return {width:innerWidth,scrollWidth:document.documentElement.scrollWidth,theme:document.documentElement.dataset.theme,portrait:rect(document.querySelector('.fh-portrait')),portraitTheme:document.querySelector('.fh-portrait picture').dataset.portraitTheme,portraitSource:document.querySelector('.fh-portrait img').currentSrc,extraHalo:!!document.querySelector('.fh-halo'),nameFont:getComputedStyle(document.querySelector('.fh-name')).fontFamily,mobileNameOverlay:document.querySelector('.fh-visual').contains(document.querySelector('.fh-name')),headline:rect(document.querySelector('.fh-headline')),name:rect(document.querySelector('.fh-name')),hero:rect(hero),about:rect(document.querySelector('#about')),overflows,headText:document.querySelector('.fh-headline').textContent.replace(/\s+/g,' ').trim(),nameText:document.querySelector('.fh-name').textContent,quote:document.querySelector('.ae-quote .ae-reveal-visual').textContent,stages:[...document.querySelectorAll('.ae-step h4')].map(e=>e.textContent),resume:document.querySelector('.fh-resume').getAttribute('href'),chapters:document.querySelectorAll('.ae-chapter').length};
  });
  if(layout.scrollWidth>width||layout.overflows.length||layout.chapters!==4||layout.headText!=='BUILDING THAT CREATES INTELLIGENT IMPACT') throw Error('Layout/content failure '+JSON.stringify(layout));
- if(layout.portraitTheme!==theme||!layout.portraitSource.includes('hero-portrait-'+theme+'.webp')||layout.extraHalo||!layout.nameFont.includes('Anton'))throw Error('Theme portrait/name regression '+JSON.stringify(layout));
+ if(layout.portraitTheme!==theme||!layout.portraitSource.includes(theme==='light'?'hero-portrait-light.webp':'hero-portrait-current.webp')||layout.extraHalo||!layout.nameFont.includes('Anton'))throw Error('Theme portrait/name regression '+JSON.stringify(layout));
  if(width<=700 && (!layout.mobileNameOverlay || layout.name.bottom>layout.portrait.bottom+1 || layout.name.y<layout.portrait.y+layout.portrait.height*.65))throw Error('Mobile name is not over lower portrait '+JSON.stringify(layout));
  results.push({theme,width,status:'PASS',...layout});
  if([320,390,768,1440,1920].includes(width))await page.screenshot({path:`${out}/hero-${theme}-${width}.png`});

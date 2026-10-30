@@ -9,9 +9,12 @@ ROOT = Path(__file__).resolve().parent.parent
 ORIGIN = 'https://fardinflyrankai.vercel.app'
 OUT = Path(sys.argv[1]) if len(sys.argv)>1 else ROOT.parent/'Fardin-reference-browser-preview.html'
 def data_uri(path):
+    # Inspection preview targets modern browsers; optimized equivalents avoid
+    # embedding multi-megabyte PNG fallbacks. Production originals stay intact.
+    if path.suffix.lower()=='.png' and path.with_suffix('.webp').is_file(): path=path.with_suffix('.webp')
     mime=mimetypes.guess_type(path.name)[0] or 'application/octet-stream'
     return 'data:'+mime+';base64,'+base64.b64encode(path.read_bytes()).decode()
-embedded={ '/'+p.relative_to(ROOT).as_posix():data_uri(p) for pattern in ('about-summitscape.*','hero-portrait-light.*','hero-portrait-dark.*') for p in (ROOT/'assets/images').glob(pattern) }
+embedded={ '/'+p.relative_to(ROOT).as_posix():data_uri(p) for pattern in ('about-summitscape.*','about-summitscape-light.*','hero-portrait-light.*','hero-portrait-dark.*','hero-portrait-current.*') for p in (ROOT/'assets/images').glob(pattern) }
 asset=re.compile(r'''(["'])(/?(?:assets/|Anthropic_Certificates_Images/|Fardin_Hossain_Resume\.pdf|paper\.pdf)[^"']*)\1''')
 def assets(text, js=False):
     def replace(m):
@@ -43,6 +46,7 @@ html=html.replace('<script type="module" src="/assets/js/app.js"></script>','<sc
 html=assets(html)
 # Preview-only safety/iframe adaptation. No fake backend results.
 adapter='''<script>
+document.documentElement.dataset.inspectionPreview='true';
 window.addEventListener('submit', event => {
   event.preventDefault(); event.stopImmediatePropagation();
   let note=document.getElementById('preview-form-note');
