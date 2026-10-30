@@ -573,9 +573,10 @@ function PortfolioApp() {
           "ul",
           { className: "nav-links-desktop" },
           [
-            { id: "projects", label: "WORKS" },
             { id: "about", label: "ABOUT" },
             { id: "experience", label: "EXPERIENCE" },
+            { id: "projects", label: "PROJECTS" },
+            { id: "certifications", label: "CERTIFICATIONS" },
             { id: "contact", label: "CONTACT" }
           ].map((item) =>
             h(
