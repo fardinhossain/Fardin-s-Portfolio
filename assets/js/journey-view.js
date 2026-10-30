@@ -264,17 +264,64 @@ export function FlyRankJourneyView({ onBackHome, initialSection, onSelectCertMod
   // Chapter 03 Progress Rail state
   const [scrollFillPct, setScrollFillPct] = useState(0);
   const [activeMonthTab, setActiveMonthTab] = useState("july");
+  const monthOrder = ["july", "july-aug", "aug-sept", "sept-oct"];
+  const currentMonthIdx = monthOrder.indexOf(activeMonthTab);
+  const goToPrevMonth = () => {
+    if (currentMonthIdx > 0) setActiveMonthTab(monthOrder[currentMonthIdx - 1]);
+  };
+  const goToNextMonth = () => {
+    if (currentMonthIdx < monthOrder.length - 1) setActiveMonthTab(monthOrder[currentMonthIdx + 1]);
+  };
+  const [monthTouchStartX, setMonthTouchStartX] = useState(0);
 
   // Chapter 04 Ranker Simulator state
   const [topN, setTopN] = useState(6);
 
   // Chapter 05 20-Certificates Filter & Search state
+  const certsGridRef = useRef(null);
+  const [activeCertIdx, setActiveCertIdx] = useState(0);
+  const scrollCertsBy = (dir) => {
+    if (!certsGridRef.current) return;
+    certsGridRef.current.scrollBy({ left: dir * 300, behavior: "smooth" });
+  };
+  const handleCertsScroll = () => {
+    if (!certsGridRef.current) return;
+    const sl = certsGridRef.current.scrollLeft;
+    const idx = Math.round(sl / 300);
+    if (idx !== activeCertIdx && idx >= 0) {
+      setActiveCertIdx(idx);
+    }
+  };
   const [certTab, setCertTab] = useState("all"); // "all", "ai-fluency", "ml-backend"
   const [certQuery, setCertQuery] = useState("");
   const [flippedCerts, setFlippedCerts] = useState({});
   const [flipAll, setFlipAll] = useState(false);
 
-  // Chapter 06 Interactive Word Beat state ("Ranker", "Agent", "Certificates")
+  // Chapter 06 Interactive Standing Proof Slider & Word Beat state
+  const [standingSlide, setStandingSlide] = useState(0);
+  const [standingTouchStartX, setStandingTouchStartX] = useState(0);
+  const standingSlides = [
+    {
+      id: "bd",
+      title: "#1 in Bangladesh (National Champion)",
+      rank: "#1 of 586",
+      badge: "🇧🇩 #1 in Bangladesh",
+      filterText: "Filter: Bangladesh",
+      src: "/assets/images/standing-top1-bangladesh.jpg",
+      originalSrc: "/assets/flyrank documents/top 1 in BD.jpg",
+      caption: "FlyRank AI Official Standing: #1 of 586 in Bangladesh in Machine Learning Track (2,136 Points)"
+    },
+    {
+      id: "world",
+      title: "#23 Worldwide (Global ML Track)",
+      rank: "#23 of 4,811",
+      badge: "🌐 #23 Worldwide",
+      filterText: "Filter: Machine Learning",
+      src: "/assets/images/standing-rank23-worldwide.jpg",
+      originalSrc: "/assets/flyrank documents/23 in Worldwide.jpg",
+      caption: "FlyRank AI Official Standing: #23 of 4,811 Worldwide in Machine Learning Track (2,136 Points)"
+    }
+  ];
   const [activeWordBeat, setActiveWordBeat] = useState("Ranker");
 
   // Universal Lightbox Modal state
@@ -465,7 +512,8 @@ export function FlyRankJourneyView({ onBackHome, initialSection, onSelectCertMod
             title: "Open official FlyRank credential verification"
           },
           h("span", { className: "verify-dot" }),
-          h("span", null, "✓ Verify: FR-D11-9E3D0-1FE2A ↗")
+          h("span", { className: "verify-text-full" }, "✓ Verify: FR-D11-9E3D0-1FE2A ↗"),
+          h("span", { className: "verify-text-short" }, "✓ Verify ↗")
         )
       )
     ),
@@ -693,13 +741,21 @@ export function FlyRankJourneyView({ onBackHome, initialSection, onSelectCertMod
             )
           ),
 
-          // Active Month Detail Card
+          // Active Month Detail Card (Slide Left to Right with swipe & button controls)
           (() => {
             const current =
               JOURNEY_TIMELINE.find((m) => m.id === activeMonthTab) || JOURNEY_TIMELINE[0];
             return h(
               "div",
-              { className: "story-month-panel" },
+              {
+                className: "story-month-panel",
+                onTouchStart: (e) => setMonthTouchStartX(e.targetTouches[0].clientX),
+                onTouchEnd: (e) => {
+                  const diff = monthTouchStartX - e.changedTouches[0].clientX;
+                  if (diff > 45) goToNextMonth();
+                  else if (diff < -45) goToPrevMonth();
+                }
+              },
               h(
                 "div",
                 { className: "month-panel-top" },
@@ -722,6 +778,46 @@ export function FlyRankJourneyView({ onBackHome, initialSection, onSelectCertMod
                 { className: "month-tags-container" },
                 current.tags.map((t, idx) =>
                   h("span", { key: idx, className: "month-tag-chip" }, t)
+                )
+              ),
+              // Interactive Month Slide Controls & Indicators (Left to Right)
+              h(
+                "div",
+                { className: "month-slide-controls" },
+                h(
+                  "button",
+                  {
+                    type: "button",
+                    className: "month-nav-btn prev",
+                    disabled: currentMonthIdx <= 0,
+                    onClick: goToPrevMonth,
+                    "aria-label": "Slide to previous month"
+                  },
+                  "‹ Previous"
+                ),
+                h(
+                  "div",
+                  { className: "month-slide-indicators" },
+                  monthOrder.map((mId, idx) =>
+                    h("button", {
+                      key: mId,
+                      type: "button",
+                      className: `month-slide-dot ${activeMonthTab === mId ? "active" : ""}`,
+                      onClick: () => setActiveMonthTab(mId),
+                      "aria-label": `Select month ${idx + 1}`
+                    })
+                  )
+                ),
+                h(
+                  "button",
+                  {
+                    type: "button",
+                    className: "month-nav-btn next",
+                    disabled: currentMonthIdx >= monthOrder.length - 1,
+                    onClick: goToNextMonth,
+                    "aria-label": "Slide to next month"
+                  },
+                  "Next ›"
                 )
               )
             );
@@ -889,38 +985,47 @@ export function FlyRankJourneyView({ onBackHome, initialSection, onSelectCertMod
               )
             ),
 
-            // Candidate Comparison Table
+            // Candidate Comparison Table with Horizontal Scroll wrapper & Mobile Hint
             h(
               "div",
-              { className: "ranker-candidates-table" },
+              { className: "ranker-table-scroll-wrapper" },
               h(
                 "div",
-                { className: "table-row header" },
-                h("span", { style: { width: "12%" } }, "Rank"),
-                h("span", { style: { width: "30%" } }, "Learned Ranker Selection"),
-                h("span", { style: { width: "30%" } }, "Fixed-Rule Selection"),
-                h("span", { style: { width: "28%" } }, "Decision Impact")
+                { className: "table-mobile-hint" },
+                "↔ Swipe table horizontally to see full candidate comparison"
               ),
-              Array.from({ length: topN }).map((_, i) => {
-                const lp = learnedOrder[i];
-                const fp = fixedOrder[i];
-                return h(
+              h(
+                "div",
+                { className: "ranker-candidates-table" },
+                h(
                   "div",
-                  { key: i, className: "table-row" },
-                  h("span", { className: "row-rank" }, `#${i + 1}`),
-                  h("span", { className: "row-name" },
-                    h("span", { className: `dot ${lp.needs ? "hit" : "miss"}` }),
-                    `${lp.name} (Demand: ${lp.demand})`
-                  ),
-                  h("span", { className: "row-name" },
-                    h("span", { className: `dot ${fp.needs ? "hit" : "miss"}` }),
-                    `${fp.name} (-${fp.decline}%)`
-                  ),
-                  h("span", { className: "row-status" },
-                    lp.needs ? "High recovery potential · Refresh" : "Low query demand · Defer"
-                  )
-                );
-              })
+                  { className: "table-row header" },
+                  h("span", { className: "col-rank" }, "Rank"),
+                  h("span", { className: "col-learned" }, "Learned Ranker Selection"),
+                  h("span", { className: "col-fixed" }, "Fixed-Rule Selection"),
+                  h("span", { className: "col-impact" }, "Decision Impact")
+                ),
+                Array.from({ length: topN }).map((_, i) => {
+                  const lp = learnedOrder[i];
+                  const fp = fixedOrder[i];
+                  return h(
+                    "div",
+                    { key: i, className: "table-row" },
+                    h("span", { className: "col-rank row-rank" }, `#${i + 1}`),
+                    h("span", { className: "col-learned row-name" },
+                      h("span", { className: `dot ${lp.needs ? "hit" : "miss"}` }),
+                      `${lp.name} (Demand: ${lp.demand})`
+                    ),
+                    h("span", { className: "col-fixed row-name" },
+                      h("span", { className: `dot ${fp.needs ? "hit" : "miss"}` }),
+                      `${fp.name} (-${fp.decline}%)`
+                    ),
+                    h("span", { className: "col-impact row-status" },
+                      lp.needs ? "High recovery potential · Refresh" : "Low query demand · Defer"
+                    )
+                  );
+                })
+              )
             ),
 
             // Plain-English Disclaimer (Kept exactly as required)
@@ -1086,10 +1191,47 @@ export function FlyRankJourneyView({ onBackHome, initialSection, onSelectCertMod
           )
         ),
 
-        // 20-Card Flip Grid (Readable in BOTH Light and Dark mode)
+        // Mobile Slide Navigation Bar (Left to Right)
         h(
           "div",
-          { className: "story-certs-grid" },
+          { className: "certs-mobile-slider-bar" },
+          h(
+            "button",
+            {
+              type: "button",
+              className: "certs-slide-arrow-btn prev",
+              disabled: activeCertIdx <= 0,
+              onClick: () => scrollCertsBy(-1),
+              "aria-label": "Slide to previous certificate"
+            },
+            "‹ Prev"
+          ),
+          h(
+            "span",
+            { className: "certs-slide-counter" },
+            `${Math.min(activeCertIdx + 1, filteredCerts.length)} of ${filteredCerts.length} Certificates`
+          ),
+          h(
+            "button",
+            {
+              type: "button",
+              className: "certs-slide-arrow-btn next",
+              disabled: activeCertIdx >= filteredCerts.length - 1,
+              onClick: () => scrollCertsBy(1),
+              "aria-label": "Slide to next certificate"
+            },
+            "Next ›"
+          )
+        ),
+
+        // 20-Card Flip Grid (Desktop: Grid / Mobile: Left to Right Slide Carousel)
+        h(
+          "div",
+          {
+            ref: certsGridRef,
+            className: "story-certs-grid",
+            onScroll: handleCertsScroll
+          },
           filteredCerts.map((cert) => {
             const isFlipped = !!flippedCerts[cert.index];
             return h(
@@ -1235,9 +1377,9 @@ export function FlyRankJourneyView({ onBackHome, initialSection, onSelectCertMod
           h(
             "div",
             { className: "trophy-top-row" },
-            h("div", { className: "trophy-badge-pill" }, "NATIONAL TRACK CHAMPION · BANGLADESH"),
+            h("div", { className: "trophy-badge-pill" }, "NATIONAL TRACK CHAMPION & WORLDWIDE FINALIST"),
             h("h2", { id: "leaderboard-title", className: "trophy-headline" },
-              "#1 in Bangladesh · Machine Learning Track"
+              "#1 in Bangladesh and #23 in worldwide in Machine Learning track"
             )
           ),
 
@@ -1246,14 +1388,18 @@ export function FlyRankJourneyView({ onBackHome, initialSection, onSelectCertMod
             "div",
             { className: "trophy-standing-card" },
             h("div", { className: "standing-header-line" },
-              "YOUR STANDING — Md. Fardin Hossain · Machine Learning · Bangladesh"
+              "YOUR STANDING — Md. Fardin Hossain · Machine Learning Track"
             ),
             h(
               "div",
               { className: "standing-stats-row" },
               h("div", { className: "standing-stat" },
-                h("span", { className: "stat-tag" }, "RANK"),
-                h("span", { className: "stat-val highlight" }, "#23 of 4794")
+                h("span", { className: "stat-tag" }, "RANK IN BANGLADESH"),
+                h("span", { className: "stat-val highlight" }, "#1 of 586")
+              ),
+              h("div", { className: "standing-stat" },
+                h("span", { className: "stat-tag" }, "WORLDWIDE RANK"),
+                h("span", { className: "stat-val highlight" }, "#23 of 4,811")
               ),
               h("div", { className: "standing-stat" },
                 h("span", { className: "stat-tag" }, "POINTS"),
@@ -1264,10 +1410,6 @@ export function FlyRankJourneyView({ onBackHome, initialSection, onSelectCertMod
                 h("span", { className: "stat-tag" }, "MOVEMENT"),
                 h("span", { className: "stat-val" }, "— 0"),
                 h("span", { className: "stat-sub" }, "(weekly baseline)")
-              ),
-              h("div", { className: "standing-stat" },
-                h("span", { className: "stat-tag" }, "NEXT MILESTONE"),
-                h("span", { className: "stat-val" }, "2 pts to #22")
               )
             )
           ),
@@ -1280,7 +1422,133 @@ export function FlyRankJourneyView({ onBackHome, initialSection, onSelectCertMod
               "🏆 #1 · Bangladesh · Machine Learning Track"
             ),
             h("div", { className: "story-rank-badge badge-overall-rank" },
-              "#23 · Overall (of 4,794)"
+              "🌐 #23 · Worldwide (of 4,811)"
+            )
+          ),
+
+          // Official Standing Proof Showcase (with Left-to-Right Slide Option)
+          h(
+            "div",
+            { className: "standing-proof-showcase" },
+            h(
+              "div",
+              { className: "proof-showcase-header" },
+              h("div", null,
+                h("span", { className: "proof-showcase-tag" }, "OFFICIAL PROOF SCREENSHOTS"),
+                h("h3", { className: "proof-showcase-title" }, "FlyRank AI Dashboard Standings")
+              ),
+              // Slide Selector Tabs (Left to Right)
+              h(
+                "div",
+                { className: "proof-slide-tabs" },
+                standingSlides.map((slide, idx) =>
+                  h(
+                    "button",
+                    {
+                      key: slide.id,
+                      type: "button",
+                      className: `proof-tab-btn ${standingSlide === idx ? "active" : ""}`,
+                      onClick: () => setStandingSlide(idx)
+                    },
+                    slide.badge
+                  )
+                )
+              )
+            ),
+
+            // Slide Display Stage with Left/Right Arrows and Swipe
+            h(
+              "div",
+              {
+                className: "proof-slide-stage",
+                onTouchStart: (e) => setStandingTouchStartX(e.targetTouches[0].clientX),
+                onTouchEnd: (e) => {
+                  const diff = standingTouchStartX - e.changedTouches[0].clientX;
+                  if (diff > 40) setStandingSlide((prev) => (prev < standingSlides.length - 1 ? prev + 1 : 0));
+                  else if (diff < -40) setStandingSlide((prev) => (prev > 0 ? prev - 1 : standingSlides.length - 1));
+                }
+              },
+              h(
+                "button",
+                {
+                  type: "button",
+                  className: "proof-nav-arrow prev",
+                  onClick: () => setStandingSlide((prev) => (prev > 0 ? prev - 1 : standingSlides.length - 1)),
+                  "aria-label": "Slide previous screenshot"
+                },
+                "‹"
+              ),
+              (() => {
+                const cur = standingSlides[standingSlide];
+                return h(
+                  "div",
+                  {
+                    className: "proof-card-active",
+                    onClick: () =>
+                      setModalPreview({
+                        type: "img",
+                        src: cur.src,
+                        title: cur.title,
+                        subtitle: "FlyRank AI Verified Standing Dashboard",
+                        caption: cur.caption
+                      })
+                  },
+                  h(
+                    "div",
+                    { className: "proof-img-frame" },
+                    h("img", {
+                      src: cur.src,
+                      alt: cur.caption,
+                      loading: "lazy",
+                      className: "proof-screenshot-img"
+                    }),
+                    h(
+                      "div",
+                      { className: "proof-img-overlay-cue" },
+                      h("span", null, "🔍 Tap or click to inspect full resolution")
+                    )
+                  ),
+                  h(
+                    "div",
+                    { className: "proof-card-info" },
+                    h("div", { className: "proof-card-title-row" },
+                      h("h4", { className: "proof-rank-h4" }, cur.title),
+                      h("span", { className: "proof-rank-badge" }, cur.rank)
+                    ),
+                    h("p", { className: "proof-caption-text" }, cur.caption)
+                  )
+                );
+              })(),
+              h(
+                "button",
+                {
+                  type: "button",
+                  className: "proof-nav-arrow next",
+                  onClick: () => setStandingSlide((prev) => (prev < standingSlides.length - 1 ? prev + 1 : 0)),
+                  "aria-label": "Slide next screenshot"
+                },
+                "›"
+              )
+            ),
+
+            // Slide indicators & mobile swipe guide
+            h(
+              "div",
+              { className: "proof-slide-footer" },
+              h(
+                "div",
+                { className: "proof-dots-container" },
+                standingSlides.map((_, idx) =>
+                  h("button", {
+                    key: idx,
+                    type: "button",
+                    className: `proof-dot ${standingSlide === idx ? "active" : ""}`,
+                    onClick: () => setStandingSlide(idx),
+                    "aria-label": `Select slide ${idx + 1}`
+                  })
+                )
+              ),
+              h("span", { className: "proof-swipe-guide" }, "↔ Slide left / right to toggle Bangladesh (#1) vs Worldwide (#23)")
             )
           ),
 
@@ -1599,9 +1867,9 @@ export function FlyRankJourneyView({ onBackHome, initialSection, onSelectCertMod
             h("div", { className: "recap-sub" }, "0.78 Precision@50 · 78.8M Rows · Deployed Edge Hub")
           ),
           h("div", { className: "recap-card" },
-            h("div", { className: "recap-tag" }, "NATIONAL STANDING"),
-            h("div", { className: "recap-h" }, "#1 in Bangladesh · #23 Overall of 4,794"),
-            h("div", { className: "recap-sub" }, "2,136 Verified Points")
+            h("div", { className: "recap-tag" }, "NATIONAL & WORLDWIDE STANDING"),
+            h("div", { className: "recap-h" }, "#1 in Bangladesh and #23 in Worldwide"),
+            h("div", { className: "recap-sub" }, "Machine Learning Track · #1 of 586 in BD · #23 of 4,811 Worldwide")
           ),
           h("div", { className: "recap-card" },
             h("div", { className: "recap-tag" }, "CREDENTIAL DATES"),
@@ -1618,7 +1886,7 @@ export function FlyRankJourneyView({ onBackHome, initialSection, onSelectCertMod
             "🏆 #1 · Bangladesh · Machine Learning Track"
           ),
           h("div", { className: "story-rank-badge badge-overall-rank" },
-            "#23 · Overall (of 4,794)"
+            "🌐 #23 · Worldwide (of 4,811)"
           )
         ),
 
