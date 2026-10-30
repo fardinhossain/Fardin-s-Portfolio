@@ -10,7 +10,7 @@
 :root {
   --proj-bg-dark: #080B11;
   --proj-bg-surface-dark: #0D111A;
-  --proj-bg-card-dark: rgba(13, 17, 26, 0.88);
+  --proj-bg-card-dark: rgba(13, 17, 26, 0.52);
   --proj-border-dark: rgba(255, 255, 255, 0.08);
   --proj-border-glow-dark: rgba(255, 98, 56, 0.35);
   --proj-text-title-dark: #FFFFFF;
@@ -18,7 +18,7 @@
 
   --proj-bg-light: #F6F7FA;
   --proj-bg-surface-light: #FFFFFF;
-  --proj-bg-card-light: rgba(255, 255, 255, 0.92);
+  --proj-bg-card-light: rgba(255, 255, 255, 0.62);
   --proj-border-light: rgba(15, 23, 42, 0.09);
   --proj-border-glow-light: rgba(255, 98, 56, 0.45);
   --proj-text-title-light: #0F172A;
@@ -166,6 +166,8 @@
   height: 42px;
   border-radius: 10px;
   background: rgba(255, 98, 56, 0.1);
+  backdrop-filter: blur(8px);
+  -webkit-backdrop-filter: blur(8px);
   border: 1px solid rgba(255, 98, 56, 0.25);
   display: flex;
   align-items: center;
@@ -231,6 +233,8 @@
   font-weight: 500;
   color: var(--proj-text-muted-dark);
   background: rgba(255, 255, 255, 0.04);
+  backdrop-filter: blur(10px);
+  -webkit-backdrop-filter: blur(10px);
   border: 1px solid rgba(255, 255, 255, 0.08);
   cursor: pointer;
   white-space: nowrap;
@@ -302,7 +306,9 @@
   position: relative;
   border-radius: 18px;
   overflow: hidden;
-  background: #05070B;
+  background: rgba(5, 7, 11, 0.52);
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
   border: 1px solid rgba(255, 255, 255, 0.08);
   box-shadow: 0 12px 36px rgba(0, 0, 0, 0.6);
   min-height: 380px;
@@ -312,7 +318,9 @@
 }
 
 [data-theme="light"] .projects-featured-preview-box {
-  background: #F1F3F8;
+  background: rgba(241, 243, 248, 0.65);
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
   border-color: rgba(15, 23, 42, 0.1);
   box-shadow: 0 12px 30px rgba(15, 23, 42, 0.12);
 }
@@ -321,7 +329,9 @@
   position: relative;
   width: 92%;
   aspect-ratio: 16 / 10;
-  background: #11141D;
+  background: rgba(17, 20, 29, 0.58);
+  backdrop-filter: blur(10px);
+  -webkit-backdrop-filter: blur(10px);
   border-radius: 12px;
   border: 1px solid rgba(255, 255, 255, 0.12);
   overflow: hidden;
@@ -330,7 +340,7 @@
 
 .projects-device-topbar {
   height: 24px;
-  background: #181C26;
+  background: rgba(24, 28, 38, 0.62);
   border-bottom: 1px solid rgba(255, 255, 255, 0.06);
   display: flex;
   align-items: center;
@@ -520,6 +530,8 @@
   font-size: 0.76rem;
   font-weight: 500;
   background: rgba(255, 255, 255, 0.04);
+  backdrop-filter: blur(10px);
+  -webkit-backdrop-filter: blur(10px);
   border: 1px solid rgba(255, 255, 255, 0.08);
   color: #E2E8F0;
   transition: all 0.2s ease;
@@ -651,6 +663,8 @@
 .projects-grid-card {
   position: relative;
   background: var(--proj-bg-card-dark);
+  backdrop-filter: blur(16px);
+  -webkit-backdrop-filter: blur(16px);
   border: 1px solid var(--proj-border-dark);
   border-radius: 18px;
   padding: 1.25rem;
@@ -775,6 +789,8 @@
   padding: 0.2rem 0.5rem;
   border-radius: 6px;
   background: rgba(255, 255, 255, 0.04);
+  backdrop-filter: blur(10px);
+  -webkit-backdrop-filter: blur(10px);
   border: 1px solid rgba(255, 255, 255, 0.08);
   color: #CBD5E1;
 }
@@ -828,6 +844,8 @@
   font-weight: 600;
   color: var(--proj-text-title-dark);
   background: rgba(255, 255, 255, 0.04);
+  backdrop-filter: blur(10px);
+  -webkit-backdrop-filter: blur(10px);
   border: 1px solid rgba(255, 255, 255, 0.08);
   text-decoration: none;
   transition: all 0.2s ease;
@@ -904,6 +922,8 @@
   max-width: 380px;
   scroll-snap-align: center;
   background: var(--proj-bg-card-dark);
+  backdrop-filter: blur(16px);
+  -webkit-backdrop-filter: blur(16px);
   border: 1px solid var(--proj-border-dark);
   border-radius: 22px;
   padding: 1.25rem;
@@ -1020,6 +1040,8 @@
   padding: 0.28rem 0.6rem;
   border-radius: 6px;
   background: rgba(255, 255, 255, 0.04);
+  backdrop-filter: blur(10px);
+  -webkit-backdrop-filter: blur(10px);
   border: 1px solid rgba(255, 255, 255, 0.08);
   color: #E2E8F0;
 }
