@@ -169,3 +169,77 @@ test('native dev server route aliases, JSON APIs, MIME, HEAD, dotfiles/traversal
   assert.equal(chat.status, 503); assert.equal(JSON.parse(chat.text).error.code, 'AI_NOT_CONFIGURED');
   const oversized = await localRequest(port, '/api/chat', { method: 'POST', headers: { 'content-type': 'application/json' }, body: 'x'.repeat(17000) }); assert.equal(oversized.status, 413);
 });
+
+test('model normalization and fallback configuration handles gemini 3.5 flash lite and 3.6 flash', () => {
+  const cfg = getConfiguration({
+    AI_API_KEY: 'test-key',
+    AI_MODEL: 'gemini 3.5 flash light',
+    AI_FALLBACK_MODEL: '3.6 FLASH'
+  });
+  assert.equal(cfg.model, 'gemini-3.5-flash-lite');
+  assert.equal(cfg.fallbackModel, 'gemini-3.6-flash');
+  assert.equal(cfg.endpoint, 'https://generativelanguage.googleapis.com/v1beta/openai/chat/completions');
+  assert.equal(cfg.fallback.endpoint, 'https://generativelanguage.googleapis.com/v1beta/openai/chat/completions');
+
+  const commaCfg = getConfiguration({
+    AI_API_KEY: 'test-key',
+    AI_MODEL: 'gemini-3.5-flash-lite, gemini-3.6-flash'
+  });
+  assert.equal(commaCfg.model, 'gemini-3.5-flash-lite');
+  assert.equal(commaCfg.fallbackModel, 'gemini-3.6-flash');
+});
+
+test('fallback to secondary model when primary model fails, and skip fallback when primary succeeds', async () => {
+  const modelsCalled = [];
+  const fallbackEnv = {
+    AI_API_KEY: 'fixture-key',
+    AI_MODEL: 'gemini-3.5-flash-lite',
+    AI_FALLBACK_MODEL: 'gemini-3.6-flash'
+  };
+
+  // Case 1: Primary fails -> secondary succeeds
+  const fallbackFn = createChatHandler({
+    env: fallbackEnv,
+    limiter: createRateLimiter({ maxRequests: 100 }),
+    fetchImpl: async (url, options) => {
+      const payload = JSON.parse(options.body);
+      modelsCalled.push(payload.model);
+      if (payload.model === 'gemini-3.5-flash-lite') {
+        return new Response('primary error', { status: 500 });
+      }
+      return provider('Fallback model reply: success');
+    }
+  });
+
+  const res = await invoke(fallbackFn);
+  assert.equal(res.statusCode, 200);
+  assert.equal(res.body.reply, 'Fallback model reply: success');
+  assert.deepEqual(modelsCalled, ['gemini-3.5-flash-lite', 'gemini-3.6-flash']);
+
+  // Case 2: Primary succeeds -> secondary never called
+  const primaryModels = [];
+  const primaryOnlyFn = createChatHandler({
+    env: fallbackEnv,
+    limiter: createRateLimiter({ maxRequests: 100 }),
+    fetchImpl: async (url, options) => {
+      const payload = JSON.parse(options.body);
+      primaryModels.push(payload.model);
+      return provider('Primary model reply');
+    }
+  });
+
+  const resPrimary = await invoke(primaryOnlyFn);
+  assert.equal(resPrimary.statusCode, 200);
+  assert.equal(resPrimary.body.reply, 'Primary model reply');
+  assert.deepEqual(primaryModels, ['gemini-3.5-flash-lite']);
+
+  // Case 3: Both fail -> 502 with no credentials leaked
+  const failBothFn = createChatHandler({
+    env: fallbackEnv,
+    limiter: createRateLimiter({ maxRequests: 100 }),
+    fetchImpl: async () => new Response('down', { status: 503 })
+  });
+  const resBoth = await invoke(failBothFn);
+  code(resBoth, 502, 'AI_UNAVAILABLE');
+  assert.ok(!resBoth.text.includes(fallbackEnv.AI_API_KEY));
+});

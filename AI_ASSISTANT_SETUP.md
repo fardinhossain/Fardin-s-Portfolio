@@ -14,11 +14,12 @@ Mock provider responses exist only in automated tests. Passing those tests prove
 
 ```dotenv
 AI_API_KEY=your-own-provider-key
-AI_MODEL=your-provider-model-id
-AI_BASE_URL=https://api.openai.com/v1
+AI_MODEL=gemini-3.5-flash-lite
+AI_FALLBACK_MODEL=gemini-3.6-flash
+AI_BASE_URL=https://generativelanguage.googleapis.com/v1beta/openai
 ```
 
-The example values above are placeholders, not working credentials. `AI_API_KEY` and `AI_MODEL` are both required. The adapter uses an **OpenAI-compatible Chat Completions API**; other native API formats require an adapter and are not claimed supported. For another compatible provider, set its HTTPS base URL and a model it actually offers. The base should precede `/chat/completions`.
+`AI_API_KEY` and `AI_MODEL` are required. `AI_FALLBACK_MODEL` (or `AI_SECONDARY_MODEL`) is optional: if configured and the primary model fails or is unavailable, the server automatically attempts the fallback model before reporting an error. The adapter uses an **OpenAI-compatible Chat Completions API** (such as Google Gemini's endpoint `https://generativelanguage.googleapis.com/v1beta/openai` or standard OpenAI/compatible endpoints). The base URL should precede `/chat/completions`.
 
 4. Run `npm run dev`, `sh start-preview.sh`, or `START_PREVIEW.bat` on Windows.
 5. Open **http://localhost:4175** and click the robot or the small assistant launcher.

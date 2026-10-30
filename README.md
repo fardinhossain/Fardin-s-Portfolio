@@ -31,7 +31,7 @@ Without a provider key/model, the assistant opens normally, displays **Not confi
 
 ### Configure the AI later
 
-Copy `.env.example` to `.env` on your machine, enter **AI_API_KEY**, **AI_MODEL**, and optionally **AI_BASE_URL**, then restart the server. The adapter uses an OpenAI-compatible Chat Completions endpoint; other API formats need an adapter. Never paste a key into chat, expose it in frontend variables, or commit a populated environment file.
+Copy `.env.example` to `.env` on your machine, enter **AI_API_KEY**, **AI_MODEL**, optionally **AI_FALLBACK_MODEL** (for automatic secondary fallback if primary model fails), and **AI_BASE_URL**, then restart the server. The adapter uses an OpenAI-compatible Chat Completions endpoint (such as Google Gemini's endpoint); other API formats need an adapter. Never paste a key into chat, expose it in frontend variables, or commit a populated environment file.
 
 See **[AI_ASSISTANT_SETUP.md](AI_ASSISTANT_SETUP.md)** for API contracts, provider configuration, professional-source grounding, privacy, security and rate-limit limitations. Configuration status does not prove provider connectivity. Test a real request after configuring your own provider.
 

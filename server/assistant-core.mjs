@@ -23,16 +23,73 @@ function sendError(res, error) {
   const safe = error instanceof HttpError ? error : new HttpError(502, 'AI_UNAVAILABLE');
   sendJson(res, safe.status, { error: { code: safe.code, message: safe.message } }, safe.status === 429 ? { 'Retry-After': '60' } : {});
 }
+function normalizeModel(val) {
+  if (!val || typeof val !== 'string') return '';
+  let m = val.trim();
+  if (m.toLowerCase().includes('flash') && m.toLowerCase().includes('light')) {
+    m = m.replace(/light/gi, 'lite');
+  }
+  if (/^3\.\d/i.test(m) && /flash/i.test(m) && !m.toLowerCase().startsWith('gemini-')) {
+    m = `gemini-${m}`;
+  }
+  if (/gemini|flash/i.test(m)) m = m.toLowerCase();
+  return m.replace(/\s+/g, '-');
+}
 export function getConfiguration(env = process.env) {
   const key = env.AI_API_KEY?.trim();
-  const model = env.AI_MODEL?.trim();
+  const rawModel = env.AI_MODEL?.trim();
+  if (!key || !rawModel) return null;
+
+  let rawPrimary = rawModel;
+  let rawFallback = (env.AI_FALLBACK_MODEL || env.AI_SECONDARY_MODEL)?.trim();
+
+  if (rawModel.includes(',')) {
+    const parts = rawModel.split(',').map(s => s.trim()).filter(Boolean);
+    rawPrimary = parts[0] || '';
+    if (!rawFallback && parts.length > 1) {
+      rawFallback = parts[1];
+    }
+  }
+
+  const model = normalizeModel(rawPrimary);
+  const fallbackModel = normalizeModel(rawFallback);
+
   try {
-    const base = new URL(env.AI_BASE_URL?.trim() || 'https://api.openai.com/v1');
-    if (!key || !model || /[\r\n]/.test(key + model) || base.protocol !== 'https:' || base.username || base.password || base.search || base.hash) return null;
-    const endpoint = `${base.href.replace(/\/+$/, '')}/chat/completions`;
+    const defaultBase = (model.toLowerCase().startsWith('gemini-') && !env.AI_BASE_URL)
+      ? 'https://generativelanguage.googleapis.com/v1beta/openai'
+      : 'https://api.openai.com/v1';
+    const baseInput = env.AI_BASE_URL?.trim() || defaultBase;
+    const base = new URL(baseInput);
+    const allText = key + model + (fallbackModel || '');
+    if (!model || /[\r\n]/.test(allText) || base.protocol !== 'https:' || base.username || base.password || base.search || base.hash) return null;
+
+    const cleanHref = base.href.replace(/\/+$/, '').replace(/\/chat\/completions$/, '');
+    const endpoint = `${cleanHref}/chat/completions`;
+
     // The credential belongs only in the Authorization header, never in URLs.
-    if (endpoint.includes(key) || model.includes(key)) return null;
-    return { key, model, endpoint };
+    if (endpoint.includes(key) || model.includes(key) || (fallbackModel && fallbackModel.includes(key))) return null;
+
+    let fallback = null;
+    if (fallbackModel && fallbackModel !== model) {
+      const fbKey = env.AI_FALLBACK_API_KEY?.trim() || key;
+      const fbBaseUrl = env.AI_FALLBACK_BASE_URL?.trim() || baseInput;
+      const fbBase = new URL(fbBaseUrl);
+      if (fbBase.protocol === 'https:' && !fbBase.username && !fbBase.password && !fbBase.search && !fbBase.hash) {
+        const cleanFbHref = fbBase.href.replace(/\/+$/, '').replace(/\/chat\/completions$/, '');
+        const fbEndpoint = `${cleanFbHref}/chat/completions`;
+        if (!fbEndpoint.includes(fbKey) && !fallbackModel.includes(fbKey)) {
+          fallback = { key: fbKey, model: fallbackModel, endpoint: fbEndpoint };
+        }
+      }
+    }
+
+    return {
+      key,
+      model,
+      endpoint,
+      fallback,
+      fallbackModel: fallback ? fallback.model : null
+    };
   } catch { return null; }
 }
 
@@ -109,7 +166,7 @@ export function validateConversation(body) {
   if (messages.at(-1).role !== 'user') fail(400, 'INVALID_REQUEST');
   return messages.map(({ role, content }) => ({ role, content }));
 }
-async function providerReply(config, messages, fetchImpl, timeoutMs) {
+async function callSingleProvider(endpoint, key, model, messages, fetchImpl, timeoutMs) {
   const controller = new AbortController();
   let timer;
   const timeout = new Promise((_, reject) => {
@@ -117,10 +174,10 @@ async function providerReply(config, messages, fetchImpl, timeoutMs) {
   });
   try {
     return await Promise.race([timeout, (async () => {
-      const response = await fetchImpl(config.endpoint, {
+      const response = await fetchImpl(endpoint, {
         method: 'POST', redirect: 'error', signal: controller.signal,
-        headers: { 'Content-Type': 'application/json', Authorization: `Bearer ${config.key}` },
-        body: JSON.stringify({ model: config.model, messages: [{ role: 'system', content: SYSTEM_INSTRUCTIONS }, ...messages], max_tokens: LIMITS.outputTokens, stream: false })
+        headers: { 'Content-Type': 'application/json', Authorization: `Bearer ${key}` },
+        body: JSON.stringify({ model, messages: [{ role: 'system', content: SYSTEM_INSTRUCTIONS }, ...messages], max_tokens: LIMITS.outputTokens, stream: false })
       });
       if (!response.ok) { await response.body?.cancel(); fail(502, 'AI_UNAVAILABLE'); }
       if (Number(response.headers.get('content-length')) > LIMITS.responseBytes) { await response.body?.cancel(); fail(502, 'AI_UNAVAILABLE'); }
@@ -137,7 +194,7 @@ async function providerReply(config, messages, fetchImpl, timeoutMs) {
       }
       const data = JSON.parse(Buffer.concat(chunks).toString('utf8'));
       const reply = data?.choices?.[0]?.message?.content;
-      if (typeof reply !== 'string' || !reply.trim() || reply.includes(config.key)) fail(502, 'AI_UNAVAILABLE');
+      if (typeof reply !== 'string' || !reply.trim() || reply.includes(key)) fail(502, 'AI_UNAVAILABLE');
       return reply.trim().slice(0, LIMITS.outputChars);
     })()]);
   } catch (error) {
@@ -145,6 +202,22 @@ async function providerReply(config, messages, fetchImpl, timeoutMs) {
     if (error instanceof HttpError) throw error;
     fail(502, 'AI_UNAVAILABLE');
   } finally { clearTimeout(timer); controller.abort(); }
+}
+async function providerReply(config, messages, fetchImpl, timeoutMs) {
+  const deadline = Date.now() + timeoutMs;
+  try {
+    return await callSingleProvider(config.endpoint, config.key, config.model, messages, fetchImpl, timeoutMs);
+  } catch (primaryError) {
+    const remainingTime = deadline - Date.now();
+    if (config.fallback && remainingTime > 200 && !(primaryError instanceof HttpError && primaryError.code === 'AI_TIMEOUT' && remainingTime <= 200)) {
+      try {
+        return await callSingleProvider(config.fallback.endpoint, config.fallback.key, config.fallback.model, messages, fetchImpl, remainingTime);
+      } catch (fallbackError) {
+        throw fallbackError;
+      }
+    }
+    throw primaryError;
+  }
 }
 export function createChatHandler({ env = process.env, fetchImpl = globalThis.fetch, limiter = sharedLimiter, timeoutMs = LIMITS.timeoutMs } = {}) {
   return async function chat(req, res) {
