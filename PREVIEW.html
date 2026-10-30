@@ -10595,7 +10595,7 @@ body { background: var(--folio-ground); }
 .fh-visual { position: relative; min-width: 0; height: clamp(420px, 46vw, 650px); align-self: stretch; pointer-events: none; }
 /* Both supplied photographs already include their halo. No extra circle,
    circular crop or old cutout is layered over these complete compositions. */
-.fh-portrait { position: absolute; inset: -24px -14% 0 6%; z-index: 2; mask-image: linear-gradient(90deg, transparent, #000 10%, #000 98%, transparent), linear-gradient(to bottom, transparent, #000 8%, #000 70%, transparent 84%); mask-composite: intersect; -webkit-mask-composite: source-in; }
+.fh-portrait { position: absolute; inset: 48px -14% -82px 6%; z-index: 2; mask-image: linear-gradient(90deg, transparent, #000 10%, #000 98%, transparent), linear-gradient(to bottom, transparent, #000 8%, #000 70%, transparent 84%); mask-composite: intersect; -webkit-mask-composite: source-in; }
 .fh-portrait picture { display: flex; justify-content: center; align-items: flex-end; width: 100%; height: 100%; }
 .fh-portrait img { display: block; width: auto; height: 100%; max-width: 100%; object-fit: contain; object-position: center bottom; mask-image: linear-gradient(90deg, transparent, #000 8%, #000 98%, transparent), linear-gradient(to bottom, #000 0%, #000 70%, transparent 84%); mask-composite: intersect; -webkit-mask-composite: source-in; }
 /* Align light portrait position with dark theme reference without changing photo asset */
@@ -10640,7 +10640,7 @@ body { background: var(--folio-ground); }
   .navbar-wrapper .nav-btn-talk, [data-theme="dark"] .navbar-wrapper .nav-btn-talk { display: none; }
   .fh-composition { grid-template-columns: minmax(0,1fr); }
   .fh-visual { order: -1; height: clamp(350px,100vw,480px); width: min(100%,420px); margin: auto; }
-  .fh-portrait { inset: 0 -8% 0 2%; mask-image: linear-gradient(90deg, transparent, #000 6%, #000 98%, transparent), linear-gradient(to bottom, transparent, #000 4%, #000 70%, transparent 84%); mask-composite: intersect; -webkit-mask-composite: source-in; }
+  .fh-portrait { inset: 22px -8% -34px 2%; mask-image: linear-gradient(90deg, transparent, #000 6%, #000 98%, transparent), linear-gradient(to bottom, transparent, #000 4%, #000 70%, transparent 84%); mask-composite: intersect; -webkit-mask-composite: source-in; }
   [data-theme="light"] .fh-portrait img,
   [data-portrait-theme="light"] img {
     transform: translateY(-10px) scale(1.02);
