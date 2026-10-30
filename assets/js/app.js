@@ -389,6 +389,26 @@ function PortfolioApp() {
   const [contactForm, setContactForm] = useState({ name: "", email: "", message: "" });
   const [contactStatus, setContactStatus] = useState({ state: "idle", message: "" });
 
+  // Lock body scroll and enable Escape key to dismiss modals
+  useEffect(() => {
+    const handleKeyDown = (e) => {
+      if (e.key === "Escape") {
+        setSelectedProject(null);
+        setSelectedCertModal(null);
+      }
+    };
+    if (selectedProject || selectedCertModal) {
+      window.addEventListener("keydown", handleKeyDown);
+      document.body.style.overflow = "hidden";
+    } else {
+      document.body.style.overflow = "";
+    }
+    return () => {
+      window.removeEventListener("keydown", handleKeyDown);
+      document.body.style.overflow = "";
+    };
+  }, [selectedProject, selectedCertModal]);
+
   // Sync browser back/forward button
   useEffect(() => {
     const onPopState = () => {
@@ -1464,18 +1484,18 @@ function PortfolioApp() {
                         target: "_blank",
                         rel: "noopener",
                         title: "Click to open official verification page",
-                        style: { display: "block", cursor: "pointer" }
+                        style: { display: "block", cursor: "pointer", textAlign: "center" }
                       },
                       h("img", {
                         src: selectedCertModal.certificateImage,
                         alt: selectedCertModal.title,
-                        style: { width: "100%", borderRadius: "14px", border: "1px solid var(--border-light)", transition: "opacity 0.2s ease" }
+                        style: { width: "100%", maxHeight: "68vh", objectFit: "contain", borderRadius: "14px", border: "1px solid var(--border-light)", transition: "opacity 0.2s ease" }
                       })
                     )
                   : h("img", {
                       src: selectedCertModal.certificateImage,
                       alt: selectedCertModal.title,
-                      style: { width: "100%", borderRadius: "14px", border: "1px solid var(--border-light)" }
+                      style: { width: "100%", maxHeight: "68vh", objectFit: "contain", borderRadius: "14px", border: "1px solid var(--border-light)" }
                     }),
                 selectedCertModal.verifyUrl &&
                   h(

@@ -7175,17 +7175,68 @@ body,
 }
 
 /* ==========================================================================
-   MODALS & DIALOGS
+   MODALS & DIALOGS (FIXED POPUP OVERLAY ON CURRENT DISPLAY)
    ========================================================================== */
+.modal-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  width: 100vw;
+  height: 100vh;
+  height: 100dvh;
+  z-index: 100000;
+  background: rgba(8, 11, 18, 0.88);
+  backdrop-filter: blur(16px) saturate(180%);
+  -webkit-backdrop-filter: blur(16px) saturate(180%);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 1.5rem;
+  box-sizing: border-box;
+  overflow-y: auto;
+}
+
+.modal-window {
+  position: relative;
+  width: 100%;
+  max-width: 800px;
+  max-height: 90vh;
+  max-height: 90dvh;
+  overflow-y: auto;
+  margin: auto;
+  background: #0d121f;
+  border: 1px solid rgba(255, 98, 56, 0.35);
+  border-radius: 20px;
+  padding: 1.75rem;
+  box-shadow: 0 24px 60px -12px rgba(0, 0, 0, 0.85), 0 0 35px rgba(255, 98, 56, 0.14);
+  color: #F8FAFC;
+  box-sizing: border-box;
+}
+
+[data-theme="light"] .modal-overlay {
+  background: rgba(15, 23, 42, 0.68);
+  backdrop-filter: blur(14px);
+  -webkit-backdrop-filter: blur(14px);
+}
+
+[data-theme="light"] .modal-window {
+  background: #FFFFFF;
+  border: 1px solid rgba(15, 23, 42, 0.12);
+  color: #0F172A;
+  box-shadow: 0 24px 60px -10px rgba(15, 23, 42, 0.2), 0 0 30px rgba(255, 98, 56, 0.08);
+}
+
 [data-theme="dark"] .modal-overlay {
-  background: rgba(11, 13, 18, 0.88);
+  background: rgba(8, 11, 18, 0.9);
 }
 
 [data-theme="dark"] .modal-window {
-  background: var(--bg-card);
-  border: 1px solid var(--border-primary);
+  background: #0d121f;
+  border: 1px solid rgba(255, 98, 56, 0.35);
   color: var(--text-primary);
-  box-shadow: 0 24px 60px -12px rgba(0, 0, 0, 0.85);
+  box-shadow: 0 24px 60px -12px rgba(0, 0, 0, 0.85), 0 0 35px rgba(255, 98, 56, 0.14);
 }
 
 [data-theme="dark"] .modal-window h3,
@@ -7197,6 +7248,18 @@ body,
 [data-theme="dark"] .modal-window ul,
 [data-theme="dark"] .modal-window li {
   color: var(--text-secondary);
+}
+
+@media (max-width: 768px) {
+  .modal-overlay {
+    padding: 0.75rem;
+  }
+  .modal-window {
+    padding: 1.25rem 1rem;
+    border-radius: 16px;
+    max-height: 94vh;
+    max-height: 94dvh;
+  }
 }
 
 /* ==========================================================================
