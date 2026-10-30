@@ -789,7 +789,41 @@ function PortfolioApp() {
 
             h(
               "div",
-              { className: "page-shell" },
+              { className: "page-shell-flow" },
+              h(
+                "div",
+                { className: "page-shell-scenery", "aria-hidden": "true" },
+                h(
+                  "div",
+                  { className: "page-shell-scenery-frame" },
+                  h(
+                    "picture",
+                    null,
+                    h("source", {
+                      srcSet:
+                        theme === "light"
+                          ? "/assets/images/about-summitscape-light.webp"
+                          : "/assets/images/about-summitscape.webp",
+                      type: "image/webp"
+                    }),
+                    h("img", {
+                      src:
+                        theme === "light"
+                          ? "/assets/images/about-summitscape-light.png"
+                          : "/assets/images/about-summitscape.png",
+                      alt: "",
+                      width: 1568,
+                      height: 627,
+                      loading: "lazy",
+                      decoding: "async"
+                    })
+                  ),
+                  h("div", { className: "page-shell-scenery-overlay" })
+                )
+              ),
+              h(
+                "div",
+                { className: "page-shell" },
 
             // Existing sections continue unchanged below the new editorial About.
             h(ExperienceTimelineSection, {
@@ -1051,7 +1085,8 @@ function PortfolioApp() {
                   )
                 )
               )
-            ),
+            )
+          ),
 
             // ================================================================
             // 7. EXPANDED FOOTER (Nav Links, Social Icons & Back to Top ↑)

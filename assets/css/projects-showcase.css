@@ -38,54 +38,21 @@
   position: relative;
   width: 100%;
   padding: 6.5rem 0 6rem;
-  background-color: var(--proj-bg-dark);
+  background-color: transparent !important;
   color: var(--proj-text-title-dark);
   font-family: var(--proj-font-body);
   overflow: hidden;
-  transition: background-color 0.4s ease, color 0.4s ease;
+  transition: color 0.4s ease;
 }
 
 [data-theme="light"] .projects-showcase-section {
-  background-color: var(--proj-bg-light);
+  background-color: transparent !important;
   color: var(--proj-text-title-light);
 }
 
-/* Mountain Summitscape Background Whole Display Art */
+/* Mountain Summitscape Background is unified across Experience, Projects, Certifications & Contact */
 .projects-mountain-bg {
-  position: absolute;
-  inset: 0;
-  width: 100%;
-  height: 100%;
-  background-image: url('/assets/images/about-summitscape.webp');
-  background-repeat: no-repeat;
-  background-position: right bottom;
-  background-size: cover;
-  opacity: 0.55;
-  pointer-events: none;
-  z-index: 1;
-  transition: background-image 0.4s ease, opacity 0.4s ease;
-}
-
-[data-theme="light"] .projects-mountain-bg {
-  background-image: url('/assets/images/about-summitscape-light.webp');
-  opacity: 0.65;
-}
-
-/* Gradient blending overlay so text and cards have high readability while the mountain spans the whole background */
-.projects-mountain-bg::after {
-  content: "";
-  position: absolute;
-  inset: 0;
-  background:
-    linear-gradient(180deg, var(--proj-bg-dark) 0%, transparent 8%, transparent 92%, var(--proj-bg-dark) 100%),
-    linear-gradient(90deg, rgba(8, 11, 17, 0.88) 0%, rgba(8, 11, 17, 0.55) 55%, rgba(8, 11, 17, 0.2) 100%);
-  pointer-events: none;
-}
-
-[data-theme="light"] .projects-mountain-bg::after {
-  background:
-    linear-gradient(180deg, var(--proj-bg-light) 0%, transparent 8%, transparent 92%, var(--proj-bg-light) 100%),
-    linear-gradient(90deg, rgba(246, 247, 250, 0.88) 0%, rgba(246, 247, 250, 0.55) 55%, rgba(246, 247, 250, 0.2) 100%);
+  display: none !important;
 }
 
 /* Subtle Grid Texture Overlay */
@@ -903,29 +870,6 @@
     align-items: flex-start;
     gap: 1.25rem;
     margin-bottom: 1.75rem;
-  }
-
-  .projects-mountain-bg {
-    position: absolute;
-    inset: 0;
-    width: 100%;
-    height: 100%;
-    max-width: none;
-    opacity: 0.55;
-    background-position: 70% bottom;
-    background-size: cover;
-  }
-
-  .projects-mountain-bg::after {
-    background:
-      linear-gradient(180deg, var(--proj-bg-dark) 0%, transparent 6%, transparent 94%, var(--proj-bg-dark) 100%),
-      linear-gradient(90deg, rgba(8, 11, 17, 0.88) 0%, rgba(8, 11, 17, 0.5) 100%);
-  }
-
-  [data-theme="light"] .projects-mountain-bg::after {
-    background:
-      linear-gradient(180deg, var(--proj-bg-light) 0%, transparent 6%, transparent 94%, var(--proj-bg-light) 100%),
-      linear-gradient(90deg, rgba(246, 247, 250, 0.88) 0%, rgba(246, 247, 250, 0.5) 100%);
   }
 }
 

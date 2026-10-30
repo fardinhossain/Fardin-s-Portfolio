@@ -175,9 +175,86 @@ body {
 
 /* ==========================================================================
    LAYOUT SHELL & CONTAINERS
+   Static Summitscape Scenery for Experience, Projects, Certifications & Contact
    ========================================================================== */
 
+.page-shell-flow {
+  position: relative;
+  width: 100%;
+  overflow: clip;
+}
+
+.page-shell-scenery {
+  position: absolute;
+  inset: 0;
+  z-index: 0;
+  pointer-events: none;
+  width: 100%;
+  height: 100%;
+}
+
+.page-shell-scenery-frame {
+  position: sticky;
+  top: 0;
+  width: 100%;
+  height: 100vh;
+  height: 100svh;
+  overflow: hidden;
+  background: var(--bg-page);
+  transition: background-color 0.4s ease;
+}
+
+.page-shell-scenery picture {
+  display: block;
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+}
+
+.page-shell-scenery img {
+  display: block;
+  width: 100%;
+  height: 100%;
+  max-width: none;
+  object-fit: cover;
+  object-position: right bottom;
+}
+
+.page-shell-scenery-overlay {
+  position: absolute;
+  inset: 0;
+  background:
+    linear-gradient(90deg, #f5f3eeed, #f5f3ee9c 60%, #f5f3ee26),
+    linear-gradient(0deg, var(--bg-page), transparent 8%, transparent 94%, var(--bg-page));
+  pointer-events: none;
+}
+
+[data-theme="dark"] .page-shell-scenery-overlay {
+  background:
+    linear-gradient(90deg, #0b0d0fdb, #0b0d0fa6 62%, #0b0d0f44),
+    linear-gradient(0deg, var(--bg-page), transparent 8%, transparent 94%, var(--bg-page));
+}
+
+@media (max-width: 768px) {
+  .page-shell-scenery img {
+    object-position: 70% bottom;
+  }
+  .page-shell-scenery-overlay {
+    background:
+      linear-gradient(90deg, #f5f3eee8, #f5f3eeb3),
+      linear-gradient(0deg, var(--bg-page), transparent 6%, transparent 95%, var(--bg-page));
+  }
+  [data-theme="dark"] .page-shell-scenery-overlay {
+    background:
+      linear-gradient(90deg, #0b0d0fe0, #0b0d0f9c),
+      linear-gradient(0deg, var(--bg-page), transparent 6%, transparent 95%, var(--bg-page));
+  }
+}
+
 .page-shell {
+  position: relative;
+  z-index: 2;
   max-width: 1320px;
   margin: 0 auto;
   padding: 0 1.5rem 5rem;
