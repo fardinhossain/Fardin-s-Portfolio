@@ -53,7 +53,7 @@ Do not claim that the CLI ran, a skill was loaded, an artifact was verified, or 
 
 # Full Redesign: My Four-Month FlyRank AI Internship Journey
 
-**Target page:** https://fardinflyrankai.vercel.app/experience/flyrank-ai
+**Target page:** https://fardin-ai.vercel.app/experience/flyrank-ai
 
 **Project:** Existing personal portfolio website
 

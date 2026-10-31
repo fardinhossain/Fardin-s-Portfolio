@@ -91,7 +91,7 @@ The assistant's professional context is derived from the website data and the pr
 
 `npm run build` writes only whitelisted public assets to `dist`; server source and environment files are excluded. Vercel function adapters use server-side environment variables, with a 15-second upstream timeout and clean error responses. Input/body/output limits, text-safe rendering, redirect rejection, key-echo rejection and best-effort process-local rate limiting are included. The in-memory limiter is not a distributed production quota; use a shared limiter and provider spending limits for public high-traffic deployment.
 
-Pushing source does not itself configure a deployment. This latest implementation is not claimed deployed or connected to a live AI provider. The existing website is https://fardinflyrankai.vercel.app/.
+Pushing source does not itself configure a deployment. This latest implementation is not claimed deployed or connected to a live AI provider. The existing website is https://fardin-ai.vercel.app/.
 
 ## Contact and license
 

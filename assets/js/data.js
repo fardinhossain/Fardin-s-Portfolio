@@ -15,13 +15,15 @@ export const PROFILE_DATA = {
   phone: "+8801992748470",
   github: "https://github.com/fardinhossain",
   linkedin: "https://www.linkedin.com/in/fardinhosn/",
-  liveSite: "https://fardinflyrankai.vercel.app/",
+  liveSite: "https://fardin-ai.vercel.app/",
   previousPortfolio: "https://mdfardin.vercel.app/",
   resumeUrl: "Fardin_Hossain_Resume.pdf",
   paperPdfUrl: "/paper.pdf",
   paperWebUrl: "https://fardinhossain.github.io/FlyRankAI-ML-Internship-Task/",
-  flyrankVerifyUrl: "https://internship.flyrank.ai/verify/FR-D11-9E3D0-1FE2A?first_name=Md.",
-  flyrankCredentialId: "FR-D11-9E3D0-1FE2A",
+  flyrankVerifyUrl: "https://internship.flyrank.ai/verify/FR-D11-EB30B-2279E?first_name=Md.",
+  flyrankCredentialId: "FR-D11-EB30B-2279E",
+  flyrankAiFluencyVerifyUrl: "https://internship.flyrank.ai/verify/FR-D11-734D6-5DB48?first_name=Md.",
+  flyrankAiFluencyCredentialId: "FR-D11-734D6-5DB48",
   heroPortrait: "/assets/images/hero-portrait-dark-cutout.webp",
   heroPortraitDark: "/assets/images/hero-portrait-dark-cutout.webp",
   heroPortraitLight: "/assets/images/hero-portrait-light-cutout.webp",
@@ -438,8 +440,8 @@ export const JOURNEY_TIMELINE = [
         url: "https://github.com/fardinhossain/FlyRankAI-ML-Internship-Task"
       },
       {
-        label: "Site: fardinflyrankai.vercel.app",
-        url: "https://fardinflyrankai.vercel.app/"
+        label: "Site: fardin-ai.vercel.app",
+        url: "https://fardin-ai.vercel.app/"
       },
       {
         label: "Research Paper (PDF)",
@@ -470,7 +472,7 @@ export const JOURNEY_TIMELINE = [
     links: [
       {
         label: "Survive the Crit (Portfolio Review)",
-        url: "https://fardinflyrankai.vercel.app/"
+        url: "https://fardin-ai.vercel.app/"
       },
       {
         label: "Show It / Tell the Story (Build-in-Public Post)",
@@ -703,12 +705,27 @@ export const VERIFIED_CERTIFICATIONS = [
     logoText: "FR",
     title: "FlyRank AI — Machine Learning, Certificate of Completion",
     period: "Jul – Oct 2026",
-    credentialId: "FR-D11-9E3D0-1FE2A",
+    credentialId: "FR-D11-EB30B-2279E",
     status: "Verified",
     statusType: "verified",
     certificateImage: "assets/images/FlyRank_ML_Certificate_of_Completion.png",
-    verifyUrl: "https://internship.flyrank.ai/verify/FR-D11-9E3D0-1FE2A?first_name=Md.",
+    pdfUrl: "/assets/flyrank%20documents/flyrank-certificate-of-completion-machine-learning.pdf",
+    verifyUrl: "https://internship.flyrank.ai/verify/FR-D11-EB30B-2279E?first_name=Md.",
     description: "Certificate of Completion — Md. Fardin Hossain — Machine Learning Internship Program at FlyRank.ai, July 1 – October 31, 2026."
+  },
+  {
+    id: "flyrank-ai-fluency",
+    issuer: "FlyRank AI",
+    logoText: "FR",
+    title: "FlyRank AI — AI Fluency, Certificate of Completion",
+    period: "Jul – Oct 2026",
+    credentialId: "FR-D11-734D6-5DB48",
+    status: "Verified",
+    statusType: "verified",
+    certificateImage: "assets/images/FlyRank_AIFluency_Certificate_of_Completion.png",
+    pdfUrl: "/assets/flyrank%20documents/flyrank-certificate-of-completion-ai-fluency.pdf",
+    verifyUrl: "https://internship.flyrank.ai/verify/FR-D11-734D6-5DB48?first_name=Md.",
+    description: "Certificate of Completion — Md. Fardin Hossain — AI Fluency Internship Program at FlyRank.ai, July 1 – October 31, 2026."
   },
   {
     id: "datacamp-ai",
@@ -764,17 +781,6 @@ export const VERIFIED_CERTIFICATIONS = [
     statusType: "verified",
     certificateImage: "assets/images/EDGE-CUET.jpg",
     description: "Hands-on enterprise penetration testing and cybersecurity assessment under the EDGE-CUET / DST initiative."
-  },
-  {
-    id: "flyrank-fluency-review",
-    issuer: "FlyRank AI",
-    logoText: "FL",
-    title: "AI Fluency Track Final Human Sign-Off (39/39 Cards)",
-    period: "Oct 2026",
-    status: "",
-    statusType: "none",
-    openJourney: true,
-    description: "All 39 portal cards complete across Machine Learning and AI Fluency capstone deliverables and peer review."
   }
 ];
 

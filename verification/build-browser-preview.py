@@ -6,7 +6,7 @@ still require internet. Contact delivery is deliberately disabled in preview.
 from pathlib import Path
 import base64, json, mimetypes, re, sys, posixpath
 ROOT = Path(__file__).resolve().parent.parent
-ORIGIN = 'https://fardinflyrankai.vercel.app'
+ORIGIN = 'https://fardin-ai.vercel.app'
 OUT = Path(sys.argv[1]) if len(sys.argv)>1 else ROOT.parent/'Fardin-reference-browser-preview.html'
 def data_uri(path):
     # Inspection preview targets modern browsers; optimized equivalents avoid

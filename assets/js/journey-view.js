@@ -436,8 +436,11 @@ export function FlyRankJourneyView({ onBackHome, initialSection, onSelectCertMod
     setFlippedCerts(map);
   };
 
-  const verifyUrl =
-    "https://internship.flyrank.ai/verify/FR-D11-9E3D0-1FE2A?first_name=Md.";
+  const mlVerifyUrl =
+    "https://internship.flyrank.ai/verify/FR-D11-EB30B-2279E?first_name=Md.";
+  const aiFluencyVerifyUrl =
+    "https://internship.flyrank.ai/verify/FR-D11-734D6-5DB48?first_name=Md.";
+  const verifyUrl = mlVerifyUrl;
 
   const scrollToTop = () => {
     scrollToTarget(0);
@@ -512,7 +515,7 @@ export function FlyRankJourneyView({ onBackHome, initialSection, onSelectCertMod
             title: "Open official FlyRank credential verification"
           },
           h("span", { className: "verify-dot" }),
-          h("span", { className: "verify-text-full" }, "✓ Verify: FR-D11-9E3D0-1FE2A ↗"),
+          h("span", { className: "verify-text-full" }, "✓ Verify: FR-D11-EB30B-2279E ↗"),
           h("span", { className: "verify-text-short" }, "✓ Verify ↗")
         )
       )
@@ -659,7 +662,7 @@ export function FlyRankJourneyView({ onBackHome, initialSection, onSelectCertMod
             h(
               "a",
               {
-                href: "/assets/documents/flyrank-internship-confirmation-letter-md-fardin-hossain.pdf",
+                href: "/assets/flyrank%20documents/FlyrankAI%20Confirmation%20Latter%20.pdf",
                 target: "_blank",
                 rel: "noopener noreferrer",
                 className: "story-btn-secondary"
@@ -830,7 +833,7 @@ export function FlyRankJourneyView({ onBackHome, initialSection, onSelectCertMod
             h(
               "a",
               {
-                href: "https://fardinflyrankai.vercel.app/",
+                href: "https://fardin-ai.vercel.app/",
                 target: "_blank",
                 rel: "noopener noreferrer",
                 className: "story-link-pill"
@@ -1141,7 +1144,103 @@ export function FlyRankJourneyView({ onBackHome, initialSection, onSelectCertMod
         h(
           "p",
           { className: "story-certs-clarifying-line" },
-          "7 credential tracks on the main portfolio · 20 Anthropic Academy course certificates below."
+          "Official FlyRank Dual-Track Completion Certificates & 20 Verified Anthropic Academy Course Credentials."
+        ),
+
+        // Official FlyRank Program Completion Certificates Spotlight
+        h(
+          "div",
+          {
+            className: "story-official-flyrank-certs",
+            style: {
+              display: "grid",
+              gridTemplateColumns: "repeat(auto-fit, minmax(280px, 1fr))",
+              gap: "16px",
+              marginBottom: "28px"
+            }
+          },
+          [
+            {
+              track: "Machine Learning Track",
+              title: "FlyRank AI — Machine Learning, Certificate of Completion",
+              id: "FR-D11-EB30B-2279E",
+              image: "assets/images/FlyRank_ML_Certificate_of_Completion.png",
+              verify: mlVerifyUrl,
+              pdf: "/assets/flyrank%20documents/flyrank-certificate-of-completion-machine-learning.pdf"
+            },
+            {
+              track: "AI Fluency Track",
+              title: "FlyRank AI — AI Fluency, Certificate of Completion",
+              id: "FR-D11-734D6-5DB48",
+              image: "assets/images/FlyRank_AIFluency_Certificate_of_Completion.png",
+              verify: aiFluencyVerifyUrl,
+              pdf: "/assets/flyrank%20documents/flyrank-certificate-of-completion-ai-fluency.pdf"
+            }
+          ].map((c) =>
+            h(
+              "div",
+              {
+                key: c.id,
+                className: "story-key-facts-box",
+                style: {
+                  background: "linear-gradient(135deg, rgba(16, 22, 34, 0.85), rgba(11, 15, 23, 0.95))",
+                  border: "1px solid rgba(255, 98, 56, 0.35)",
+                  borderRadius: "14px",
+                  padding: "18px 20px",
+                  position: "relative"
+                }
+              },
+              h("div", { style: { display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: "10px" } },
+                h("span", { className: "report-meta-tag success" }, "✓ OFFICIAL COMPLETION CREDENTIAL"),
+                h("span", { style: { fontFamily: "var(--font-mono, monospace)", fontSize: "11px", color: "var(--color-primary-light, #ff7048)" } }, c.id)
+              ),
+              h("h4", { style: { margin: "4px 0 12px", fontSize: "16px", fontWeight: "700", color: "#fff" } }, c.title),
+              h("p", { style: { margin: "0 0 14px", fontSize: "12px", color: "#94a3b8", lineHeight: "1.5" } },
+                `Issued October 31, 2026 for the 4-Month FlyRank.ai Internship Program (July 1 – October 31, 2026).`
+              ),
+              h("div", { style: { display: "flex", flexWrap: "wrap", gap: "8px" } },
+                h(
+                  "button",
+                  {
+                    type: "button",
+                    className: "story-btn-secondary",
+                    style: { fontSize: "12px", padding: "6px 14px" },
+                    onClick: () =>
+                      setModalPreview({
+                        type: "img",
+                        src: c.image,
+                        title: c.title,
+                        subtitle: `Official Credential · ID: ${c.id}`,
+                        caption: `Certificate of Completion — Md. Fardin Hossain — FlyRank.ai ${c.track}`
+                      })
+                  },
+                  "👁 View Scan"
+                ),
+                h(
+                  "a",
+                  {
+                    href: c.verify,
+                    target: "_blank",
+                    rel: "noopener noreferrer",
+                    className: "story-btn-primary",
+                    style: { fontSize: "12px", padding: "6px 14px" }
+                  },
+                  "✓ Verify ↗"
+                ),
+                h(
+                  "a",
+                  {
+                    href: c.pdf,
+                    target: "_blank",
+                    rel: "noopener noreferrer",
+                    className: "story-btn-secondary",
+                    style: { fontSize: "12px", padding: "6px 14px" }
+                  },
+                  "📄 PDF ↗"
+                )
+              )
+            )
+          )
         ),
 
         // Filter Tabs & Search Bar
@@ -1670,7 +1769,7 @@ export function FlyRankJourneyView({ onBackHome, initialSection, onSelectCertMod
             h(
               "a",
               {
-                href: "/assets/documents/flyrank-internship-progress-report.pdf",
+                href: "/assets/flyrank%20documents/Flyrank%20AI%20Internship%20Progress%20Report.pdf",
                 target: "_blank",
                 rel: "noopener noreferrer",
                 className: "story-btn-primary"
@@ -1736,7 +1835,7 @@ export function FlyRankJourneyView({ onBackHome, initialSection, onSelectCertMod
             h(
               "a",
               {
-                href: "/assets/documents/flyrank-internship-progress-report.pdf",
+                href: "/assets/flyrank%20documents/Flyrank%20AI%20Internship%20Progress%20Report.pdf",
                 target: "_blank",
                 rel: "noopener noreferrer",
                 className: "story-btn-primary"
@@ -1817,7 +1916,7 @@ export function FlyRankJourneyView({ onBackHome, initialSection, onSelectCertMod
             h(
               "a",
               {
-                href: "/assets/documents/flyrank-recommendation-letter.pdf",
+                href: "/assets/flyrank%20documents/flyrank-recommendation-letter.pdf",
                 target: "_blank",
                 rel: "noopener noreferrer",
                 className: "story-btn-primary"
@@ -1897,12 +1996,54 @@ export function FlyRankJourneyView({ onBackHome, initialSection, onSelectCertMod
           h(
             "a",
             {
-              href: verifyUrl,
+              href: mlVerifyUrl,
               target: "_blank",
               rel: "noopener noreferrer",
               className: "story-btn-primary large"
             },
-            "✓ Verified · D11 Certificate of Completion · Machine Learning ↗"
+            "✓ Verified · Machine Learning Certificate (FR-D11-EB30B-2279E) ↗"
+          ),
+          h(
+            "a",
+            {
+              href: aiFluencyVerifyUrl,
+              target: "_blank",
+              rel: "noopener noreferrer",
+              className: "story-btn-primary large"
+            },
+            "✓ Verified · AI Fluency Certificate (FR-D11-734D6-5DB48) ↗"
+          ),
+          h(
+            "button",
+            {
+              type: "button",
+              className: "story-btn-secondary large",
+              onClick: () =>
+                setModalPreview({
+                  type: "img",
+                  src: "assets/images/FlyRank_AIFluency_Certificate_of_Completion.png",
+                  title: "FlyRank AI — AI Fluency, Certificate of Completion",
+                  subtitle: "Official Credential · ID: FR-D11-734D6-5DB48",
+                  caption: "Certificate of Completion — Md. Fardin Hossain — AI Fluency Internship Program at FlyRank.ai, July 1 – October 31, 2026."
+                })
+            },
+            "👁 View AI Fluency Certificate"
+          ),
+          h(
+            "button",
+            {
+              type: "button",
+              className: "story-btn-secondary large",
+              onClick: () =>
+                setModalPreview({
+                  type: "img",
+                  src: "assets/images/FlyRank_ML_Certificate_of_Completion.png",
+                  title: "FlyRank AI — Machine Learning, Certificate of Completion",
+                  subtitle: "Official Credential · ID: FR-D11-EB30B-2279E",
+                  caption: "Certificate of Completion — Md. Fardin Hossain — Machine Learning Internship Program at FlyRank.ai, July 1 – October 31, 2026."
+                })
+            },
+            "👁 View ML Certificate"
           ),
           h(
             "button",

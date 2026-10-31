@@ -4,7 +4,19 @@
 
 # Agent Skills & IDE Customizations (keep local, ignore from GitHub)
 .agents/
+.agent/
+.claude/
+.codex/
+.devin/
+.gemini/
+.grok/
+.opencode/
 skills-lock.json
+
+# Plugin and design system files (keep local, do not push to GitHub)
+DESIGN.md
+desgin.md
+design-md/
 
 # Weekly Coursework Context & Documentation (not used in live website)
 doc/
