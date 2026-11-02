@@ -40,7 +40,7 @@ body { background: var(--folio-ground); }
 .fh-atmosphere { position: absolute; inset: 0; z-index: -1; pointer-events: none; }
 .fh-inner { max-width: 1440px; margin: auto; padding: 0 clamp(20px, 6.4vw, 92px); }
 .fh-composition { display: grid; grid-template-columns: 1fr 1.1fr; align-items: center; gap: 0; }
-.fh-copy { position: relative; z-index: 3; min-width: 0; container-type: inline-size; padding: 38px 0 70px; }
+.fh-copy { position: relative; z-index: 3; min-width: 0; container-type: inline-size; padding: 24px 0 36px; }
 .fh-kicker { margin: 0 0 22px; padding-left: 12px; border-left: 5px solid #e56440; font-family: var(--font-sans); font-size: clamp(9px, 1.9cqw, 12px); line-height: 1.6; font-weight: 600; letter-spacing: .035em; color: var(--folio-ink); }
 .fh-headline { margin: 0; color: var(--folio-muted); font-family: 'Anton', 'Oswald', sans-serif; font-size: clamp(32px, 10.1cqw, 74px); line-height: 1.04; letter-spacing: -.02em; font-weight: 400; }
 .fh-headline-line { display: block; white-space: nowrap; }
@@ -85,10 +85,10 @@ body { background: var(--folio-ground); }
 .fh-resume:hover { text-decoration: underline; }
 .fh-resume svg { width: 16px; height: 16px; }
 .fh-actions a:focus-visible { outline: 2px solid var(--folio-coral); outline-offset: 5px; }
-.fh-visual { position: relative; min-width: 0; height: clamp(430px, 47vw, 660px); align-self: stretch; pointer-events: none; margin-top: 36px; }
+.fh-visual { position: relative; min-width: 0; height: clamp(400px, 42vw, 560px); align-self: stretch; pointer-events: none; margin-top: 10px; }
 /* Both supplied photographs already include their halo. Render the complete
    portrait cleanly to the bottom of the stage with a subtle bottom feather. */
-.fh-portrait { position: absolute; inset: 32px -8% 0 2%; z-index: 2; }
+.fh-portrait { position: absolute; inset: 12px -4% 0 0; z-index: 2; }
 .fh-portrait picture { display: flex; justify-content: center; align-items: flex-end; width: 100%; height: 100%; }
 .fh-portrait img { display: block; width: auto; height: 100%; max-width: 100%; object-fit: contain; object-position: center bottom; -webkit-mask-image: linear-gradient(90deg, transparent 0%, #000 6%, #000 96%, transparent 100%), linear-gradient(to bottom, #000 0%, #000 90%, transparent 100%); mask-image: linear-gradient(90deg, transparent 0%, #000 6%, #000 96%, transparent 100%), linear-gradient(to bottom, #000 0%, #000 90%, transparent 100%); mask-composite: intersect; -webkit-mask-composite: source-in; }
 /* Align light portrait position with dark theme reference without changing photo asset */
@@ -105,9 +105,9 @@ body { background: var(--folio-ground); }
 .fh-strength-icon { display: flex; align-items: center; justify-content: center; width: 30px; height: 30px; flex: 0 0 30px; color: var(--folio-coral); }
 .fh-strength-icon svg { width: 20px; height: 20px; }
 @media (min-width:701px) and (max-width:1050px) {
-  .fh-visual { height: 480px; margin-top: 30px; }
-  .fh-portrait { inset: 30px -8% 0 2%; }
-  .fh-copy { padding-block: 35px; }
+  .fh-visual { height: 440px; margin-top: 14px; }
+  .fh-portrait { inset: 14px -4% 0 0; }
+  .fh-copy { padding-block: 24px; }
   .fh-headline { font-size: 10.1cqw; }
   .fh-actions { gap: 10px 16px; }
   .fh-contact { padding-inline: 14px; }
@@ -135,7 +135,7 @@ body { background: var(--folio-ground); }
   .navbar-wrapper .nav-btn-talk, [data-theme="dark"] .navbar-wrapper .nav-btn-talk { display: none; }
   .fh-composition { grid-template-columns: minmax(0,1fr); }
   .fh-visual { order: -1; height: clamp(360px,102vw,490px); width: min(100%,420px); margin: 56px auto 0; }
-  .fh-portrait { inset: 26px -6% 0 2%; }
+  .fh-portrait { inset: 26px 0 0 0; }
   [data-theme="light"] .fh-portrait img,
   [data-portrait-theme="light"] img {
     transform: translateY(-4px) scale(1.02);
@@ -152,6 +152,11 @@ body { background: var(--folio-ground); }
     bottom: 8px;
     margin: 0;
     padding: 16px 12px 10px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    text-align: center;
     font-size: clamp(29px, 9.8vw, 42px);
     color: #fff;
     text-shadow: 0 2px 14px rgba(0, 0, 0, 0.72), 0 1px 3px rgba(0, 0, 0, 0.6);
@@ -164,19 +169,24 @@ body { background: var(--folio-ground); }
   }
   [data-theme="dark"] .fh-name-mobile .fh-name-cloud {
     background:
-      radial-gradient(ellipse 65% 75% at 48% 52%, rgba(231, 100, 64, 0.44) 0%, rgba(255, 120, 70, 0.24) 42%, transparent 75%),
+      radial-gradient(ellipse 65% 75% at 50% 50%, rgba(231, 100, 64, 0.44) 0%, rgba(255, 120, 70, 0.24) 42%, transparent 75%),
       radial-gradient(ellipse 90% 85% at 50% 50%, rgba(9, 11, 14, 0.95) 0%, rgba(15, 18, 24, 0.82) 55%, transparent 85%);
     filter: blur(16px);
     -webkit-filter: blur(16px);
   }
   [data-theme="light"] .fh-name-mobile .fh-name-cloud {
     background:
-      radial-gradient(ellipse 65% 75% at 48% 52%, rgba(229, 100, 64, 0.28) 0%, rgba(255, 130, 80, 0.16) 42%, transparent 75%),
+      radial-gradient(ellipse 65% 75% at 50% 50%, rgba(229, 100, 64, 0.28) 0%, rgba(255, 130, 80, 0.16) 42%, transparent 75%),
       radial-gradient(ellipse 90% 85% at 50% 50%, rgba(255, 255, 255, 0.96) 0%, rgba(244, 244, 241, 0.84) 55%, transparent 85%);
     filter: blur(14px);
     -webkit-filter: blur(14px);
   }
-  .fh-name-mobile::before { left: 10px; top: 6px; }
+  .fh-name-mobile::before {
+    position: static;
+    margin: 0 auto 8px auto;
+    left: auto;
+    top: auto;
+  }
   .fh-name-mobile .fh-name-accent { color: #ff7952; }
   .fh-actions { gap: 10px 18px; }
   .fh-resume { font-size: 10px; }

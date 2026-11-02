@@ -130,7 +130,7 @@ export function HeroAuraFlyingRobot({ onActivate, open = false, onRevealProgress
             button.tabIndex = position.visible ? 0 : -1;
 
             const labelEl = labelRef.current;
-            if (labelEl && el.clientWidth > 0 && el.clientHeight > 0) {
+            if (labelEl && position.visible && position.width > 0 && el.clientWidth > 0 && el.clientHeight > 0) {
               const labelW = labelEl.offsetWidth || 168;
               const labelH = labelEl.offsetHeight || 28;
               const centerX = position.x + position.width / 2;
@@ -138,6 +138,10 @@ export function HeroAuraFlyingRobot({ onActivate, open = false, onRevealProgress
               const clampedTop = Math.max(8, Math.min(el.clientHeight - labelH - 8, position.y - labelH - 6));
               labelEl.style.left = `${Math.round(clampedLeft)}px`;
               labelEl.style.top = `${Math.round(clampedTop)}px`;
+              labelEl.style.visibility = "visible";
+            } else if (labelEl && (!position.visible || position.width === 0)) {
+              labelEl.style.opacity = "0";
+              labelEl.style.visibility = "hidden";
             }
           }
         });
@@ -179,10 +183,10 @@ export function HeroAuraFlyingRobot({ onActivate, open = false, onRevealProgress
       ref: hitbox, className: "fh-robot-hitbox", type: "button", style: { visibility: "hidden" }, tabIndex: -1,
       "aria-label": "Open Fardin's AI assistant", "aria-haspopup": "dialog", "aria-expanded": open,
       onClick: event => current.current.onActivate?.(event.currentTarget),
-      onPointerEnter: () => { activity.current.hover = true; syncPause(); },
-      onPointerLeave: () => { activity.current.hover = false; syncPause(); },
-      onFocus: () => { activity.current.focus = true; syncPause(); },
-      onBlur: () => { activity.current.focus = false; syncPause(); }
+      onPointerEnter: e => { if (e.pointerType === "mouse") { activity.current.hover = true; syncPause(); } },
+      onPointerLeave: e => { if (e.pointerType === "mouse") { activity.current.hover = false; syncPause(); } },
+      onFocus: e => { if (e.target.matches?.(":focus-visible")) { activity.current.focus = true; syncPause(); } },
+      onBlur: () => { activity.current.focus = false; activity.current.hover = false; syncPause(); }
     }, h("span", { className: "fh-sr-only" }, "Ask about Fardin's work"))
   );
 }

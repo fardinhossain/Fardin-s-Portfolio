@@ -70,7 +70,14 @@ export function mountHeroOrbit(host, options = {}) {
   const orbitEnd = revealEnd + orbitDuration;
   const landEnd = orbitEnd + landDuration;
   const assistantEnd = landEnd + assistantDuration;
-  let inView = false;
+  function checkInView() {
+    if (!host || typeof window === 'undefined') return false;
+    const r = host.getBoundingClientRect();
+    const vh = window.innerHeight || document.documentElement.clientHeight || 0;
+    const vw = window.innerWidth || document.documentElement.clientWidth || 0;
+    return r.bottom > 0 && r.top < vh && r.right > 0 && r.left < vw;
+  }
+  let inView = checkInView();
   let width = 0;
   let height = 0;
   let frame = 0;
@@ -128,6 +135,8 @@ export function mountHeroOrbit(host, options = {}) {
     resizeObserver?.disconnect();
     intersectionObserver?.disconnect();
     window.removeEventListener('resize', resize);
+    window.removeEventListener('pageshow', wake);
+    window.removeEventListener('focus', wake);
     document.removeEventListener('visibilitychange', visibilityChanged);
     canvas.removeEventListener('webglcontextlost', contextLost);
     for (const item of geometries) item.dispose();
@@ -199,7 +208,7 @@ export function mountHeroOrbit(host, options = {}) {
     const isStatic = reduced || stationary;
     const revealX = narrow ? 0.88 : 0.14;
     const revealY = narrow ? 0.28 : 0.54;
-    const landX = narrow ? 0.89 : 0.88;
+    const landX = narrow ? 0.94 : 0.935;
     const landY = narrow ? 0.68 : 0.82;
     let x = revealX;
     let y = revealY;
@@ -387,6 +396,7 @@ export function mountHeroOrbit(host, options = {}) {
 
   function resize() {
     if (disposed) return;
+    inView = checkInView();
     const bounds = host.getBoundingClientRect();
     width = Math.max(0, bounds.width);
     height = Math.max(0, bounds.height);
@@ -402,7 +412,15 @@ export function mountHeroOrbit(host, options = {}) {
     sync();
   }
 
-  function visibilityChanged() { sync(); }
+  function visibilityChanged() {
+    inView = checkInView();
+    sync();
+  }
+
+  function wake() {
+    inView = checkInView();
+    resize();
+  }
 
   try {
     renderer.outputColorSpace = THREE.SRGBColorSpace;
@@ -497,6 +515,8 @@ export function mountHeroOrbit(host, options = {}) {
 
     document.addEventListener('visibilitychange', visibilityChanged);
     window.addEventListener('resize', resize, { passive: true });
+    window.addEventListener('pageshow', wake, { passive: true });
+    window.addEventListener('focus', wake, { passive: true });
     if (typeof ResizeObserver !== 'undefined') {
       resizeObserver = new ResizeObserver(resize);
       resizeObserver.observe(host);
