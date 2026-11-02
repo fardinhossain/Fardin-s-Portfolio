@@ -71,13 +71,14 @@ export function mountHeroOrbit(host, options = {}) {
   const landEnd = orbitEnd + landDuration;
   const assistantEnd = landEnd + assistantDuration;
   function checkInView() {
-    if (!host || typeof window === 'undefined') return false;
+    if (!host || typeof window === 'undefined') return true;
     const r = host.getBoundingClientRect();
     const vh = window.innerHeight || document.documentElement.clientHeight || 0;
     const vw = window.innerWidth || document.documentElement.clientWidth || 0;
-    return r.bottom > 0 && r.top < vh && r.right > 0 && r.left < vw;
+    if (r.width === 0 || r.height === 0 || vh === 0) return true;
+    return r.bottom > -80 && r.top < vh + 80 && r.right > -80 && r.left < vw + 80;
   }
-  let inView = checkInView();
+  let inView = true;
   let width = 0;
   let height = 0;
   let frame = 0;
@@ -85,6 +86,7 @@ export function mountHeroOrbit(host, options = {}) {
   let elapsed = 0;
   let resizeObserver;
   let intersectionObserver;
+  const retryTimers = [];
   const geometries = new Set();
   const materials = new Set();
   const textures = new Set();
@@ -132,6 +134,7 @@ export function mountHeroOrbit(host, options = {}) {
     if (disposed) return;
     disposed = true;
     stop();
+    while (retryTimers.length) clearTimeout(retryTimers.pop());
     resizeObserver?.disconnect();
     intersectionObserver?.disconnect();
     window.removeEventListener('resize', resize);
@@ -208,8 +211,8 @@ export function mountHeroOrbit(host, options = {}) {
     const isStatic = reduced || stationary;
     const revealX = narrow ? 0.88 : 0.14;
     const revealY = narrow ? 0.28 : 0.54;
-    const landX = narrow ? 0.94 : 0.935;
-    const landY = narrow ? 0.68 : 0.82;
+    const landX = narrow ? 0.93 : 0.935;
+    const landY = narrow ? 0.70 : 0.82;
     let x = revealX;
     let y = revealY;
     let depth = 0;
@@ -340,7 +343,7 @@ export function mountHeroOrbit(host, options = {}) {
     // (face: x in 0.27..0.80, y in 0.13..0.66).
     const scale = stationary
       ? Math.min(width * 0.82 / 2.9, height * 0.84 / 4.6) * modelScale
-      : Math.min(width * (narrow ? 0.11 : 0.165) / 3.0, height * (narrow ? 0.155 : 0.21) / 4.05) * Math.min(modelScale, narrow ? 1.05 : 1.12);
+      : Math.min(width * (narrow ? 0.165 : 0.165) / 3.0, height * (narrow ? 0.21 : 0.21) / 4.05) * Math.min(modelScale, narrow ? 1.25 : 1.12);
     const depthScale = stationary ? 1 : 1 + 0.11 * depth;
     robot.scale.setScalar(scale * depthScale);
     robot.position.set(width * (x - 0.5), height * (0.5 - y), depth * 28);
@@ -520,13 +523,16 @@ export function mountHeroOrbit(host, options = {}) {
     if (typeof ResizeObserver !== 'undefined') {
       resizeObserver = new ResizeObserver(resize);
       resizeObserver.observe(host);
+      if (host.parentElement) resizeObserver.observe(host.parentElement);
     }
     if (typeof IntersectionObserver !== 'undefined') {
       intersectionObserver = new IntersectionObserver((entries) => {
         inView = entries.some((entry) => entry.isIntersecting);
-        sync();
+        if (inView) resize();
+        else sync();
       }, { threshold: 0 });
       intersectionObserver.observe(host);
+      if (host.parentElement) intersectionObserver.observe(host.parentElement);
     } else {
       inView = true;
     }
@@ -536,6 +542,12 @@ export function mountHeroOrbit(host, options = {}) {
     setReveal(reduced || stationary ? 1 : 0);
     setAssistant(reduced || stationary ? 1 : 0);
     resize();
+    retryTimers.push(
+      setTimeout(resize, 60),
+      setTimeout(resize, 180),
+      setTimeout(resize, 450),
+      setTimeout(resize, 1000)
+    );
   } catch (_) {
     dispose();
     unavailable();
