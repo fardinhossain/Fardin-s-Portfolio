@@ -11063,19 +11063,23 @@ body,
 
 /* ==========================================================================
    FULL-WIDTH PAGE GROUND & BORDERLESS SECTION DETAILS OVERRIDES
-   Aligns page background with Hero section (--hero-ground) and removes
+   Aligns page background with the summitscape artwork and removes
    outer section boxes from Experience & Certifications.
    ========================================================================== */
 html,
 body {
-  background-color: var(--hero-ground, #f4f4f1) !important;
+  background-color: #FAF6F2 !important;
   background-image: none !important;
 }
 
 [data-theme="dark"] html,
 [data-theme="dark"] body {
-  background-color: var(--hero-ground, #1f1f1f) !important;
+  background-color: #080A0F !important;
   background-image: none !important;
+}
+
+.page-shell-scenery {
+  display: none !important;
 }
 
 .exp-robot-stage,
