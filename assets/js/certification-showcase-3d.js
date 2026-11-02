@@ -707,14 +707,23 @@ export function DualRobotDeliveryScene({
       currentBot.leftArmParts.gripperPivot.rotation.z = 0.22;
       currentBot.rightArmParts.gripperPivot.rotation.z = -0.22;
 
-      // Vertical offset so the carried tile aligns exactly with the row center
+      // Vertical offset so the carried tile aligns exactly with the card center
       const targetTileOffsetY = 0.54 * baseScale;
+      const targetX = THREE.MathUtils.clamp(slotPos.x || 0, -vW * 0.36, vW * 0.36);
 
       // Positions for smooth 3D Bézier approach (clearly in front with z > 0.6)
       const p0 = new THREE.Vector3(startX, slotPos.y + targetTileOffsetY + 0.6, 0.6);
-      const c1 = new THREE.Vector3(sideMultiplier * (vW * 0.28), slotPos.y + targetTileOffsetY + 1.2, 1.5);
-      const c2 = new THREE.Vector3(sideMultiplier * (vW * 0.1), slotPos.y + targetTileOffsetY + 0.35, 1.1);
-      const p3 = new THREE.Vector3(0, slotPos.y + targetTileOffsetY, 0.95); // precise alignment in front
+      const c1 = new THREE.Vector3(
+        THREE.MathUtils.lerp(startX, targetX, 0.45),
+        slotPos.y + targetTileOffsetY + 1.2,
+        1.5
+      );
+      const c2 = new THREE.Vector3(
+        THREE.MathUtils.lerp(startX, targetX, 0.82),
+        slotPos.y + targetTileOffsetY + 0.35,
+        1.1
+      );
+      const p3 = new THREE.Vector3(targetX, slotPos.y + targetTileOffsetY, 0.95); // precise alignment in front
 
       currentBot.root.position.copy(p0);
 
@@ -1012,8 +1021,8 @@ export function DualRobotDeliveryScene({
 
 // --------------------------------------------------------------------------
 // 4. CERTIFICATION ROW COMPONENT (`CertificationRow`)
-// Matches reference screenshot 100%: F-01 badge, issuer logo, title, period,
-// status pill, and action buttons.
+// Premium Glassmorphism Horizontal Card: F-01 callsign, issuer badge,
+// readable multi-line title, issuer/date metadata, verified status, and actions.
 // --------------------------------------------------------------------------
 export function CertificationRow({
   cert,
@@ -1047,7 +1056,7 @@ export function CertificationRow({
           motion.div,
           {
             role: "listitem",
-            className: `cert-row-card cert-list-tile is-tile-settled ${
+            className: `cert-row-card cert-list-tile cert-glass-card is-tile-settled ${
               isLeftOrigin ? "delivered-from-left" : "delivered-from-right"
             }`,
             initial: isInstant ? false : { opacity: 0, scale: 0.95, y: -10 },
@@ -1063,111 +1072,146 @@ export function CertificationRow({
                   ease: [0.16, 1, 0.3, 1]
                 }
           },
-          // Left side: Callsign Badge + Issuer Logo + Title & Meta
+          // Ambient glass reflection highlight layer
+          h("div", { className: "cert-glass-shine", "aria-hidden": "true" }),
+
+          // Top + Body wrapper (.cert-tile-left preserved for compatibility)
           h(
             "div",
-            { className: "cert-tile-left" },
-            h(
-              "span",
-              {
-                className: "cert-mini-bot-badge",
-                title: `Credential ${unitNum} — Delivered by ${isLeftOrigin ? "Robot A" : "Robot B"}`
-              },
-              h(
-                "svg",
-                {
-                  className: "bot-f01-mascot-svg",
-                  width: 20,
-                  height: 20,
-                  viewBox: "0 0 100 100",
-                  fill: "none",
-                  xmlns: "http://www.w3.org/2000/svg"
-                },
-                h("circle", { cx: 50, cy: 50, r: 42, fill: "#0F172A" }),
-                h("rect", { x: 26, y: 38, width: 48, height: 26, rx: 13, fill: "#E11D48" }),
-                h("circle", { cx: 40, cy: 51, r: 4.5, fill: "#FFFFFF" }),
-                h("circle", { cx: 60, cy: 51, r: 4.5, fill: "#FFFFFF" })
-              ),
-              h("span", { className: "cert-mini-bot-tag" }, `F-${unitNum}`)
-            ),
-            h("div", { className: "cert-issuer-logo cert-tile-logo" }, cert.logoText),
+            { className: "cert-tile-left cert-card-main" },
+            // Top bar: Callsign Badge + Issuer Logo Badge
             h(
               "div",
-              { className: "cert-tile-text" },
+              { className: "cert-card-top" },
+              h(
+                "span",
+                {
+                  className: "cert-mini-bot-badge",
+                  title: `Credential ${unitNum} — Delivered by ${isLeftOrigin ? "Robot A" : "Robot B"}`
+                },
+                h(
+                  "svg",
+                  {
+                    className: "bot-f01-mascot-svg",
+                    width: 20,
+                    height: 20,
+                    viewBox: "0 0 100 100",
+                    fill: "none",
+                    xmlns: "http://www.w3.org/2000/svg"
+                  },
+                  h("circle", { cx: 50, cy: 50, r: 42, fill: "#0F172A" }),
+                  h("rect", { x: 26, y: 38, width: 48, height: 26, rx: 13, fill: "#E11D48" }),
+                  h("circle", { cx: 40, cy: 51, r: 4.5, fill: "#FFFFFF" }),
+                  h("circle", { cx: 60, cy: 51, r: 4.5, fill: "#FFFFFF" })
+                ),
+                h("span", { className: "cert-mini-bot-tag" }, `F-${unitNum}`)
+              ),
+              h(
+                "div",
+                {
+                  className: "cert-issuer-logo cert-tile-logo",
+                  title: cert.issuer
+                },
+                cert.logoText
+              )
+            ),
+
+            // Body: Certificate Title + Issuer & Date Metadata
+            h(
+              "div",
+              { className: "cert-tile-text cert-card-body" },
               h(
                 "div",
                 { className: "cert-tile-title-row" },
-                h("span", { className: "cert-tile-title", title: cert.title }, cert.title)
+                h("h3", { className: "cert-tile-title", title: cert.title }, cert.title)
               ),
               h(
                 "div",
                 { className: "cert-tile-meta-row" },
                 h("span", { className: "cert-tile-issuer" }, cert.issuer),
-                cert.period && h("span", { className: "cert-tile-period" }, `· ${cert.period}`)
+                cert.period &&
+                  h(
+                    "span",
+                    { className: "cert-tile-period" },
+                    h("span", { className: "cert-meta-dot", "aria-hidden": "true" }, "·"),
+                    cert.period
+                  )
               )
             )
           ),
 
-          // Right side: Status Pill + Action Buttons
+          // Footer: Status Pill + Action Buttons (.cert-tile-right preserved)
           h(
             "div",
-            { className: "cert-tile-right" },
-            Boolean(cert.status && cert.statusType !== "none") &&
-              h(
-                "span",
-                {
-                  className:
-                    cert.statusType === "verified"
-                      ? "verified-pill"
-                      : "inprogress-pill"
-                },
-                cert.statusType === "verified" ? `✓ ${cert.status}` : `⏳ ${cert.status}`
-              ),
-            cert.verifyUrl &&
-              h(
-                "a",
-                {
-                  href: cert.verifyUrl,
-                  target: "_blank",
-                  rel: "noopener",
-                  className: "icon-circle-btn cert-tile-icon-btn",
-                  title: `Verify ${cert.issuer} Credential`
-                },
-                h(ExternalArrowIcon, { size: 12 })
-              ),
-            cert.certificateImage &&
-              h(
-                "button",
-                {
-                  type: "button",
-                  className: "icon-circle-btn cert-tile-icon-btn",
-                  title: `View ${cert.title} Certificate Scan`,
-                  onClick: () => onOpenModal && onOpenModal(cert)
-                },
-                "👁"
-              ),
-            cert.openCertWall &&
-              h(
-                "button",
-                {
-                  type: "button",
-                  className: "icon-circle-btn cert-tile-icon-btn",
-                  title: "Explore 20/20 Certificate Wall on FlyRank Internship Page",
-                  onClick: () => onOpenCertWall && onOpenCertWall("journey-certificates")
-                },
-                "→"
-              ),
-            cert.openJourney &&
-              h(
-                "button",
-                {
-                  type: "button",
-                  className: "icon-circle-btn cert-tile-icon-btn",
-                  title: "Open in Interactive Journey",
-                  onClick: () => onOpenJourney && onOpenJourney("journey-timeline")
-                },
-                "→"
-              )
+            { className: "cert-tile-right cert-card-footer" },
+            h(
+              "div",
+              { className: "cert-status-wrap" },
+              Boolean(cert.status && cert.statusType !== "none") &&
+                h(
+                  "span",
+                  {
+                    className:
+                      cert.statusType === "verified"
+                        ? "verified-pill"
+                        : "inprogress-pill"
+                  },
+                  cert.statusType === "verified" ? `✓ ${cert.status}` : `⏳ ${cert.status}`
+                )
+            ),
+            h(
+              "div",
+              { className: "cert-actions-cluster" },
+              cert.verifyUrl &&
+                h(
+                  "a",
+                  {
+                    href: cert.verifyUrl,
+                    target: "_blank",
+                    rel: "noopener",
+                    className: "icon-circle-btn cert-tile-icon-btn",
+                    title: `Verify ${cert.issuer} Credential`,
+                    "aria-label": `Verify ${cert.issuer} Credential`
+                  },
+                  h(ExternalArrowIcon, { size: 12 })
+                ),
+              cert.certificateImage &&
+                h(
+                  "button",
+                  {
+                    type: "button",
+                    className: "icon-circle-btn cert-tile-icon-btn",
+                    title: `View ${cert.title} Certificate Scan`,
+                    "aria-label": `View ${cert.title} Certificate Scan`,
+                    onClick: () => onOpenModal && onOpenModal(cert)
+                  },
+                  "👁"
+                ),
+              cert.openCertWall &&
+                h(
+                  "button",
+                  {
+                    type: "button",
+                    className: "icon-circle-btn cert-tile-icon-btn",
+                    title: "Explore 20/20 Certificate Wall on FlyRank Internship Page",
+                    "aria-label": "Explore 20/20 Certificate Wall on FlyRank Internship Page",
+                    onClick: () => onOpenCertWall && onOpenCertWall("journey-certificates")
+                  },
+                  "→"
+                ),
+              cert.openJourney &&
+                h(
+                  "button",
+                  {
+                    type: "button",
+                    className: "icon-circle-btn cert-tile-icon-btn",
+                    title: "Open in Interactive Journey",
+                    "aria-label": "Open in Interactive Journey",
+                    onClick: () => onOpenJourney && onOpenJourney("journey-timeline")
+                  },
+                  "→"
+                )
+            )
           )
         )
   );
@@ -1175,7 +1219,8 @@ export function CertificationRow({
 
 // --------------------------------------------------------------------------
 // 5. CERTIFICATION SHOWCASE CONTAINER (`CertificationShowcase`)
-// Full section with Telemetry Bar, Dual Robot 3D Canvas, and 7 Credential Rows
+// Full section with Telemetry Bar, Dual Robot 3D Canvas, and 7 Credential Cards
+// in a Horizontal Glassmorphism Carousel (Desktop & Mobile)
 // --------------------------------------------------------------------------
 export function CertificationShowcase({
   certifications,
@@ -1184,6 +1229,7 @@ export function CertificationShowcase({
 }) {
   const stageRef = useRef(null);
   const sectionRef = useRef(null);
+  const carouselRef = useRef(null);
   const slotRefsMap = useRef(new Map());
   const controllerRef = useRef(null);
   const lifecycleRef = useRef(ANIM_LIFECYCLE.IDLE);
@@ -1203,10 +1249,82 @@ export function CertificationShowcase({
   const [runCount, setRunCount] = useState(0);
   const [theme, setTheme] = useState(getCurrentTheme);
 
+  // Horizontal carousel state
+  const [activeCardIndex, setActiveCardIndex] = useState(0);
+  const [canScrollLeft, setCanScrollLeft] = useState(false);
+  const [canScrollRight, setCanScrollRight] = useState(true);
+
   useEffect(() => {
     const unsubscribe = subscribeTheme(setTheme);
     setTheme(getCurrentTheme());
     return unsubscribe;
+  }, []);
+
+  // Update horizontal carousel scroll indicators & active index
+  const syncCarouselState = useCallback(() => {
+    const track = carouselRef.current;
+    if (!track) return;
+    const { scrollLeft, scrollWidth, clientWidth } = track;
+    const maxScroll = Math.max(0, scrollWidth - clientWidth);
+    setCanScrollLeft(scrollLeft > 8);
+    setCanScrollRight(scrollLeft < maxScroll - 8);
+
+    // Determine which card is closest to the viewport's leading/center snap edge
+    const slots = Array.from(track.querySelectorAll(".cert-row-slot"));
+    if (!slots.length) return;
+    const isMobileTrack = window.innerWidth <= 680;
+    const refPoint = isMobileTrack ? scrollLeft + clientWidth * 0.5 : scrollLeft + 24;
+    let bestIdx = 0;
+    let bestDist = Infinity;
+    slots.forEach((slot, idx) => {
+      const slotPoint = isMobileTrack
+        ? slot.offsetLeft + slot.offsetWidth * 0.5
+        : slot.offsetLeft;
+      const dist = Math.abs(slotPoint - refPoint);
+      if (dist < bestDist) {
+        bestDist = dist;
+        bestIdx = idx;
+      }
+    });
+    setActiveCardIndex(bestIdx);
+  }, []);
+
+  useEffect(() => {
+    const track = carouselRef.current;
+    if (!track) return;
+    syncCarouselState();
+    const onScroll = () => {
+      window.requestAnimationFrame(syncCarouselState);
+    };
+    track.addEventListener("scroll", onScroll, { passive: true });
+    window.addEventListener("resize", onScroll, { passive: true });
+    return () => {
+      track.removeEventListener("scroll", onScroll);
+      window.removeEventListener("resize", onScroll);
+    };
+  }, [syncCarouselState, certifications.length]);
+
+  const scrollToCard = useCallback((index) => {
+    const track = carouselRef.current;
+    if (!track) return;
+    const slots = track.querySelectorAll(".cert-row-slot");
+    const target = slots[index];
+    if (!target) return;
+    const isMobileTrack = window.innerWidth <= 680;
+    const left = isMobileTrack
+      ? Math.max(0, target.offsetLeft - (track.clientWidth - target.offsetWidth) * 0.5)
+      : Math.max(0, target.offsetLeft - 4);
+    track.scrollTo({ left, behavior: "smooth" });
+    setActiveCardIndex(index);
+  }, []);
+
+  const scrollByCards = useCallback((direction) => {
+    const track = carouselRef.current;
+    if (!track) return;
+    const slots = track.querySelectorAll(".cert-row-slot");
+    const firstSlot = slots[0];
+    const step = firstSlot ? firstSlot.offsetWidth + 20 : track.clientWidth * 0.8;
+    track.scrollBy({ left: direction * step, behavior: "smooth" });
   }, []);
 
   // Telemetry state
@@ -1226,6 +1344,22 @@ export function CertificationShowcase({
 
   const handleTargetRow = useCallback((certId) => {
     setActiveTargetId(certId);
+    // Keep the active target slot visible horizontally inside the carousel track (without moving window scroll)
+    const track = carouselRef.current;
+    const slotEl = slotRefsMap.current.get(certId);
+    if (track && slotEl) {
+      const slotLeft = slotEl.offsetLeft;
+      const slotRight = slotLeft + slotEl.offsetWidth;
+      const viewLeft = track.scrollLeft;
+      const viewRight = viewLeft + track.clientWidth;
+      if (slotRight > viewRight - 12 || slotLeft < viewLeft + 12) {
+        const targetScroll = Math.max(
+          0,
+          slotLeft - (track.clientWidth - slotEl.offsetWidth) * 0.5
+        );
+        track.scrollTo({ left: targetScroll, behavior: "smooth" });
+      }
+    }
   }, []);
 
   const handleRowDelivered = useCallback((certId) => {
@@ -1370,6 +1504,9 @@ export function CertificationShowcase({
   }, [certifications]);
 
   const handleReplayDelivery = () => {
+    if (carouselRef.current) {
+      carouselRef.current.scrollTo({ left: 0, behavior: "smooth" });
+    }
     lifecycleRef.current = ANIM_LIFECYCLE.PLAYING;
     setLifecycle(ANIM_LIFECYCLE.PLAYING);
     setIsQuickReveal(false);
@@ -1378,6 +1515,8 @@ export function CertificationShowcase({
     setJustLandedId(null);
     setRunCount((r) => r + 1);
   };
+
+  const totalCerts = certifications.length;
 
   return h(
     "section",
@@ -1531,6 +1670,9 @@ export function CertificationShowcase({
         ref: stageRef,
         className: "credentials-strip-container cert-squad-stage-inner cert-showcase-stage"
       },
+      // Ambient background glow orbs behind glass cards
+      h("div", { className: "cert-stage-ambient-glow", "aria-hidden": "true" }),
+
       // Overlay Dual Robot 3D WebGL Canvas Layer
       h(DualRobotDeliveryScene, {
         containerRef: stageRef,
@@ -1544,7 +1686,7 @@ export function CertificationShowcase({
         onTelemetryUpdate: handleTelemetryUpdate
       }),
 
-      // Credentials Header (matching screenshot)
+      // Credentials Header + Carousel Navigation Controls
       h(
         "div",
         { className: "credentials-strip-header" },
@@ -1552,19 +1694,71 @@ export function CertificationShowcase({
           "span",
           { className: "credentials-strip-eyebrow" },
           h("span", { className: "red-dot", style: { width: 6, height: 6 } }),
-          "PRIMARY INDUSTRY & ACADEMIC CREDENTIALS (7 VERIFIED TRACKS)"
+          `PRIMARY INDUSTRY & ACADEMIC CREDENTIALS (${totalCerts} VERIFIED TRACKS)`
         ),
         h(
-          "span",
-          { className: "credentials-strip-hint" },
-          "Click 👁 to view scan or ↗ to verify"
+          "div",
+          { className: "cert-header-controls-right" },
+          h(
+            "span",
+            { className: "credentials-strip-hint" },
+            "Click 👁 to view scan or ↗ to verify"
+          ),
+          h(
+            "div",
+            { className: "cert-carousel-nav", role: "group", "aria-label": "Certification carousel navigation" },
+            h(
+              "span",
+              { className: "cert-carousel-counter", "aria-live": "polite" },
+              `${String(activeCardIndex + 1).padStart(2, "0")} / ${String(totalCerts).padStart(2, "0")}`
+            ),
+            h(
+              "button",
+              {
+                type: "button",
+                className: "cert-carousel-arrow prev",
+                onClick: () => scrollByCards(-1),
+                disabled: !canScrollLeft,
+                "aria-label": "Previous certifications",
+                title: "Previous certifications"
+              },
+              "‹"
+            ),
+            h(
+              "button",
+              {
+                type: "button",
+                className: "cert-carousel-arrow next",
+                onClick: () => scrollByCards(1),
+                disabled: !canScrollRight,
+                "aria-label": "Next certifications",
+                title: "Next certifications"
+              },
+              "›"
+            )
+          )
         )
       ),
 
-      // Vertically stacked credential row slots
+      // Horizontal Glassmorphism Carousel Track (Desktop & Mobile)
       h(
         "div",
-        { className: "cert-tiles-list", role: "list" },
+        {
+          ref: carouselRef,
+          className: "cert-tiles-list cert-horizontal-carousel",
+          role: "list",
+          tabIndex: 0,
+          "aria-label": "Verified Certifications Carousel",
+          onKeyDown: (e) => {
+            if (e.key === "ArrowRight") {
+              e.preventDefault();
+              scrollByCards(1);
+            } else if (e.key === "ArrowLeft") {
+              e.preventDefault();
+              scrollByCards(-1);
+            }
+          }
+        },
         certifications.map((cert, idx) =>
           h(CertificationRow, {
             key: cert.id,
@@ -1579,6 +1773,32 @@ export function CertificationShowcase({
             onOpenCertWall: onOpenJourneyExperience,
             onOpenJourney: onOpenJourneyExperience
           })
+        )
+      ),
+
+      // Bottom Carousel Footer: Pagination Dots + Swipe Cue
+      h(
+        "div",
+        { className: "cert-carousel-footer" },
+        h(
+          "div",
+          { className: "cert-pagination-dots", role: "tablist", "aria-label": "Select certification card" },
+          certifications.map((cert, idx) =>
+            h("button", {
+              key: `dot-${cert.id}`,
+              type: "button",
+              role: "tab",
+              "aria-selected": activeCardIndex === idx,
+              "aria-label": `Go to certificate ${idx + 1}: ${cert.title}`,
+              className: `cert-pagination-dot ${activeCardIndex === idx ? "is-active" : ""}`,
+              onClick: () => scrollToCard(idx)
+            })
+          )
+        ),
+        h(
+          "span",
+          { className: "cert-swipe-hint" },
+          "⇄ Swipe or use arrows to explore all 7 credentials"
         )
       )
     )
