@@ -230,7 +230,7 @@
 }
 
 @media (max-width: 700px) {
-  .ae-section { --ae-nav-top: 64px; --ae-anchor-offset: 168px; margin-top: 1.75rem; padding: 0; }
+  .ae-section { --ae-nav-top: 0px; --ae-anchor-offset: 112px; margin-top: 0; padding: 0; }
   .ae-title { margin-top: 0; font-size: clamp(2rem, 8.5vw, 2.75rem); }
   .ae-intro { margin-bottom: 12px; }
   .ae-content { padding: 0; }
@@ -243,22 +243,25 @@
   .ae-sidebar { display: block; padding-right: 0; border-right: 0; }
   .ae-nav {
     position: sticky;
-    top: var(--ae-nav-top);
+    top: 0;
     left: 0;
     right: 0;
-    width: 100%;
-    margin: 0 0 24px;
-    padding: 12px 16px 14px;
-    background: rgba(20, 24, 31, 0.94);
+    width: 100vw;
+    margin-left: calc(50% - 50vw);
+    margin-right: calc(50% - 50vw);
+    margin-top: 0;
+    margin-bottom: 24px;
+    padding: 12px 20px 14px;
+    background: rgba(11, 13, 16, 0.94);
     backdrop-filter: blur(20px);
     -webkit-backdrop-filter: blur(20px);
     border-bottom: 1px solid rgba(255, 98, 56, 0.28);
-    box-shadow: 0 8px 30px rgba(0, 0, 0, 0.35);
-    border-radius: 12px;
+    box-shadow: 0 8px 30px rgba(0, 0, 0, 0.4);
+    border-radius: 0;
     z-index: 50;
   }
   [data-theme="light"] .ae-nav {
-    background: rgba(250, 248, 244, 0.94);
+    background: rgba(250, 246, 242, 0.94);
     border-bottom: 1px solid rgba(184, 66, 44, 0.25);
     box-shadow: 0 8px 30px rgba(0, 0, 0, 0.08);
   }
