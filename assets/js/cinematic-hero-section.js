@@ -296,7 +296,7 @@ export function CinematicHeroSection({ resumeUrl = PROFILE_DATA.resumeUrl, onNav
           h("div", { className: "fh-actions" },
             h("a", { href: "#contact", className: "fh-contact", onClick: contact }, "LET’S TALK", h("span", { "aria-hidden": true }, "→")),
             h("a", { href: resumeHref, className: "fh-resume", target: "_blank", rel: "noopener noreferrer" },
-              h("svg", { viewBox: "0 0 24 24", fill: "none", stroke: "currentColor", strokeWidth: 1.6, "aria-hidden": true }, h("path", { d: "M12 3v12m-4-4 4 4 4-4M5 16v5h14v-5" })), "View Résumé (PDF)"))),
+              h("svg", { viewBox: "0 0 24 24", fill: "none", stroke: "currentColor", strokeWidth: 1.6, "aria-hidden": true }, h("path", { d: "M12 3v12m-4-4 4 4 4-4M5 16v5h14v-5" })), "VIEW RESUME"))),
         h("div", { className: "fh-visual" },
           h("div", { className: "fh-portrait" }, h("picture", { "data-portrait-theme": theme },
             h("img", { src: portraitSrc,

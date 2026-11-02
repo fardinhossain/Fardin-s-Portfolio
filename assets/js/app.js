@@ -345,6 +345,109 @@ export function BotF01MascotSvg({ isActive = false, size = 38, className = "" })
 }
 
 // --------------------------------------------------------------------------
+// LUCIDE REACT SVG ICONS (MOBILE BOTTOM TAB BAR)
+// Consistent 20x20 size, 1.8 stroke width, slate-gray (#64748b) / active coral (#e11d48)
+// --------------------------------------------------------------------------
+function LucideUserRound({ color = "#64748b", size = 20 }) {
+  return h(
+    "svg",
+    {
+      width: size,
+      height: size,
+      viewBox: "0 0 24 24",
+      fill: "none",
+      stroke: color,
+      strokeWidth: 1.8,
+      strokeLinecap: "round",
+      strokeLinejoin: "round",
+      "aria-hidden": "true"
+    },
+    h("circle", { cx: 12, cy: 8, r: 5 }),
+    h("path", { d: "M20 21a8 8 0 0 0-16 0" })
+  );
+}
+
+function LucideBriefcaseBusiness({ color = "#64748b", size = 20 }) {
+  return h(
+    "svg",
+    {
+      width: size,
+      height: size,
+      viewBox: "0 0 24 24",
+      fill: "none",
+      stroke: color,
+      strokeWidth: 1.8,
+      strokeLinecap: "round",
+      strokeLinejoin: "round",
+      "aria-hidden": "true"
+    },
+    h("path", { d: "M12 12h.01" }),
+    h("path", { d: "M16 6V4a2 2 0 0 0-2-2h-4a2 2 0 0 0-2 2v2" }),
+    h("path", { d: "M22 13a18.15 18.15 0 0 1-20 0" }),
+    h("rect", { width: 20, height: 14, x: 2, y: 6, rx: 2 })
+  );
+}
+
+function LucideLayers3({ color = "#64748b", size = 20 }) {
+  return h(
+    "svg",
+    {
+      width: size,
+      height: size,
+      viewBox: "0 0 24 24",
+      fill: "none",
+      stroke: color,
+      strokeWidth: 1.8,
+      strokeLinecap: "round",
+      strokeLinejoin: "round",
+      "aria-hidden": "true"
+    },
+    h("path", { d: "m12.83 2.18a2 2 0 0 0-1.66 0L2.6 6.08a1 1 0 0 0 0 1.83l8.58 3.91a2 2 0 0 0 1.66 0l8.58-3.9a1 1 0 0 0 0-1.83Z" }),
+    h("path", { d: "m22 12.5-8.58 3.91a2 2 0 0 1-1.66 0L2 12.5" }),
+    h("path", { d: "m22 17.5-8.58 3.91a2 2 0 0 1-1.66 0L2 17.5" })
+  );
+}
+
+function LucideAward({ color = "#64748b", size = 20 }) {
+  return h(
+    "svg",
+    {
+      width: size,
+      height: size,
+      viewBox: "0 0 24 24",
+      fill: "none",
+      stroke: color,
+      strokeWidth: 1.8,
+      strokeLinecap: "round",
+      strokeLinejoin: "round",
+      "aria-hidden": "true"
+    },
+    h("circle", { cx: 12, cy: 8, r: 6 }),
+    h("path", { d: "m15.477 12.89 1.515 8.526a.5.5 0 0 1-.747.536L12 19.463l-4.245 2.49a.5.5 0 0 1-.747-.536l1.515-8.526" }),
+    h("polygon", { points: "12 5.5 13.09 7.71 15.53 8.06 13.77 9.78 14.18 12.21 12 11.06 9.82 12.21 10.23 9.78 8.47 8.06 10.91 7.71 12 5.5", strokeWidth: 1.1, fill: "none" })
+  );
+}
+
+function LucideSend({ color = "#64748b", size = 20 }) {
+  return h(
+    "svg",
+    {
+      width: size,
+      height: size,
+      viewBox: "0 0 24 24",
+      fill: "none",
+      stroke: color,
+      strokeWidth: 1.8,
+      strokeLinecap: "round",
+      strokeLinejoin: "round",
+      "aria-hidden": "true"
+    },
+    h("path", { d: "m22 2-7 20-4-9-9-4Z" }),
+    h("path", { d: "M22 2 11 13" })
+  );
+}
+
+// --------------------------------------------------------------------------
 // MAIN PORTFOLIO APPLICATION
 // --------------------------------------------------------------------------
 function PortfolioApp() {
@@ -1217,41 +1320,51 @@ function PortfolioApp() {
     h(
       "nav",
       { className: "mobile-bottom-bar", "aria-label": "Mobile Quick Navigation" },
-      [
-        { id: "home", label: "Fardin.AI", isAvatar: true, action: () => navigateToSection("home") },
-        { id: "about", label: "About", icon: "◉", action: () => navigateToSection("about") },
-        { id: "experience", label: "Exp", icon: "★", action: () => navigateToSection("experience") },
-        { id: "projects", label: "Projects", icon: "⊞", action: () => navigateToSection("projects") },
-        { id: "certifications", label: "Certs", icon: "✓", action: () => navigateToSection("certifications") },
-        { id: "contact", label: "Contact", icon: "✉", action: () => navigateToSection("contact") }
-      ].map((tab) => {
-        const isActive = view === "home" && activeNav === tab.id;
-        return h(
-          "button",
-          {
-            key: tab.id,
-            type: "button",
-            className: `mobile-tab-item ${isActive ? "active" : ""}`,
-            onClick: tab.action
-          },
-          tab.isAvatar
-            ? h(
-                "span",
-                { className: "mobile-tab-avatar-wrap", "aria-hidden": "true" },
-                h("img", {
-                  src: "/assets/images/fardin-tab-avatar.jpg",
-                  alt: "Home",
-                  className: "mobile-tab-avatar",
-                  width: 22,
-                  height: 22,
-                  loading: "eager",
-                  decoding: "async"
-                })
-              )
-            : h("span", { style: { fontSize: "0.95rem", lineHeight: 1 } }, tab.icon),
-          h("span", null, tab.label)
-        );
-      })
+      h(
+        "div",
+        { className: "mobile-tab-items-row" },
+        [
+          { id: "home", label: "Fardin.AI", isAvatar: true, action: () => navigateToSection("home") },
+          { id: "about", label: "About", renderIcon: (c) => h(LucideUserRound, { color: c }), action: () => navigateToSection("about") },
+          { id: "experience", label: "Exp", renderIcon: (c) => h(LucideBriefcaseBusiness, { color: c }), action: () => navigateToSection("experience") },
+          { id: "projects", label: "Projects", renderIcon: (c) => h(LucideLayers3, { color: c }), action: () => navigateToSection("projects") },
+          { id: "certifications", label: "Certs", renderIcon: (c) => h(LucideAward, { color: c }), action: () => navigateToSection("certifications") },
+          { id: "contact", label: "Contact", renderIcon: (c) => h(LucideSend, { color: c }), action: () => navigateToSection("contact") }
+        ].map((tab) => {
+          const isActive = view === "home" && activeNav === tab.id;
+          const iconColor = isActive ? "#e11d48" : "#64748b";
+          return h(
+            "button",
+            {
+              key: tab.id,
+              type: "button",
+              className: `mobile-tab-item ${isActive ? "active" : ""}${tab.isAvatar ? " mobile-tab-item-brand" : ""}`,
+              onClick: tab.action
+            },
+            tab.isAvatar
+              ? h(
+                  "span",
+                  { className: "mobile-tab-avatar-wrap", "aria-hidden": "true" },
+                  h("img", {
+                    src: "/assets/images/fardin-tab-avatar.jpg",
+                    alt: "Home",
+                    className: "mobile-tab-avatar",
+                    width: 26,
+                    height: 26,
+                    loading: "eager",
+                    decoding: "async"
+                  })
+                )
+              : h("span", { className: "mobile-tab-icon-wrap" }, tab.renderIcon(iconColor)),
+            h("span", { className: "mobile-tab-label" }, tab.label)
+          );
+        })
+      ),
+      h(
+        "div",
+        { className: "mobile-bottom-home-indicator-area", "aria-hidden": "true" },
+        h("div", { className: "mobile-bottom-home-indicator-pill" })
+      )
     ),
 
     // ========================================================================

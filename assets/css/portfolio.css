@@ -710,50 +710,131 @@ body {
   }
 }
 
-/* Mobile Bottom Tab Bar (Matches Figma Mobile Mockup) */
-.mobile-bottom-bar {
+/* Mobile Bottom Tab Bar (Matches Reference Mockup) */
+.mobile-bottom-bar,
+[data-theme="dark"] .mobile-bottom-bar {
   position: fixed;
   bottom: 0;
   left: 0;
   right: 0;
   z-index: 95;
-  background: rgba(255, 255, 255, 0.94);
-  backdrop-filter: blur(16px);
-  -webkit-backdrop-filter: blur(16px);
-  border-top: 1px solid var(--border-light);
+  background: #ffffff !important;
+  border-top: 1px solid #f1f5f9;
+  box-shadow: 0 -4px 20px rgba(15, 23, 42, 0.05);
   display: flex;
-  justify-content: space-around;
-  align-items: center;
-  padding: 0.45rem 0.5rem calc(0.45rem + env(safe-area-inset-bottom, 0px));
-  box-shadow: 0 -8px 24px rgba(15, 23, 42, 0.06);
+  flex-direction: column;
+  padding: 6px 4px calc(4px + env(safe-area-inset-bottom, 0px));
 }
 
 @media (min-width: 768px) {
   .mobile-bottom-bar {
-    display: none;
+    display: none !important;
   }
 }
 
-.mobile-tab-item {
+.mobile-tab-items-row {
+  display: flex;
+  justify-content: space-around;
+  align-items: center;
+  width: 100%;
+}
+
+.mobile-tab-item,
+[data-theme="dark"] .mobile-tab-item {
+  flex: 1 1 0;
+  min-width: 0;
   background: none;
   border: none;
   display: flex;
   flex-direction: column;
   align-items: center;
-  gap: 0.2rem;
+  justify-content: center;
+  gap: 3px;
   font-family: var(--font-sans);
-  font-size: 0.68rem;
-  font-weight: 600;
-  color: var(--text-muted);
+  font-size: 11px;
+  font-weight: 500;
+  color: #64748b;
   cursor: pointer;
-  padding: 0.25rem 0.6rem;
-  border-radius: 10px;
+  padding: 4px 1px;
+  border-radius: 8px;
   text-decoration: none;
+  transition: all 0.15s ease;
+  -webkit-tap-highlight-color: transparent;
 }
 
-.mobile-tab-item.active {
-  color: var(--accent-red);
+.mobile-tab-item:active {
+  transform: scale(0.96);
+}
+
+.mobile-tab-item.active,
+[data-theme="dark"] .mobile-tab-item.active {
+  color: #e11d48;
+}
+
+.mobile-tab-item-brand .mobile-tab-label {
+  color: #e11d48 !important;
   font-weight: 700;
+  letter-spacing: -0.01em;
+}
+
+.mobile-tab-icon-wrap {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 22px;
+  height: 22px;
+  color: #64748b;
+  transition: color 0.15s ease;
+}
+
+.mobile-tab-item.active .mobile-tab-icon-wrap {
+  color: #e11d48;
+}
+
+.mobile-tab-avatar-wrap {
+  width: 26px;
+  height: 26px;
+  flex: 0 0 26px;
+  border-radius: 7px;
+  overflow: hidden;
+  border: 1.5px solid rgba(225, 29, 72, 0.85);
+  box-shadow: 0 0 10px rgba(225, 29, 72, 0.35);
+  background: #111418;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.mobile-tab-avatar {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  object-position: center;
+  display: block;
+}
+
+.mobile-tab-label {
+  display: block;
+  font-size: 11px;
+  line-height: 1.15;
+  white-space: nowrap;
+  letter-spacing: -0.01em;
+}
+
+.mobile-bottom-home-indicator-area {
+  width: 100%;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  padding-top: 6px;
+  padding-bottom: 2px;
+}
+
+.mobile-bottom-home-indicator-pill {
+  width: 134px;
+  height: 4.5px;
+  background: #c4c4c4;
+  border-radius: 999px;
 }
 
 /* ==========================================================================
@@ -6010,17 +6091,6 @@ body {
     padding: 1rem 0.9rem;
   }
 
-  /* Mobile Bottom Dock */
-  .mobile-bottom-bar {
-    height: calc(52px + env(safe-area-inset-bottom, 0px));
-    padding: 0.35rem 0.4rem calc(0.35rem + env(safe-area-inset-bottom, 0px));
-    box-shadow: 0 -6px 20px rgba(15, 23, 42, 0.08);
-  }
-
-  .mobile-tab-item {
-    padding: 0.2rem 0.45rem;
-    font-size: 0.65rem;
-  }
 }
 
 /* Compact, Centered Featured Projects Bento Grid & Cards (<= 679px) */
@@ -6478,20 +6548,6 @@ body,
 
 [data-theme="dark"] .nav-item-btn.active {
   color: #FFFFFF;
-}
-
-[data-theme="dark"] .mobile-bottom-bar {
-  background: rgba(18, 21, 29, 0.96);
-  border-top-color: var(--border-primary);
-  box-shadow: 0 -8px 24px -4px rgba(0, 0, 0, 0.65);
-}
-
-[data-theme="dark"] .mobile-tab-item {
-  color: var(--text-muted);
-}
-
-[data-theme="dark"] .mobile-tab-item.active {
-  color: var(--accent-red);
 }
 
 [data-theme="dark"] .mobile-menu-trigger {
