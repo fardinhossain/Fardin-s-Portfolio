@@ -553,6 +553,10 @@ function PortfolioApp() {
       closeJourneyExperience(sectionId);
       return;
     }
+    if (sectionId === "home") {
+      scrollToTarget(0);
+      return;
+    }
     const el = document.getElementById(sectionId);
     if (el) {
       scrollToTarget(el);

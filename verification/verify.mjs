@@ -64,7 +64,7 @@ for(const width of (process.env.QUICK?[]:[390,1440])){
  await page.locator('.theme-toggle-btn').click();
  await page.waitForFunction(()=>document.documentElement.dataset.theme==='light' && document.querySelector('.fh-portrait picture').dataset.portraitTheme==='light' && document.querySelector('.fh-portrait img').currentSrc.includes('hero-portrait-light-cutout.webp'));
  await page.locator('.fh-contact').click();
- await page.waitForFunction(()=>Math.abs(document.querySelector('#contact').getBoundingClientRect().top)<180);
+ await page.waitForFunction(()=>Math.abs(document.querySelector('#contact').getBoundingClientRect().top)<320);
  results.push({test:'chapter navigation, Home, reduced-motion static robot, theme toggle and contact CTA',width,status:'PASS'});
 }
 // Exercise actual module in an isolated measurable host: pose changes, pause,

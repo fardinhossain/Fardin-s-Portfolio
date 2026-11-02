@@ -79,7 +79,7 @@ export const PROJECTS_LIST = [
     categories: ["all", "web", "ai-ml"],
     featured: true,
     visualType: "location",
-    image: "assets/images/locationkhuji.png",
+    image: "assets/images/projects/locationkhuji-desktop.png",
     summary:
       "AI-powered Bangladesh map-first discovery platform to explore places, food, tourism, education and more with intelligent recommendations.",
     description:
@@ -109,7 +109,7 @@ export const PROJECTS_LIST = [
     categories: ["all", "mobile", "academic", "tools"],
     featured: true,
     visualType: "unibuddy",
-    image: "assets/images/unibuddy-app.png",
+    image: "assets/images/projects/unibuddy-desktop.png",
     summary:
       "A university community app for students to connect, share resources and collaborate.",
     description:
@@ -139,7 +139,7 @@ export const PROJECTS_LIST = [
     categories: ["all", "ai-ml", "web", "tools"],
     featured: true,
     visualType: "civic",
-    image: "assets/images/civicpulse-ai.jpg",
+    image: "assets/images/projects/civicpulse-desktop.png",
     summary:
       "AI-powered civic infrastructure reporting platform for automated issue categorization, severity scoring, duplicate detection, and department routing.",
     description:
@@ -169,7 +169,7 @@ export const PROJECTS_LIST = [
     categories: ["all", "tools", "web", "academic"],
     featured: true,
     visualType: "schedos",
-    image: "assets/images/schedos.png",
+    image: "assets/images/projects/schedos-desktop.png",
     summary:
       "Interactive OS CPU scheduling laboratory — visualize, simulate, and compare 8 scheduling algorithms with Gantt charts and 557 passing tests.",
     description:
@@ -199,7 +199,7 @@ export const PROJECTS_LIST = [
     categories: ["all", "web", "academic", "tools"],
     featured: true,
     visualType: "routine",
-    image: "assets/images/seu-routine-maker.jpg",
+    image: "assets/images/projects/seuroutine-desktop.png",
     summary:
       "Fast, mobile-friendly routine builder for SEU students — import UMS HTML or course screenshots to generate conflict-free schedules and export PNG/PDF.",
     description:
@@ -229,7 +229,7 @@ export const PROJECTS_LIST = [
     categories: ["all", "ai-ml", "academic"],
     featured: true,
     visualType: "flyrank",
-    image: "assets/images/flyrank-ml-capstone.jpg",
+    image: "assets/images/projects/flyrank-capstone-desktop.png",
     summary:
       "Decision-support content-refresh ranking over 78.8M DuckDB rows and 9,961 pages (0.78 Precision@50 vs 0.30 baseline) with IEEE paper.",
     description:

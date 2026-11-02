@@ -465,12 +465,14 @@ export function FeaturedProjects({
   // Left-to-right slider scroll controls
   const handleSlideLeft = useCallback(() => {
     if (!sliderTrackRef.current) return;
-    sliderTrackRef.current.scrollBy({ left: -340, behavior: "smooth" });
+    const scrollAmount = sliderTrackRef.current.clientWidth;
+    sliderTrackRef.current.scrollBy({ left: -scrollAmount, behavior: "smooth" });
   }, []);
 
   const handleSlideRight = useCallback(() => {
     if (!sliderTrackRef.current) return;
-    sliderTrackRef.current.scrollBy({ left: 340, behavior: "smooth" });
+    const scrollAmount = sliderTrackRef.current.clientWidth;
+    sliderTrackRef.current.scrollBy({ left: scrollAmount, behavior: "smooth" });
   }, []);
 
   // Cycle Next/Prev for featured project on desktop
