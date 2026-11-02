@@ -11095,8 +11095,9 @@ body {
   padding-right: 0 !important;
 }
 
+.robot-telemetry-bar,
 #certifications .robot-telemetry-bar {
-  margin-bottom: 16px;
+  display: none !important;
 }
 
 /* ==========================================================================
@@ -11137,30 +11138,7 @@ body {
   background-size: 100% 100%, 100% 100%, 100% 100%, 36px 36px, 36px 36px;
 }
 
-/* 2. Refined Glassmorphism Telemetry Bar */
-#certifications .robot-telemetry-bar {
-  background: linear-gradient(135deg, rgba(255, 255, 255, 0.74) 0%, rgba(252, 247, 243, 0.54) 100%) !important;
-  backdrop-filter: blur(18px) saturate(165%) !important;
-  -webkit-backdrop-filter: blur(18px) saturate(165%) !important;
-  border: 1px solid rgba(255, 98, 56, 0.22) !important;
-  box-shadow:
-    0 12px 30px -10px rgba(15, 23, 42, 0.07),
-    inset 0 1px 0 rgba(255, 255, 255, 0.88) !important;
-  border-radius: 18px;
-}
-
-[data-theme="dark"] #certifications .robot-telemetry-bar {
-  background: linear-gradient(135deg, rgba(20, 25, 38, 0.54) 0%, rgba(12, 16, 24, 0.36) 100%) !important;
-  backdrop-filter: blur(18px) saturate(175%) !important;
-  -webkit-backdrop-filter: blur(18px) saturate(175%) !important;
-  border: 1px solid rgba(255, 98, 56, 0.26) !important;
-  box-shadow:
-    0 16px 36px -10px rgba(0, 0, 0, 0.52),
-    0 0 24px rgba(255, 98, 56, 0.06),
-    inset 0 1px 0 rgba(255, 255, 255, 0.12) !important;
-}
-
-/* 3. Credentials Header & Carousel Navigation Controls */
+/* 2. Credentials Header & Carousel Navigation Controls */
 .cert-showcase-stage .credentials-strip-header {
   position: relative;
   z-index: 14;
@@ -11690,17 +11668,6 @@ body {
 }
 
 @media (max-width: 680px) {
-  #certifications .robot-telemetry-bar {
-    max-width: 100% !important;
-    margin: 0 0 12px 0 !important;
-    padding: 0.55rem 0.75rem !important;
-    gap: 0.45rem !important;
-  }
-
-  #certifications .robot-telemetry-bar .robot-status-text {
-    display: none !important;
-  }
-
   .cert-showcase-stage .credentials-strip-header {
     justify-content: space-between !important;
     align-items: center !important;
@@ -11739,5 +11706,166 @@ body {
 
   #certifications .cert-glass-card .cert-tile-title {
     font-size: 0.95rem !important;
+  }
+}
+
+/* ==========================================================================
+   THIN, COMPACT FOOTER & BOTTOM DISPLAY ALIGNMENT
+   ========================================================================== */
+.page-shell {
+  padding-bottom: 0 !important;
+}
+
+.site-footer,
+[data-theme="light"] .site-footer,
+[data-theme="dark"] .site-footer {
+  position: relative;
+  z-index: 10;
+  margin: 2rem 0 0 0 !important;
+  padding: 0.75rem 0 0.85rem !important;
+  background: transparent !important;
+  backdrop-filter: none !important;
+  -webkit-backdrop-filter: none !important;
+  border: 0 !important;
+  border-top: 1px solid rgba(15, 23, 42, 0.09) !important;
+  border-radius: 0 !important;
+  box-shadow: none !important;
+  gap: 0 !important;
+}
+
+[data-theme="dark"] .site-footer {
+  border-top-color: rgba(255, 255, 255, 0.09) !important;
+}
+
+.site-footer-bar {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  flex-wrap: wrap;
+  gap: 0.65rem 1.25rem;
+  width: 100%;
+}
+
+.site-footer-brand {
+  display: inline-flex;
+  align-items: center;
+  flex-direction: row !important;
+  flex-wrap: wrap;
+  gap: 0.5rem !important;
+}
+
+.site-footer-brand .brand-logo {
+  font-size: 18px !important;
+  gap: 7px !important;
+}
+
+.site-footer-brand .brand-avatar-wrap {
+  width: 22px;
+  height: 22px;
+  flex-basis: 22px;
+}
+
+.site-footer-sep {
+  color: var(--text-muted);
+  opacity: 0.5;
+  font-size: 0.8rem;
+}
+
+.site-footer-copy {
+  font-size: 0.74rem;
+  color: var(--text-muted);
+  white-space: nowrap;
+}
+
+.site-footer-nav {
+  display: inline-flex;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 0.15rem !important;
+}
+
+.site-footer-link {
+  font-size: 0.75rem !important;
+  font-weight: 600 !important;
+  padding: 0.25rem 0.55rem !important;
+  text-decoration: none;
+}
+
+.site-footer-cv-link {
+  color: var(--folio-coral, #e76440) !important;
+  font-weight: 700 !important;
+}
+
+.site-footer-actions {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem !important;
+}
+
+@media (min-width: 769px) {
+  .site-footer-bar {
+    padding-right: 196px !important;
+  }
+
+  .site-footer-actions {
+    margin-right: 0 !important;
+  }
+}
+
+.site-footer-socials .icon-circle-btn {
+  width: 30px !important;
+  height: 30px !important;
+}
+
+.site-footer .back-to-top-btn {
+  padding: 0.28rem 0.65rem !important;
+  font-size: 0.72rem !important;
+}
+
+@media (max-width: 768px) {
+  .page-shell {
+    padding-bottom: calc(64px + env(safe-area-inset-bottom, 0px)) !important;
+  }
+
+  .site-footer,
+  [data-theme="light"] .site-footer,
+  [data-theme="dark"] .site-footer {
+    margin: 1.25rem 0 0 0 !important;
+    padding: 0.5rem 0.75rem !important;
+  }
+
+  .site-footer-bar {
+    flex-direction: row;
+    align-items: center;
+    justify-content: space-between;
+    flex-wrap: nowrap;
+    gap: 0.5rem;
+    padding-right: 0 !important;
+  }
+
+  .site-footer-brand {
+    justify-content: flex-start;
+    flex-wrap: nowrap !important;
+    min-width: 0;
+  }
+
+  .site-footer-copy {
+    font-size: 0.68rem;
+    overflow: hidden;
+    text-overflow: ellipsis;
+  }
+
+  .site-footer-nav .site-footer-link:not(.site-footer-cv-link) {
+    display: none !important;
+  }
+
+  .site-footer-socials {
+    display: none !important;
+  }
+
+  .site-footer-actions {
+    margin-right: 0 !important;
+    justify-content: flex-end;
+    flex-shrink: 0;
   }
 }

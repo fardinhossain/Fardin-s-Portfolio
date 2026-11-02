@@ -5,7 +5,8 @@
 
 export const PROFILE_DATA = {
   name: "Md. Fardin Hossain",
-  handle: "fardin.ai",
+  handle: "Fardin.AI",
+  brandAvatar: "/assets/images/fardin-brand-avatar.jpg",
   roleLine: "AI ENGINEER • FULL-STACK DEVELOPER • PROBLEM SOLVER",
   heroHeadlinePrefix: "Building ",
   heroHeadlineHighlight: "Intelligent Solutions.",
@@ -17,7 +18,7 @@ export const PROFILE_DATA = {
   linkedin: "https://www.linkedin.com/in/fardinhosn/",
   liveSite: "https://fardin-ai.vercel.app/",
   previousPortfolio: "https://mdfardin.vercel.app/",
-  resumeUrl: "Fardin_Hossain_Resume.pdf",
+  resumeUrl: "/Fardin_Hossain_Resume.pdf",
   paperPdfUrl: "/paper.pdf",
   paperWebUrl: "https://fardinhossain.github.io/FlyRankAI-ML-Internship-Task/",
   flyrankVerifyUrl: "https://internship.flyrank.ai/verify/FR-D11-EB30B-2279E?first_name=Md.",
@@ -735,7 +736,7 @@ export const VERIFIED_CERTIFICATIONS = [
     period: "2026",
     status: "Verified",
     statusType: "verified",
-    verifyUrl: "Fardin_Hossain_Resume.pdf",
+    verifyUrl: "/Fardin_Hossain_Resume.pdf",
     description: "Certified proficiency in LLM APIs, production prompt engineering, vector embeddings, and software integration."
   },
   {
@@ -746,7 +747,7 @@ export const VERIFIED_CERTIFICATIONS = [
     period: "2026",
     status: "Verified",
     statusType: "verified",
-    verifyUrl: "Fardin_Hossain_Resume.pdf",
+    verifyUrl: "/Fardin_Hossain_Resume.pdf",
     description: "Comprehensive engineering credential covering foundation models, fine-tuning, transformers, and retrieval-augmented generation."
   },
   {

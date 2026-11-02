@@ -585,19 +585,39 @@ function PortfolioApp() {
       h(
         "nav",
         { className: "navbar-glass portix-navbar", "aria-label": "Primary Navigation" },
-        // Brand Logo: fardin.ai •
+        // Brand Logo: Portrait Avatar + Fardin.AI (Portix-inspired bold typography)
         h(
           "a",
           {
             href: "#home",
             className: "brand-logo",
+            "aria-label": "Fardin.AI — Home",
             onClick: (e) => {
               e.preventDefault();
               navigateToSection("home");
             }
           },
-          h("span", { className: "brand-name-text" }, "fardin.ai"),
-          h("span", { className: "red-dot", "aria-hidden": "true" })
+          h(
+            "span",
+            { className: "brand-avatar-wrap", "aria-hidden": "true" },
+            h("img", {
+              src: "/assets/images/fardin-brand-avatar.jpg",
+              alt: "",
+              className: "brand-avatar-img",
+              width: 28,
+              height: 28,
+              loading: "eager",
+              decoding: "async"
+            })
+          ),
+          h(
+            "span",
+            { className: "brand-name-text" },
+            "F",
+            h("span", { className: "brand-accent-char" }, "a"),
+            "rdin",
+            h("span", { className: "brand-accent-ai" }, ".AI")
+          )
         ),
 
         // Desktop Navigation Links
@@ -1122,15 +1142,15 @@ function PortfolioApp() {
           ),
 
             // ================================================================
-            // 7. EXPANDED FOOTER (Nav Links, Social Icons & Back to Top ↑)
+            // 7. THIN, COMPACT FOOTER (Aligned with Bottom of Display)
             // ================================================================
             h(
               "footer",
               { className: "site-footer" },
               h(
                 "div",
-                { className: "site-footer-top" },
-                // Brand & Tagline
+                { className: "site-footer-bar" },
+                // Left: Brand Logo + Compact Copyright
                 h(
                   "div",
                   { className: "site-footer-brand" },
@@ -1139,23 +1159,43 @@ function PortfolioApp() {
                     {
                       href: "#home",
                       className: "brand-logo",
+                      "aria-label": "Fardin.AI — Home",
                       onClick: (e) => {
                         e.preventDefault();
                         navigateToSection("home");
                       }
                     },
-                    h("span", { className: "brand-icon-circle", "aria-hidden": "true" }, "✦"),
-                    h("span", null, "fardin.ai"),
-                    h("span", { className: "red-dot", "aria-hidden": "true" })
+                    h(
+                      "span",
+                      { className: "brand-avatar-wrap", "aria-hidden": "true" },
+                      h("img", {
+                        src: "/assets/images/fardin-brand-avatar.jpg",
+                        alt: "",
+                        className: "brand-avatar-img",
+                        width: 24,
+                        height: 24,
+                        loading: "lazy",
+                        decoding: "async"
+                      })
+                    ),
+                    h(
+                      "span",
+                      { className: "brand-name-text" },
+                      "F",
+                      h("span", { className: "brand-accent-char" }, "a"),
+                      "rdin",
+                      h("span", { className: "brand-accent-ai" }, ".AI")
+                    )
                   ),
+                  h("span", { className: "site-footer-sep", "aria-hidden": "true" }, "·"),
                   h(
-                    "p",
-                    { className: "site-footer-desc" },
-                    "Md. Fardin Hossain · AI Engineer & Full-Stack Developer · Dhaka, Bangladesh"
+                    "span",
+                    { className: "site-footer-copy" },
+                    `© ${new Date().getFullYear()} Md. Fardin Hossain`
                   )
                 ),
 
-                // Footer Navigation Links (Matching exact section order)
+                // Center: Compact Footer Navigation + CV Link
                 h(
                   "nav",
                   { className: "site-footer-nav", "aria-label": "Footer Navigation" },
@@ -1177,10 +1217,20 @@ function PortfolioApp() {
                       },
                       item.label
                     )
+                  ),
+                  h(
+                    "a",
+                    {
+                      href: PROFILE_DATA.resumeUrl,
+                      target: "_blank",
+                      rel: "noopener noreferrer",
+                      className: "site-footer-link site-footer-cv-link"
+                    },
+                    "CV (PDF) ↗"
                   )
                 ),
 
-                // Social Icons & Back to Top Button
+                // Right: Social Icons & Back to Top
                 h(
                   "div",
                   { className: "site-footer-actions" },
@@ -1197,7 +1247,7 @@ function PortfolioApp() {
                         title: "GitHub @fardinhossain",
                         "aria-label": "GitHub"
                       },
-                      h(GithubIcon, { size: 16 })
+                      h(GithubIcon, { size: 15 })
                     ),
                     h(
                       "a",
@@ -1209,7 +1259,7 @@ function PortfolioApp() {
                         title: "LinkedIn @fardinhosn",
                         "aria-label": "LinkedIn"
                       },
-                      h(LinkedInIcon, { size: 16 })
+                      h(LinkedInIcon, { size: 15 })
                     ),
                     h(
                       "a",
@@ -1219,7 +1269,7 @@ function PortfolioApp() {
                         title: `Email ${PROFILE_DATA.email}`,
                         "aria-label": "Email"
                       },
-                      h(MailIcon, { size: 16 })
+                      h(MailIcon, { size: 15 })
                     )
                   ),
                   h(
@@ -1230,35 +1280,8 @@ function PortfolioApp() {
                       onClick: () => scrollToTarget(0),
                       "aria-label": "Back to top"
                     },
-                    "Back to top ↑"
+                    "↑ Top"
                   )
-                )
-              ),
-              h(
-                "div",
-                { className: "site-footer-bottom" },
-                h(
-                  "span",
-                  null,
-                  `© ${new Date().getFullYear()} Md. Fardin Hossain. All rights reserved.`
-                ),
-                h(
-                  "button",
-                  {
-                    type: "button",
-                    className: "replay-entrance-btn",
-                    onClick: () => {
-                      scrollToTarget(0);
-                      setTimeout(() => window.location.reload(), 300);
-                    },
-                    "aria-label": "Replay 3D cinematic hero entrance animation"
-                  },
-                  "↺ Replay Entrance"
-                ),
-                h(
-                  "span",
-                  null,
-                  "Built with React & Tailwind CSS"
                 )
               )
             )
@@ -1273,7 +1296,7 @@ function PortfolioApp() {
       "nav",
       { className: "mobile-bottom-bar", "aria-label": "Mobile Quick Navigation" },
       [
-        { id: "home", label: "Home", icon: "⌂", action: () => navigateToSection("home") },
+        { id: "home", label: "Fardin.AI", isAvatar: true, action: () => navigateToSection("home") },
         { id: "about", label: "About", icon: "◉", action: () => navigateToSection("about") },
         { id: "experience", label: "Exp", icon: "★", action: () => navigateToSection("experience") },
         { id: "projects", label: "Projects", icon: "⊞", action: () => navigateToSection("projects") },
@@ -1289,7 +1312,21 @@ function PortfolioApp() {
             className: `mobile-tab-item ${isActive ? "active" : ""}`,
             onClick: tab.action
           },
-          h("span", { style: { fontSize: "0.95rem", lineHeight: 1 } }, tab.icon),
+          tab.isAvatar
+            ? h(
+                "span",
+                { className: "mobile-tab-avatar-wrap", "aria-hidden": "true" },
+                h("img", {
+                  src: "/assets/images/fardin-brand-avatar.jpg",
+                  alt: "",
+                  className: "mobile-tab-avatar",
+                  width: 18,
+                  height: 18,
+                  loading: "eager",
+                  decoding: "async"
+                })
+              )
+            : h("span", { style: { fontSize: "0.95rem", lineHeight: 1 } }, tab.icon),
           h("span", null, tab.label)
         );
       })
