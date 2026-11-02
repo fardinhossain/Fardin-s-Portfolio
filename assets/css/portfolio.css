@@ -11749,32 +11749,15 @@ body {
 .site-footer-brand {
   display: inline-flex;
   align-items: center;
-  flex-direction: row !important;
-  flex-wrap: wrap;
-  gap: 0.5rem !important;
-}
-
-.site-footer-brand .brand-logo {
-  font-size: 18px !important;
-  gap: 7px !important;
-}
-
-.site-footer-brand .brand-avatar-wrap {
-  width: 22px;
-  height: 22px;
-  flex-basis: 22px;
-}
-
-.site-footer-sep {
-  color: var(--text-muted);
-  opacity: 0.5;
-  font-size: 0.8rem;
 }
 
 .site-footer-copy {
-  font-size: 0.74rem;
+  font-size: 0.78rem;
+  font-weight: 500;
   color: var(--text-muted);
+  opacity: 0.85;
   white-space: nowrap;
+  letter-spacing: 0.01em;
 }
 
 .site-footer-nav {
@@ -11804,7 +11787,7 @@ body {
 
 @media (min-width: 769px) {
   .site-footer-bar {
-    padding-right: 196px !important;
+    padding-right: 0 !important;
   }
 
   .site-footer-actions {

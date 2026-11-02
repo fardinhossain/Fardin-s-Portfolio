@@ -6,7 +6,8 @@
 export const PROFILE_DATA = {
   name: "Md. Fardin Hossain",
   handle: "Fardin.AI",
-  brandAvatar: "/assets/images/fardin-brand-avatar.jpg",
+  brandAvatar: "/assets/images/fardin-tab-avatar.jpg",
+  tabBarIcon: "/assets/images/fardin-tab-avatar.jpg",
   roleLine: "AI ENGINEER • FULL-STACK DEVELOPER • PROBLEM SOLVER",
   heroHeadlinePrefix: "Building ",
   heroHeadlineHighlight: "Intelligent Solutions.",

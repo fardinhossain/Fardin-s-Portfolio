@@ -260,6 +260,7 @@ export function CinematicHeroSection({ resumeUrl = PROFILE_DATA.resumeUrl, onNav
   const activate = element => { lastLauncher.current = element; setChatOpen(true); };
   const identity = h("p", { className: `fh-name${mobileName ? " fh-name-mobile" : ""}` },
     h("span", { className: "fh-sr-only" }, "MD. FARDIN HOSSAIN"),
+    h("span", { className: "fh-name-cloud", "aria-hidden": true }),
     h("span", { className: "fh-name-visual", "aria-hidden": true },
       NAME_WORDS.map((word, wIdx) =>
         h(React.Fragment, { key: word.text },
@@ -308,8 +309,6 @@ export function CinematicHeroSection({ resumeUrl = PROFILE_DATA.resumeUrl, onNav
           mobileName && identity)),
       h("ul", { className: "fh-strengths", "aria-label": "Areas of focus" }, STRENGTHS.map(([type, first, second]) =>
         h("li", { key: type }, h("span", { className: "fh-strength-icon" }, h(StrengthIcon, { type })), h("span", null, first, h("br"), second))))),
-    createPortal(h("button", { className: "fh-chat-launcher", type: "button", "aria-label": "Ask Fardin's assistant", "aria-haspopup": "dialog", "aria-expanded": chatOpen,
-      onClick: event => activate(event.currentTarget) }, h(ChatGlyph), h("span", null, "Ask about my work")), document.body),
     h(PortfolioAssistant, { open: chatOpen, onClose: () => setChatOpen(false), returnFocusRef: lastLauncher })
   );
 }
