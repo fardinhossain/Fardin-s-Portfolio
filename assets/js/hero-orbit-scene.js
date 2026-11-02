@@ -28,6 +28,8 @@ export function mountHeroOrbit(host, options = {}) {
   const noop = { dispose() {}, setReducedMotion() {}, setPaused() {} };
   function unavailable() {
     notify('onRevealProgress', 1);
+    notify('onAssistantProgress', 1);
+    notify('onStage', 'unavailable');
     notify('onPhase', 'unavailable');
     notify('onPosition', { ...emptyPosition });
   }
@@ -54,11 +56,20 @@ export function mountHeroOrbit(host, options = {}) {
   let reduced = Boolean(options.reducedMotion);
   let paused = false;
   let phase = '';
+  let stage = '';
   let revealProgress = -1;
+  let assistantProgress = -1;
   const stationary = Boolean(options.stationary);
   const modelScale = Number.isFinite(options.modelScale) && options.modelScale > 0 ? options.modelScale : 1;
-  const entranceDuration = 1;
-  const revealDuration = 1.1;
+  const entranceDuration = 1.0;
+  const revealDuration = 1.15;
+  const orbitDuration = 2.40;
+  const landDuration = 0.85;
+  const assistantDuration = 1.10;
+  const revealEnd = entranceDuration + revealDuration;
+  const orbitEnd = revealEnd + orbitDuration;
+  const landEnd = orbitEnd + landDuration;
+  const assistantEnd = landEnd + assistantDuration;
   let inView = false;
   let width = 0;
   let height = 0;
@@ -146,6 +157,12 @@ export function mountHeroOrbit(host, options = {}) {
     notify('onPhase', value);
   }
 
+  function setStage(value) {
+    if (stage === value) return;
+    stage = value;
+    notify('onStage', value);
+  }
+
   function setReveal(value) {
     const next = Math.max(0, Math.min(1, value));
     if (next === revealProgress) return;
@@ -153,7 +170,15 @@ export function mountHeroOrbit(host, options = {}) {
     notify('onRevealProgress', next);
   }
 
+  function setAssistant(value) {
+    const next = Math.max(0, Math.min(1, value));
+    if (next === assistantProgress) return;
+    assistantProgress = next;
+    notify('onAssistantProgress', next);
+  }
+
   const smooth = (t) => t * t * (3 - 2 * t);
+  const easeOutCubic = (t) => 1 - (1 - t) ** 3;
   const mix = (a, b, t) => a + (b - a) * t;
 
   function boundsForRobot() {
@@ -172,62 +197,160 @@ export function mountHeroOrbit(host, options = {}) {
   function pose() {
     const narrow = width < 460;
     const isStatic = reduced || stationary;
-    let angle = 0;
-    let x = narrow ? 0.91 : 0.12;
-    let y = narrow ? 0.25 : 0.58;
+    const revealX = narrow ? 0.88 : 0.14;
+    const revealY = narrow ? 0.28 : 0.54;
+    const landX = narrow ? 0.89 : 0.88;
+    const landY = narrow ? 0.68 : 0.82;
+    let x = revealX;
+    let y = revealY;
+    let depth = 0;
     let gesture = 0;
+    let bankZ = 0;
+    let nodX = 0;
+    let behind = false;
+    let interactiveReady = false;
+
     if (isStatic) {
       setPhase('static');
+      setStage('settled');
       setReveal(1);
-      if (stationary) { x = 0.5; y = 0.56; }
+      setAssistant(1);
+      x = stationary ? 0.5 : landX;
+      y = stationary ? 0.56 : landY;
+      interactiveReady = true;
     } else if (elapsed < entranceDuration) {
+      // Phase 1: Robot Arrival — fly in from outside the viewport
       setPhase('enter');
+      setStage('enter');
       setReveal(0);
-      const t = smooth(elapsed / entranceDuration);
-      // The desktop transit crosses the portrait only behind its stacking layer.
-      x = mix(1.22, x, t);
-      y = mix(-0.32, y, t);
-    } else if (elapsed < entranceDuration + revealDuration) {
+      setAssistant(0);
+      const rawT = Math.max(0, Math.min(1, elapsed / entranceDuration));
+      const t = easeOutCubic(rawT);
+      x = mix(1.24, revealX, t);
+      y = mix(-0.22, revealY, t) - 0.045 * Math.sin(Math.PI * rawT);
+      depth = -0.35 * (1 - t);
+      bankZ = (1 - t) * (narrow ? 0.16 : 0.26);
+      behind = !narrow;
+    } else if (elapsed < revealEnd) {
+      // Phase 2: Name Reveal — hover near portrait & reveal "Md. Fardin Hossain"
       setPhase('reveal');
-      const t = (elapsed - entranceDuration) / revealDuration;
-      setReveal(smooth(t));
-      gesture = Math.sin(Math.PI * t) ** 2;
-    } else {
+      setStage('reveal');
+      setAssistant(0);
+      const rawT = Math.max(0, Math.min(1, (elapsed - entranceDuration) / revealDuration));
+      setReveal(smooth(rawT));
+      gesture = Math.sin(Math.PI * rawT) ** 2;
+      x = revealX + (narrow ? -0.014 : 0.018) * Math.sin(rawT * Math.PI);
+      y = revealY - 0.018 * Math.sin(rawT * Math.PI * 2);
+      depth = 0.22 * Math.sin(rawT * Math.PI);
+      bankZ = -0.05 * Math.sin(rawT * Math.PI);
+      behind = false;
+    } else if (elapsed < orbitEnd) {
+      // Phase 3: Fly Around the Portrait — 3D loop behind & in front of the portrait
       setPhase('orbit');
       setReveal(1);
-      const t = elapsed - entranceDuration - revealDuration;
-      // Integrate a velocity ramp: exact reveal endpoint with zero initial
-      // velocity, then smoothly reach the familiar 21-second orbit speed.
-      const ramp = 0.8;
-      const orbitTime = t < ramp ? t ** 3 / (3 * ramp ** 2) : t - 2 * ramp / 3;
-      angle = orbitTime * Math.PI * 2 / 21;
-      if (narrow) {
-        x = 0.91 - 0.025 * Math.sin(angle);
-        y = 0.25 + 0.065 * Math.sin(angle);
+      setAssistant(0);
+      const rawU = Math.max(0, Math.min(1, (elapsed - revealEnd) / orbitDuration));
+      const u = smooth(rawU);
+      if (u < 0.5) {
+        // First half: pass BEHIND the portrait (occluded by cutout head/halo/shoulders)
+        setStage('orbit-behind');
+        const p = u * 2; // 0 -> 1
+        const startX = revealX;
+        const endX = narrow ? 0.14 : 0.86;
+        const endY = narrow ? 0.28 : 0.30;
+        x = mix(startX, endX, smooth(p));
+        y = mix(revealY, endY, smooth(p)) - 0.16 * Math.sin(Math.PI * p);
+        depth = -Math.sin(Math.PI * p);
+        bankZ = (narrow ? 0.18 : -0.20) * Math.sin(Math.PI * p);
+        behind = true;
       } else {
-        x = 0.49 - 0.37 * Math.cos(angle);
-        y = 0.43 + 0.15 * Math.cos(angle) + 0.23 * Math.sin(angle);
+        // Second half: emerge & sweep IN FRONT OF the portrait across the foreground
+        setStage('orbit-front');
+        const p = (u - 0.5) * 2; // 0 -> 1
+        const startX = narrow ? 0.14 : 0.86;
+        const startY = narrow ? 0.28 : 0.30;
+        const endX = narrow ? 0.82 : 0.72;
+        const endY = narrow ? 0.60 : 0.64;
+        // Sweep across the front of the portrait before curving toward the right corner
+        const sweepX = narrow
+          ? mix(startX, endX, smooth(p)) + 0.12 * Math.sin(Math.PI * p)
+          : mix(startX, endX, smooth(p)) - 0.42 * Math.sin(Math.PI * p);
+        x = sweepX;
+        y = mix(startY, endY, smooth(p)) + 0.08 * Math.sin(Math.PI * p);
+        depth = Math.sin(Math.PI * p);
+        bankZ = (narrow ? -0.16 : 0.20) * Math.sin(Math.PI * p);
+        gesture = 0.35 * Math.sin(Math.PI * p);
+        behind = false;
       }
+    } else if (elapsed < landEnd) {
+      // Phase 4: Land at the Hero's Right Corner
+      setPhase('orbit');
+      setStage('land');
+      setReveal(1);
+      setAssistant(0);
+      const rawV = Math.max(0, Math.min(1, (elapsed - orbitEnd) / landDuration));
+      const v = easeOutCubic(rawV);
+      const startX = narrow ? 0.82 : 0.72;
+      const startY = narrow ? 0.60 : 0.64;
+      x = mix(startX, landX, v);
+      y = mix(startY, landY, v) + 0.015 * Math.sin(Math.PI * rawV);
+      depth = 0.30 * (1 - v);
+      bankZ = -0.08 * (1 - v);
+      nodX = 0.06 * Math.sin(Math.PI * rawV);
+      behind = false;
+    } else if (elapsed < assistantEnd) {
+      // Phase 5: Reveal "Fardin's AI Assistant" above the landed robot
+      setPhase('orbit');
+      setStage('assistant');
+      setReveal(1);
+      const rawW = Math.max(0, Math.min(1, (elapsed - landEnd) / assistantDuration));
+      setAssistant(smooth(rawW));
+      const idleT = elapsed - landEnd;
+      x = landX + (narrow ? 0.004 : 0.006) * Math.sin(idleT * 1.6);
+      y = landY + 0.007 * Math.sin(idleT * 2.1);
+      depth = 0.18;
+      gesture = 0.65 * Math.sin(Math.PI * rawW) ** 2;
+      nodX = -0.05 * Math.sin(Math.PI * rawW);
+      behind = false;
+      interactiveReady = true;
+    } else {
+      // Settled at the Hero's right corner with gentle idle floating
+      setPhase('orbit');
+      setStage('settled');
+      setReveal(1);
+      setAssistant(1);
+      const idleT = elapsed - landEnd;
+      x = landX + (narrow ? 0.004 : 0.006) * Math.sin(idleT * 1.6);
+      y = landY + 0.007 * Math.sin(idleT * 2.1);
+      depth = 0.15 * Math.cos(idleT * 1.1);
+      behind = false;
+      interactiveReady = true;
     }
-    const depth = Math.sin(angle);
-    // Safe envelope rather than just the torso governs size. Mobile is kept
-    // outside the right edge of the expanded face box, even at full bank.
+
+    // Safe envelope governs size so the landed robot never overlaps the face box
+    // (face: x in 0.27..0.80, y in 0.13..0.66).
     const scale = stationary
       ? Math.min(width * 0.82 / 2.9, height * 0.84 / 4.6) * modelScale
-      : Math.min(width * (narrow ? 0.078 : 0.22) / 2.9, height * (narrow ? 0.17 : 0.32) / 4.6) * Math.min(modelScale, narrow ? 1.05 : 1.15);
-    robot.scale.setScalar(scale * (stationary ? 1 : 0.97 + 0.03 * Math.cos(angle)));
-    robot.position.set(width * (x - 0.5), height * (0.5 - y), depth * 24);
+      : Math.min(width * (narrow ? 0.11 : 0.165) / 3.0, height * (narrow ? 0.155 : 0.21) / 4.05) * Math.min(modelScale, narrow ? 1.05 : 1.12);
+    const depthScale = stationary ? 1 : 1 + 0.11 * depth;
+    robot.scale.setScalar(scale * depthScale);
+    robot.position.set(width * (x - 0.5), height * (0.5 - y), depth * 28);
     const motionTime = isStatic ? 0 : elapsed;
-    robot.rotation.set(0.035 * Math.sin(motionTime * 0.7), -0.10 + depth * 0.08, 0.045 * Math.sin(motionTime * 0.9));
+    robot.rotation.set(
+      nodX + 0.035 * Math.sin(motionTime * 1.3),
+      -0.10 + depth * 0.14 + (0.5 - x) * 0.18,
+      bankZ + 0.04 * Math.sin(motionTime * 1.1)
+    );
     for (const arm of gestureArms) arm.rotation.z = arm.userData.rest + arm.userData.side * gesture * 0.38;
     const pulse = isStatic ? 1 : 1 + 0.045 * Math.sin(motionTime * 5.5);
     for (const flame of flames) flame.scale.y = flame.userData.baseY * pulse;
     const bounds = boundsForRobot();
     const intersectsFace = bounds.x < width * 0.80 && bounds.x + bounds.width > width * 0.27
       && bounds.y < height * 0.66 && bounds.y + bounds.height > height * 0.13;
-    const behind = !stationary && (intersectsFace || (!narrow && phase === 'enter'));
-    host.style.zIndex = behind ? '1' : '3';
-    bounds.visible = !behind && bounds.x + bounds.width > 0 && bounds.x < width
+    const layerBehind = !stationary && behind;
+    host.style.zIndex = layerBehind ? '1' : '3';
+    bounds.visible = interactiveReady && !layerBehind && !intersectsFace
+      && bounds.x + bounds.width > 0 && bounds.x < width
       && bounds.y + bounds.height > 0 && bounds.y < height;
     notify('onPosition', bounds);
   }
@@ -389,7 +512,9 @@ export function mountHeroOrbit(host, options = {}) {
     }
     // Settle semantics immediately, even if the stage starts offscreen/zero size.
     setPhase(reduced || stationary ? 'static' : 'enter');
+    setStage(reduced || stationary ? 'settled' : 'enter');
     setReveal(reduced || stationary ? 1 : 0);
+    setAssistant(reduced || stationary ? 1 : 0);
     resize();
   } catch (_) {
     dispose();
@@ -408,6 +533,10 @@ export function mountHeroOrbit(host, options = {}) {
       // the orbit anchor, never replays or re-hides the semantic name.
       elapsed = Math.max(elapsed, entranceDuration + revealDuration);
       setReveal(1);
+      if (reduced || stationary) {
+        setAssistant(1);
+        setStage('settled');
+      }
       setPhase(reduced || stationary ? 'static' : 'orbit');
       sync();
     },
