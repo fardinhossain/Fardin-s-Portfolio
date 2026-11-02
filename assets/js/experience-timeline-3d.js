@@ -12,6 +12,7 @@ import React, { useState, useEffect, useRef } from "react";
 import { motion } from "framer-motion";
 import * as THREE from "three";
 import { createFlyingRobot3D } from "./project-showcase-3d.js";
+import { getCurrentTheme, subscribeTheme } from "./theme-manager.js";
 
 const h = React.createElement;
 
@@ -583,6 +584,13 @@ export function ExperienceTimelineSection({ onExploreInternship }) {
     };
   });
   const [cardAnimKey, setCardAnimKey] = useState(0);
+  const [theme, setTheme] = useState(getCurrentTheme);
+
+  useEffect(() => {
+    const unsubscribe = subscribeTheme(setTheme);
+    setTheme(getCurrentTheme());
+    return unsubscribe;
+  }, []);
 
   // Trigger the sequence ONCE when the Experience section enters the viewport
   useEffect(() => {
@@ -637,34 +645,61 @@ export function ExperienceTimelineSection({ onExploreInternship }) {
 
   return h(
     "section",
-    { id: "experience", ref: sectionRef, className: "section-block" },
-    // Section Header
+    { id: "experience", ref: sectionRef, className: "section-block", "aria-labelledby": "exp-title" },
+    // Section Summit Header Banner
     h(
-      "div",
-      { className: "section-header-bar" },
+      "header",
+      { className: "section-summit-header" },
       h(
         "div",
-        { className: "section-title-group" },
-        h("span", { className: "section-red-bar" }),
+        { className: "section-summit-bg", "aria-hidden": "true" },
         h(
-          "h2",
-          { className: "section-heading" },
-          "Experience",
-          h("span", { className: "red-dot" })
-        )
+          "picture",
+          { className: "section-summit-pic" },
+          h("source", {
+            srcSet:
+              theme === "light"
+                ? "/assets/images/about-summitscape-light.webp"
+                : "/assets/images/about-summitscape.webp",
+            type: "image/webp"
+          }),
+          h("img", {
+            src:
+              theme === "light"
+                ? "/assets/images/about-summitscape-light.png"
+                : "/assets/images/about-summitscape.png",
+            alt: "",
+            width: 1568,
+            height: 627,
+            loading: "lazy",
+            decoding: "async",
+            className: "section-summit-img"
+          })
+        ),
+        h("div", { className: "section-summit-glow" }),
+        h("div", { className: "section-summit-overlay" })
       ),
       h(
-        "span",
-        { className: "exp-timeline-top-tag" },
-        h("span", { className: "red-dot", style: { width: 6, height: 6 } }),
-        "Bot-Guided Timeline"
+        "div",
+        { className: "section-summit-content" },
+        h(
+          "h2",
+          { id: "exp-title", className: "section-summit-title" },
+          "Experi",
+          h("span", { className: "section-summit-accent" }, "ence")
+        ),
+        h(
+          "p",
+          { className: "section-summit-desc" },
+          "My professional journey, internships, and hands-on experience."
+        )
       )
     ),
 
-    // Outer Double-Bezel Stage
+    // Detail Content Container Below Header
     h(
       "div",
-      { className: "bezel-outer" },
+      { className: "bezel-outer section-detail-panel exp-detail-panel" },
       h(
         "div",
         { className: "bezel-inner exp-robot-stage" },

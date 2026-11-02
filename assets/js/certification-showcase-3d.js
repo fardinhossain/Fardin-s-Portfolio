@@ -16,6 +16,7 @@ import { motion, AnimatePresence } from "framer-motion";
 import * as THREE from "three";
 import { gsap } from "gsap";
 import { ExternalArrowIcon } from "./visual-previews.js";
+import { getCurrentTheme, subscribeTheme } from "./theme-manager.js";
 
 const h = React.createElement;
 
@@ -1200,6 +1201,13 @@ export function CertificationShowcase({
   const [activeTargetId, setActiveTargetId] = useState(null);
   const [justLandedId, setJustLandedId] = useState(null);
   const [runCount, setRunCount] = useState(0);
+  const [theme, setTheme] = useState(getCurrentTheme);
+
+  useEffect(() => {
+    const unsubscribe = subscribeTheme(setTheme);
+    setTheme(getCurrentTheme());
+    return unsubscribe;
+  }, []);
 
   // Telemetry state
   const [telemetry, setTelemetry] = useState({
@@ -1373,179 +1381,209 @@ export function CertificationShowcase({
 
   return h(
     "section",
-    { id: "certifications", ref: sectionRef, className: "section-block" },
-    // Section Header Bar
+    { id: "certifications", ref: sectionRef, className: "section-block", "aria-labelledby": "certifications-title" },
+    // Section Summit Header Banner
     h(
-      "div",
-      { className: "section-header-bar" },
+      "header",
+      { className: "section-summit-header" },
       h(
         "div",
-        { className: "section-title-group" },
-        h("span", { className: "section-red-bar" }),
+        { className: "section-summit-bg", "aria-hidden": "true" },
+        h(
+          "picture",
+          { className: "section-summit-pic" },
+          h("source", {
+            srcSet:
+              theme === "light"
+                ? "/assets/images/about-summitscape-light.webp"
+                : "/assets/images/about-summitscape.webp",
+            type: "image/webp"
+          }),
+          h("img", {
+            src:
+              theme === "light"
+                ? "/assets/images/about-summitscape-light.png"
+                : "/assets/images/about-summitscape.png",
+            alt: "",
+            width: 1568,
+            height: 627,
+            loading: "lazy",
+            decoding: "async",
+            className: "section-summit-img"
+          })
+        ),
+        h("div", { className: "section-summit-glow" }),
+        h("div", { className: "section-summit-overlay" })
+      ),
+      h(
+        "div",
+        { className: "section-summit-content" },
         h(
           "h2",
-          { className: "section-heading" },
-          "Certifications",
-          h("span", { className: "red-dot" })
-        )
-      ),
-      h(
-        "button",
-        {
-          type: "button",
-          className: "project-action-pill",
-          onClick: () => onOpenJourneyExperience && onOpenJourneyExperience("journey-certificates")
-        },
-        "20/20 Certificate Wall (FlyRank Explore) →"
-      )
-    ),
-
-    // Dual-Robot Telemetry & Control Bar
-    h(
-      "div",
-      {
-        className: "robot-telemetry-bar",
-        role: "region",
-        "aria-label": "Dual Robot Credential Delivery Controls"
-      },
-      h(
-        "div",
-        { className: "robot-telemetry-left" },
-        // Twin Holopad Dock Icons
-        h(
-          "span",
-          {
-            className: `robot-holopad-dock bot-f01-dock-stage ${
-              telemetry.active ? "is-bot-scanning" : "is-bot-docked"
-            }`,
-            title: "Robot A & Robot B Dual Dock"
-          },
-          h(
-            "span",
-            { style: { display: "inline-flex", alignItems: "center", gap: "4px" } },
-            // Robot A mascot
-            h(
-              "svg",
-              { width: 22, height: 22, viewBox: "0 0 100 100", fill: "none" },
-              h("circle", { cx: 50, cy: 50, r: 42, fill: "#0F172A" }),
-              h("rect", { x: 26, y: 38, width: 48, height: 24, rx: 12, fill: "#E11D48" }),
-              h("circle", { cx: 40, cy: 50, r: 4.5, fill: "#FFFFFF" }),
-              h("circle", { cx: 60, cy: 50, r: 4.5, fill: "#FFFFFF" })
-            ),
-            // Robot B mascot
-            h(
-              "svg",
-              { width: 22, height: 22, viewBox: "0 0 100 100", fill: "none" },
-              h("circle", { cx: 50, cy: 50, r: 42, fill: "#0F172A" }),
-              h("rect", { x: 26, y: 38, width: 48, height: 24, rx: 12, fill: "#F59E0B" }),
-              h("circle", { cx: 40, cy: 50, r: 4.5, fill: "#FFFFFF" }),
-              h("circle", { cx: 60, cy: 50, r: 4.5, fill: "#FFFFFF" })
-            )
-          )
+          { id: "certifications-title", className: "section-summit-title" },
+          "Certifi",
+          h("span", { className: "section-summit-accent" }, "cations")
         ),
         h(
-          "span",
-          { className: "robot-unit-badge" },
-          h("span", { className: "robot-unit-led" }),
-          h("span", null, "DUAL ROBOTS · A & B")
-        ),
-        h(
-          "span",
-          {
-            className: `robot-state-chip ${!telemetry.active ? "state-idle" : ""}`
-          },
-          telemetry.chip
-        ),
-        h(
-          "span",
-          { className: "robot-status-text" },
-          telemetry.text
-        )
-      ),
-      h(
-        "div",
-        { className: "robot-telemetry-actions" },
-        h(
-          "button",
-          {
-            type: "button",
-            className: "robot-control-btn primary-replay",
-            onClick: handleReplayDelivery,
-            title: "Replay dual-side robot delivery sequence"
-          },
-          "Replay Delivery ↻"
-        ),
-        h(
-          "button",
-          {
-            type: "button",
-            className: "robot-control-btn",
-            onClick: () => onOpenJourneyExperience && onOpenJourneyExperience("journey-certificates"),
-            title: "Open 20/20 Anthropic Certificate Wall on FlyRank Internship Explore Page"
-          },
-          "Explore 20/20 Wall ↗"
+          "p",
+          { className: "section-summit-desc" },
+          "Professional certifications that validate my skills and continuous learning."
         )
       )
     ),
 
-    // Main Stage Container
+    // Detail Content Container Below Header
     h(
       "div",
-      { className: "bezel-outer" },
+      { className: "section-detail-panel cert-detail-panel" },
+
+      // Dual-Robot Telemetry & Control Bar
       h(
         "div",
         {
-          ref: stageRef,
-          className: "bezel-inner credentials-strip-container cert-squad-stage-inner cert-showcase-stage"
+          className: "robot-telemetry-bar",
+          role: "region",
+          "aria-label": "Dual Robot Credential Delivery Controls"
         },
-        // Overlay Dual Robot 3D WebGL Canvas Layer
-        h(DualRobotDeliveryScene, {
-          containerRef: stageRef,
-          slotRefsMap,
-          certifications,
-          runCount,
-          controllerRef,
-          onTargetRow: handleTargetRow,
-          onRowDelivered: handleRowDelivered,
-          onAllDelivered: handleAllDelivered,
-          onTelemetryUpdate: handleTelemetryUpdate
-        }),
-
-        // Credentials Header (matching screenshot)
         h(
           "div",
-          { className: "credentials-strip-header" },
+          { className: "robot-telemetry-left" },
+          // Twin Holopad Dock Icons
           h(
             "span",
-            { className: "credentials-strip-eyebrow" },
-            h("span", { className: "red-dot", style: { width: 6, height: 6 } }),
-            "PRIMARY INDUSTRY & ACADEMIC CREDENTIALS (7 VERIFIED TRACKS)"
+            {
+              className: `robot-holopad-dock bot-f01-dock-stage ${
+                telemetry.active ? "is-bot-scanning" : "is-bot-docked"
+              }`,
+              title: "Robot A & Robot B Dual Dock"
+            },
+            h(
+              "span",
+              { style: { display: "inline-flex", alignItems: "center", gap: "4px" } },
+              // Robot A mascot
+              h(
+                "svg",
+                { width: 22, height: 22, viewBox: "0 0 100 100", fill: "none" },
+                h("circle", { cx: 50, cy: 50, r: 42, fill: "#0F172A" }),
+                h("rect", { x: 26, y: 38, width: 48, height: 24, rx: 12, fill: "#E11D48" }),
+                h("circle", { cx: 40, cy: 50, r: 4.5, fill: "#FFFFFF" }),
+                h("circle", { cx: 60, cy: 50, r: 4.5, fill: "#FFFFFF" })
+              ),
+              // Robot B mascot
+              h(
+                "svg",
+                { width: 22, height: 22, viewBox: "0 0 100 100", fill: "none" },
+                h("circle", { cx: 50, cy: 50, r: 42, fill: "#0F172A" }),
+                h("rect", { x: 26, y: 38, width: 48, height: 24, rx: 12, fill: "#F59E0B" }),
+                h("circle", { cx: 40, cy: 50, r: 4.5, fill: "#FFFFFF" }),
+                h("circle", { cx: 60, cy: 50, r: 4.5, fill: "#FFFFFF" })
+              )
+            )
           ),
           h(
             "span",
-            { className: "credentials-strip-hint" },
-            "Click 👁 to view scan or ↗ to verify"
+            { className: "robot-unit-badge" },
+            h("span", { className: "robot-unit-led" }),
+            h("span", null, "DUAL ROBOTS · A & B")
+          ),
+          h(
+            "span",
+            {
+              className: `robot-state-chip ${!telemetry.active ? "state-idle" : ""}`
+            },
+            telemetry.chip
+          ),
+          h(
+            "span",
+            { className: "robot-status-text" },
+            telemetry.text
           )
         ),
-
-        // Vertically stacked credential row slots
         h(
           "div",
-          { className: "cert-tiles-list", role: "list" },
-          certifications.map((cert, idx) =>
-            h(CertificationRow, {
-              key: cert.id,
-              cert,
-              index: idx,
-              isDelivered: deliveredIds.has(cert.id),
-              isActiveTarget: activeTargetId === cert.id,
-              isJustLanded: justLandedId === cert.id,
-              isInstant: isQuickReveal || prefersReducedMotion(),
-              slotRefCallback: registerSlotRef,
-              onOpenModal,
-              onOpenCertWall: onOpenJourneyExperience,
-              onOpenJourney: onOpenJourneyExperience
-            })
+          { className: "robot-telemetry-actions" },
+          h(
+            "button",
+            {
+              type: "button",
+              className: "robot-control-btn primary-replay",
+              onClick: handleReplayDelivery,
+              title: "Replay dual-side robot delivery sequence"
+            },
+            "Replay Delivery ↻"
+          ),
+          h(
+            "button",
+            {
+              type: "button",
+              className: "robot-control-btn",
+              onClick: () => onOpenJourneyExperience && onOpenJourneyExperience("journey-certificates"),
+              title: "Open 20/20 Anthropic Certificate Wall on FlyRank Internship Explore Page"
+            },
+            "Explore 20/20 Wall ↗"
+          )
+        )
+      ),
+
+      // Main Stage Container
+      h(
+        "div",
+        { className: "bezel-outer cert-bezel-outer" },
+        h(
+          "div",
+          {
+            ref: stageRef,
+            className: "bezel-inner credentials-strip-container cert-squad-stage-inner cert-showcase-stage"
+          },
+          // Overlay Dual Robot 3D WebGL Canvas Layer
+          h(DualRobotDeliveryScene, {
+            containerRef: stageRef,
+            slotRefsMap,
+            certifications,
+            runCount,
+            controllerRef,
+            onTargetRow: handleTargetRow,
+            onRowDelivered: handleRowDelivered,
+            onAllDelivered: handleAllDelivered,
+            onTelemetryUpdate: handleTelemetryUpdate
+          }),
+
+          // Credentials Header (matching screenshot)
+          h(
+            "div",
+            { className: "credentials-strip-header" },
+            h(
+              "span",
+              { className: "credentials-strip-eyebrow" },
+              h("span", { className: "red-dot", style: { width: 6, height: 6 } }),
+              "PRIMARY INDUSTRY & ACADEMIC CREDENTIALS (7 VERIFIED TRACKS)"
+            ),
+            h(
+              "span",
+              { className: "credentials-strip-hint" },
+              "Click 👁 to view scan or ↗ to verify"
+            )
+          ),
+
+          // Vertically stacked credential row slots
+          h(
+            "div",
+            { className: "cert-tiles-list", role: "list" },
+            certifications.map((cert, idx) =>
+              h(CertificationRow, {
+                key: cert.id,
+                cert,
+                index: idx,
+                isDelivered: deliveredIds.has(cert.id),
+                isActiveTarget: activeTargetId === cert.id,
+                isJustLanded: justLandedId === cert.id,
+                isInstant: isQuickReveal || prefersReducedMotion(),
+                slotRefCallback: registerSlotRef,
+                onOpenModal,
+                onOpenCertWall: onOpenJourneyExperience,
+                onOpenJourney: onOpenJourneyExperience
+              })
+            )
           )
         )
       )

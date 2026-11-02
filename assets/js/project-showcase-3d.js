@@ -14,6 +14,7 @@
 
 import React, { useState, useEffect, useRef, useMemo, useCallback } from "react";
 import * as THREE from "three";
+import { getCurrentTheme, subscribeTheme } from "./theme-manager.js";
 
 const h = React.createElement;
 
@@ -423,10 +424,17 @@ export function FeaturedProjects({
   const [featuredIndex, setFeaturedIndex] = useState(0);
   const [mobileDetailsProject, setMobileDetailsProject] = useState(null);
   const [activeMobileCardIndex, setActiveMobileCardIndex] = useState(0);
+  const [theme, setTheme] = useState(getCurrentTheme);
 
   const carouselRef = useRef(null);
   const sliderTrackRef = useRef(null);
   const isTouchScrollingRef = useRef(false);
+
+  useEffect(() => {
+    const unsubscribe = subscribeTheme(setTheme);
+    setTheme(getCurrentTheme());
+    return unsubscribe;
+  }, []);
 
   // Filter projects by category
   const filteredProjects = useMemo(() => {
@@ -554,7 +562,7 @@ export function FeaturedProjects({
       mobileDetailsProject
         ? h(
             "div",
-            { className: "projects-mobile-details-view" },
+            { className: "projects-mobile-details-view section-detail-panel projects-detail-panel" },
 
             // Top Bar: Back Button & Share Icon
             h(
@@ -709,99 +717,88 @@ export function FeaturedProjects({
             React.Fragment,
             null,
 
-            // Header Row: Badge, Title & Stats Counters
+            // Section Summit Header Banner with Title, Description, and Category Filters
             h(
-              "div",
-              { className: "projects-header-row" },
+              "header",
+              { className: "section-summit-header projects-summit-header" },
               h(
                 "div",
-                { className: "projects-header-left" },
+                { className: "section-summit-bg", "aria-hidden": "true" },
                 h(
-                  "div",
-                  { className: "projects-badge" },
-                  h("span", { className: "projects-badge-dot" }),
-                  "PROJECTS"
+                  "picture",
+                  { className: "section-summit-pic" },
+                  h("source", {
+                    srcSet:
+                      theme === "light"
+                        ? "/assets/images/about-summitscape-light.webp"
+                        : "/assets/images/about-summitscape.webp",
+                    type: "image/webp"
+                  }),
+                  h("img", {
+                    src:
+                      theme === "light"
+                        ? "/assets/images/about-summitscape-light.png"
+                        : "/assets/images/about-summitscape.png",
+                    alt: "",
+                    width: 1568,
+                    height: 627,
+                    loading: "lazy",
+                    decoding: "async",
+                    className: "section-summit-img"
+                  })
                 ),
+                h("div", { className: "section-summit-glow" }),
+                h("div", { className: "section-summit-overlay" })
+              ),
+              h(
+                "div",
+                { className: "section-summit-content projects-header-left" },
                 h(
                   "h2",
-                  { className: "projects-title" },
+                  { id: "projects-title", className: "section-summit-title projects-title" },
                   "Pro",
-                  h("span", { className: "projects-title-gradient" }, "jects")
+                  h("span", { className: "section-summit-accent projects-title-gradient" }, "jects")
                 ),
                 h(
                   "p",
-                  { className: "projects-subtitle" },
+                  { className: "section-summit-desc projects-subtitle" },
                   "A collection of projects where I explore ideas, solve real problems, and turn concepts into usable products."
                 )
               ),
 
-              // Desktop Top-Right Stats
+              // Category Filter Buttons Bar inside Projects Header
               h(
                 "div",
-                { className: "projects-stats-row" },
-                h(
-                  "div",
-                  { className: "projects-stat-card" },
-                  h("div", { className: "projects-stat-icon-box" }, h(IconCube, { size: 20 })),
+                { className: "projects-filters-bar", role: "tablist", "aria-label": "Filter projects by category" },
+                categories.map((cat) =>
                   h(
-                    "div",
-                    { className: "projects-stat-info" },
-                    h("span", { className: "projects-stat-number" }, "6"),
-                    h("span", { className: "projects-stat-label" }, "Projects Built")
-                  )
-                ),
-                h(
-                  "div",
-                  { className: "projects-stat-card" },
-                  h("div", { className: "projects-stat-icon-box" }, h(IconCodeBrackets, { size: 20 })),
-                  h(
-                    "div",
-                    { className: "projects-stat-info" },
-                    h("span", { className: "projects-stat-number" }, "10+"),
-                    h("span", { className: "projects-stat-label" }, "Technologies")
-                  )
-                ),
-                h(
-                  "div",
-                  { className: "projects-stat-card" },
-                  h("div", { className: "projects-stat-icon-box" }, h(IconUsersGroup, { size: 20 })),
-                  h(
-                    "div",
-                    { className: "projects-stat-info" },
-                    h("span", { className: "projects-stat-number" }, "Real"),
-                    h("span", { className: "projects-stat-label" }, "World Focus")
+                    "button",
+                    {
+                      key: cat.id,
+                      role: "tab",
+                      "aria-selected": activeCategory === cat.id,
+                      className: `projects-filter-btn ${activeCategory === cat.id ? "active" : ""}`,
+                      onClick: () => setActiveCategory(cat.id)
+                    },
+                    h(IconCategory, { type: cat.id || cat.icon, size: 15 }),
+                    cat.label
                   )
                 )
               )
             ),
 
-            // Category Filter Buttons Bar
+            // Content Area Below Projects Header
             h(
               "div",
-              { className: "projects-filters-bar", role: "tablist", "aria-label": "Filter projects by category" },
-              categories.map((cat) =>
-                h(
-                  "button",
-                  {
-                    key: cat.id,
-                    role: "tab",
-                    "aria-selected": activeCategory === cat.id,
-                    className: `projects-filter-btn ${activeCategory === cat.id ? "active" : ""}`,
-                    onClick: () => setActiveCategory(cat.id)
-                  },
-                  h(IconCategory, { type: cat.id || cat.icon, size: 16 }),
-                  cat.label
-                )
-              )
-            ),
+              { className: "section-detail-panel projects-detail-panel" },
 
-            // ----------------------------------------------------------------
-            // DESKTOP SECTION: FEATURED PROJECT SHOWCASE CARD
-            // ----------------------------------------------------------------
-            activeFeatured &&
-              h(
-                "div",
-                { className: "projects-featured-card" },
+              // ----------------------------------------------------------------
+              // DESKTOP SECTION: FEATURED PROJECT SHOWCASE CARD
+              // ----------------------------------------------------------------
+              activeFeatured &&
+                h(
+                  "div",
+                  { className: "projects-featured-card" },
 
                 // Left: High Fidelity Laptop & Phone Dual Mockup Presentation
                 h(
@@ -1264,6 +1261,7 @@ export function FeaturedProjects({
                 { className: "projects-swipe-hint" },
                 "👆 Swipe left or right to explore more projects"
               )
+            )
             )
           )
     )
