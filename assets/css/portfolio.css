@@ -11062,68 +11062,35 @@ body,
 }
 
 /* ==========================================================================
-   EXPERIENCE & CERTIFICATIONS DETAIL PANEL OVERRIDES
-   Aligns .exp-detail-panel and .cert-detail-panel with .section-detail-panel
+   FULL-WIDTH PAGE GROUND & BORDERLESS SECTION DETAILS OVERRIDES
+   Aligns page background with Hero section (--hero-ground) and removes
+   outer section boxes from Experience & Certifications.
    ========================================================================== */
-.bezel-outer.section-detail-panel,
-.exp-detail-panel,
-.cert-detail-panel {
-  background: var(--detail-panel-bg, #FAF8F4) !important;
-  border: 1px solid var(--detail-panel-border, #DFDDD7) !important;
-  border-radius: 20px !important;
-  box-shadow: var(--detail-panel-shadow, 0 4px 20px -6px rgba(15, 23, 42, 0.04)) !important;
+html,
+body {
+  background-color: var(--hero-ground, #f4f4f1) !important;
+  background-image: none !important;
+}
+
+[data-theme="dark"] html,
+[data-theme="dark"] body {
+  background-color: var(--hero-ground, #1f1f1f) !important;
+  background-image: none !important;
+}
+
+.exp-robot-stage,
+.cert-showcase-stage,
+.credentials-strip-container.cert-showcase-stage {
+  background: transparent !important;
+  border: 0 !important;
+  border-radius: 0 !important;
+  box-shadow: none !important;
   backdrop-filter: none !important;
   -webkit-backdrop-filter: none !important;
+  padding-left: 0 !important;
+  padding-right: 0 !important;
 }
 
-[data-theme="dark"] .bezel-outer.section-detail-panel,
-[data-theme="dark"] .exp-detail-panel,
-[data-theme="dark"] .cert-detail-panel {
-  background: var(--detail-panel-bg, #14181F) !important;
-  border: 1px solid var(--detail-panel-border, rgba(255, 255, 255, 0.08)) !important;
-  box-shadow: var(--detail-panel-shadow, 0 8px 28px -8px rgba(0, 0, 0, 0.45)) !important;
-}
-
-.exp-detail-panel {
-  padding: 0 !important;
-}
-
-.exp-detail-panel .bezel-inner.exp-robot-stage {
-  background: transparent !important;
-  border: 0 !important;
-  border-radius: 20px !important;
-  box-shadow: none !important;
-}
-
-.cert-detail-panel {
-  padding: clamp(16px, 2vw, 24px);
-}
-
-.cert-detail-panel .robot-telemetry-bar {
-  margin-bottom: 14px;
-}
-
-.cert-detail-panel .bezel-outer.cert-bezel-outer {
-  background: transparent !important;
-  border: 0 !important;
-  padding: 0 !important;
-  box-shadow: none !important;
-}
-
-.cert-detail-panel .bezel-inner.cert-showcase-stage {
-  background: transparent !important;
-  border: 0 !important;
-  box-shadow: none !important;
-}
-
-@media (max-width: 768px) {
-  .bezel-outer.section-detail-panel,
-  .exp-detail-panel,
-  .cert-detail-panel {
-    border-radius: 18px !important;
-  }
-
-  .cert-detail-panel {
-    padding: 14px 12px;
-  }
+#certifications .robot-telemetry-bar {
+  margin-bottom: 16px;
 }

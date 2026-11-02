@@ -335,25 +335,26 @@ export function AboutScrollStory() {
           h("div", { className: "section-summit-glow" }),
           h("div", { className: "section-summit-overlay" })
         ),
-        h("div", { className: "section-summit-content" },
-          h("h2", { id: "ae-title", className: "ae-title section-summit-title" },
-            "About",
-            h("span", { className: "ae-title-accent section-summit-accent" }, "Me")
-          ),
-          h("p", { className: "section-summit-desc" },
-            "Get to know me, my background, interests, and what I'm passionate about."
+        h("div", { className: "section-summit-inner" },
+          h("div", { className: "section-summit-content" },
+            h("h2", { id: "ae-title", className: "ae-title section-summit-title" },
+              "About",
+              h("span", { className: "ae-title-accent section-summit-accent" }, "Me")
+            ),
+            h("p", { className: "section-summit-desc" },
+              "Get to know me, my background, interests, and what I'm passionate about."
+            )
           )
         )
       ),
-      h("div", { className: "section-detail-panel ae-detail-panel" },
-        h("div", { className: "ae-quote-wrap" },
-          h("span", { className: "ae-quote-mark", "aria-hidden": "true" }, "“"),
-          h(ScrollWordReveal, {
-            as: "blockquote", className: "ae-quote", text: "I turn complex problems into practical digital experiences.”",
-            srText: "“I turn complex problems into practical digital experiences.”",
-            highlights: ["complex problems", "digital experiences"]
-          })),
-        h("div", { className: "ae-layout" },
+      h("div", { className: "ae-quote-wrap" },
+        h("span", { className: "ae-quote-mark", "aria-hidden": "true" }, "“"),
+        h(ScrollWordReveal, {
+          as: "blockquote", className: "ae-quote", text: "I turn complex problems into practical digital experiences.”",
+          srText: "“I turn complex problems into practical digital experiences.”",
+          highlights: ["complex problems", "digital experiences"]
+        })),
+      h("div", { className: "ae-layout" },
         h("nav", { ref: navRef, className: "ae-nav ae-sidebar", "aria-label": "About chapters" },
             h("div", { ref: navLinksRef, className: "ae-nav-links", style: { "--ae-progress": active / 3 } },
               h("span", { className: "ae-nav-progress", "aria-hidden": "true" }),
@@ -396,5 +397,5 @@ export function AboutScrollStory() {
               h("li", { className: "ae-step", key: title, style: { "--ae-step": index } },
                 h("div", { className: "ae-step-node" }, h(Icon, { name: icon })),
                 h("span", { className: "ae-step-number", "aria-hidden": "true" }, `0${index + 1}`),
-                h("h4", { className: "ae-small-title" }, title), h("p", { className: "ae-detail" }, description)))))))))) ;
+                h("h4", { className: "ae-small-title" }, title), h("p", { className: "ae-detail" }, description))))))))) ;
 }

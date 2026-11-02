@@ -681,28 +681,29 @@ export function ExperienceTimelineSection({ onExploreInternship }) {
       ),
       h(
         "div",
-        { className: "section-summit-content" },
+        { className: "section-summit-inner" },
         h(
-          "h2",
-          { id: "exp-title", className: "section-summit-title" },
-          "Experi",
-          h("span", { className: "section-summit-accent" }, "ence")
-        ),
-        h(
-          "p",
-          { className: "section-summit-desc" },
-          "My professional journey, internships, and hands-on experience."
+          "div",
+          { className: "section-summit-content" },
+          h(
+            "h2",
+            { id: "exp-title", className: "section-summit-title" },
+            "Experi",
+            h("span", { className: "section-summit-accent" }, "ence")
+          ),
+          h(
+            "p",
+            { className: "section-summit-desc" },
+            "My professional journey, internships, and hands-on experience."
+          )
         )
       )
     ),
 
-    // Detail Content Container Below Header
+    // Experience Timeline Stage Directly on Page Background
     h(
       "div",
-      { className: "bezel-outer section-detail-panel exp-detail-panel" },
-      h(
-        "div",
-        { className: "bezel-inner exp-robot-stage" },
+      { className: "exp-robot-stage" },
         // 3D Flying Robot Canvas Layer
         h(ExperienceRobotScene, {
           nodeTopRef,
@@ -809,6 +810,5 @@ export function ExperienceTimelineSection({ onExploreInternship }) {
           )
         )
       )
-    )
   );
 }

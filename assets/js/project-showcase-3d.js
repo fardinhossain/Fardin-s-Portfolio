@@ -562,7 +562,7 @@ export function FeaturedProjects({
       mobileDetailsProject
         ? h(
             "div",
-            { className: "projects-mobile-details-view section-detail-panel projects-detail-panel" },
+            { className: "projects-mobile-details-view" },
 
             // Top Bar: Back Button & Share Icon
             h(
@@ -717,7 +717,7 @@ export function FeaturedProjects({
             React.Fragment,
             null,
 
-            // Section Summit Header Banner with Title, Description, and Category Filters
+            // Full-Width Section Summit Header with Title, Description, Stats, and Category Filters
             h(
               "header",
               { className: "section-summit-header projects-summit-header" },
@@ -752,53 +752,95 @@ export function FeaturedProjects({
               ),
               h(
                 "div",
-                { className: "section-summit-content projects-header-left" },
+                { className: "section-summit-inner projects-summit-inner" },
                 h(
-                  "h2",
-                  { id: "projects-title", className: "section-summit-title projects-title" },
-                  "Pro",
-                  h("span", { className: "section-summit-accent projects-title-gradient" }, "jects")
-                ),
-                h(
-                  "p",
-                  { className: "section-summit-desc projects-subtitle" },
-                  "A collection of projects where I explore ideas, solve real problems, and turn concepts into usable products."
-                )
-              ),
-
-              // Category Filter Buttons Bar inside Projects Header
-              h(
-                "div",
-                { className: "projects-filters-bar", role: "tablist", "aria-label": "Filter projects by category" },
-                categories.map((cat) =>
+                  "div",
+                  { className: "projects-header-row" },
                   h(
-                    "button",
-                    {
-                      key: cat.id,
-                      role: "tab",
-                      "aria-selected": activeCategory === cat.id,
-                      className: `projects-filter-btn ${activeCategory === cat.id ? "active" : ""}`,
-                      onClick: () => setActiveCategory(cat.id)
-                    },
-                    h(IconCategory, { type: cat.id || cat.icon, size: 15 }),
-                    cat.label
+                    "div",
+                    { className: "section-summit-content projects-header-left" },
+                    h(
+                      "h2",
+                      { id: "projects-title", className: "section-summit-title projects-title" },
+                      "Pro",
+                      h("span", { className: "section-summit-accent projects-title-gradient" }, "jects")
+                    ),
+                    h(
+                      "p",
+                      { className: "section-summit-desc projects-subtitle" },
+                      "A collection of projects where I explore ideas, solve real problems, and turn concepts into usable products."
+                    )
+                  ),
+
+                  // Desktop Top-Right Stats
+                  h(
+                    "div",
+                    { className: "projects-stats-row" },
+                    h(
+                      "div",
+                      { className: "projects-stat-card" },
+                      h("div", { className: "projects-stat-icon-box" }, h(IconCube, { size: 20 })),
+                      h(
+                        "div",
+                        { className: "projects-stat-info" },
+                        h("span", { className: "projects-stat-number" }, "5+"),
+                        h("span", { className: "projects-stat-label" }, "Projects Built")
+                      )
+                    ),
+                    h(
+                      "div",
+                      { className: "projects-stat-card" },
+                      h("div", { className: "projects-stat-icon-box" }, h(IconCodeBrackets, { size: 20 })),
+                      h(
+                        "div",
+                        { className: "projects-stat-info" },
+                        h("span", { className: "projects-stat-number" }, "10+"),
+                        h("span", { className: "projects-stat-label" }, "Technologies")
+                      )
+                    ),
+                    h(
+                      "div",
+                      { className: "projects-stat-card" },
+                      h("div", { className: "projects-stat-icon-box" }, h(IconUsersGroup, { size: 20 })),
+                      h(
+                        "div",
+                        { className: "projects-stat-info" },
+                        h("span", { className: "projects-stat-number" }, "Real"),
+                        h("span", { className: "projects-stat-label" }, "World Focus")
+                      )
+                    )
+                  )
+                ),
+
+                // Category Filter Buttons Bar inside Projects Header
+                h(
+                  "div",
+                  { className: "projects-filters-bar", role: "tablist", "aria-label": "Filter projects by category" },
+                  categories.map((cat) =>
+                    h(
+                      "button",
+                      {
+                        key: cat.id,
+                        role: "tab",
+                        "aria-selected": activeCategory === cat.id,
+                        className: `projects-filter-btn ${activeCategory === cat.id ? "active" : ""}`,
+                        onClick: () => setActiveCategory(cat.id)
+                      },
+                      h(IconCategory, { type: cat.id || cat.icon, size: 15 }),
+                      cat.label
+                    )
                   )
                 )
               )
             ),
 
-            // Content Area Below Projects Header
-            h(
-              "div",
-              { className: "section-detail-panel projects-detail-panel" },
-
-              // ----------------------------------------------------------------
-              // DESKTOP SECTION: FEATURED PROJECT SHOWCASE CARD
-              // ----------------------------------------------------------------
-              activeFeatured &&
-                h(
-                  "div",
-                  { className: "projects-featured-card" },
+            // ----------------------------------------------------------------
+            // DESKTOP SECTION: FEATURED PROJECT SHOWCASE CARD
+            // ----------------------------------------------------------------
+            activeFeatured &&
+              h(
+                "div",
+                { className: "projects-featured-card" },
 
                 // Left: High Fidelity Laptop & Phone Dual Mockup Presentation
                 h(
@@ -909,7 +951,17 @@ export function FeaturedProjects({
                           },
                           h(IconGitHub, { size: 16 }),
                           "GitHub"
-                        )
+                        ),
+                      h(
+                        "button",
+                        {
+                          type: "button",
+                          className: "projects-btn-secondary",
+                          onClick: () => handleOpenDetails(activeFeatured)
+                        },
+                        "View Details",
+                        h(IconArrowRight, { size: 14 })
+                      )
                     ),
 
                     // Prev / Next Chevron Arrows
@@ -1261,7 +1313,6 @@ export function FeaturedProjects({
                 { className: "projects-swipe-hint" },
                 "👆 Swipe left or right to explore more projects"
               )
-            )
             )
           )
     )
