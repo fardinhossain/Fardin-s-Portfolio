@@ -1332,7 +1332,7 @@ function PortfolioApp() {
           { id: "contact", label: "Contact", renderIcon: (c) => h(LucideSend, { color: c }), action: () => navigateToSection("contact") }
         ].map((tab) => {
           const isActive = view === "home" && activeNav === tab.id;
-          const iconColor = isActive ? "#e11d48" : "#64748b";
+          const iconColor = isActive ? "#e11d48" : (theme === "dark" ? "#94a3b8" : "#64748b");
           return h(
             "button",
             {
@@ -1349,8 +1349,8 @@ function PortfolioApp() {
                     src: "/assets/images/fardin-tab-avatar.jpg",
                     alt: "Home",
                     className: "mobile-tab-avatar",
-                    width: 26,
-                    height: 26,
+                    width: 22,
+                    height: 22,
                     loading: "eager",
                     decoding: "async"
                   })
@@ -1359,11 +1359,6 @@ function PortfolioApp() {
             h("span", { className: "mobile-tab-label" }, tab.label)
           );
         })
-      ),
-      h(
-        "div",
-        { className: "mobile-bottom-home-indicator-area", "aria-hidden": "true" },
-        h("div", { className: "mobile-bottom-home-indicator-pill" })
       )
     ),
 

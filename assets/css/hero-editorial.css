@@ -173,10 +173,13 @@ body { background: var(--folio-ground); }
     left: 0;
     right: 0;
   }
-  .navbar-glass, .navbar-glass.portix-navbar { height: 36px; padding: 0 14px; }
-  .navbar-wrapper .brand-logo { font-size: 17px; letter-spacing: .05em; font-family: 'Rostex', sans-serif; }
+  .navbar-glass, .navbar-glass.portix-navbar { height: 28px !important; min-height: 28px !important; padding: 0 12px; }
+  .navbar-wrapper .brand-logo { font-size: 13px !important; letter-spacing: .04em; font-family: 'Rostex', sans-serif; }
   .navbar-wrapper .brand-avatar-wrap { display: none !important; }
-  .navbar-wrapper .theme-toggle-btn { width: 26px; min-width: 26px; height: 26px; min-height: 26px; padding: 4px; }
+  .navbar-wrapper .theme-toggle-btn { width: 22px !important; min-width: 22px !important; height: 22px !important; min-height: 22px !important; padding: 2px !important; }
+  .navbar-wrapper .theme-toggle-icon-box { width: 12px !important; height: 12px !important; }
+  .navbar-wrapper .theme-toggle-icon-box svg { width: 12px !important; height: 12px !important; }
+  .mobile-menu-trigger { width: 24px !important; min-width: 24px !important; height: 24px !important; min-height: 24px !important; font-size: 11px !important; line-height: 1 !important; padding: 0 !important; }
   .navbar-wrapper .nav-btn-talk, [data-theme="dark"] .navbar-wrapper .nav-btn-talk { display: none; }
   .fh-hero { min-height: auto; }
   .fh-inner { min-height: auto; display: block; }

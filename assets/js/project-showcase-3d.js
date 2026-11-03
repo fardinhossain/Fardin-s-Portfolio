@@ -512,12 +512,17 @@ export function FeaturedProjects({
     }, 450);
   }, [filteredProjects.length]);
 
-  // Open Project Details (Modal for Desktop, Dedicated View for Mobile)
+  // Open Project Details (Modal for Desktop, Inline Details under Carousel for Mobile)
   const handleOpenDetails = useCallback((project) => {
     if (!project) return;
     if (typeof window !== "undefined" && window.innerWidth <= 992) {
       setMobileDetailsProject(project);
-      window.scrollTo({ top: document.getElementById("projects")?.offsetTop || 0, behavior: "smooth" });
+      setTimeout(() => {
+        const detailsEl = document.getElementById("mobile-project-details-panel");
+        if (detailsEl) {
+          detailsEl.scrollIntoView({ behavior: "smooth", block: "nearest" });
+        }
+      }, 80);
     } else if (onOpenModal) {
       onOpenModal(project);
     }
@@ -537,6 +542,161 @@ export function FeaturedProjects({
     const prevIdx = (currIdx - 1 + filteredProjects.length) % filteredProjects.length;
     setMobileDetailsProject(filteredProjects[prevIdx]);
   }, [mobileDetailsProject, filteredProjects]);
+
+  const renderMobileDetailsPanel = () => {
+    if (!mobileDetailsProject) return null;
+    return h(
+      "div",
+      {
+        id: "mobile-project-details-panel",
+        className: "projects-mobile-details-view"
+      },
+      // Top Bar: Close Button & Share/Link
+      h(
+        "div",
+        { className: "projects-details-topbar" },
+        h(
+          "button",
+          {
+            className: "projects-details-back-btn",
+            onClick: () => setMobileDetailsProject(null),
+            "aria-label": "Close project details"
+          },
+          h(IconChevronLeft, { size: 18 }),
+          "Close Details"
+        ),
+        h(
+          "a",
+          {
+            href: mobileDetailsProject.liveUrl || mobileDetailsProject.githubUrl,
+            target: "_blank",
+            rel: "noopener noreferrer",
+            className: "projects-details-share-btn",
+            "aria-label": "Open project URL"
+          },
+          h(IconExternalArrow, { size: 16 })
+        )
+      ),
+
+      // Hero Device Preview with Wireframe Summitscape & Overlay Arrows
+      h(
+        "div",
+        { className: "projects-details-preview-hero" },
+        h("div", { className: "projects-details-preview-bg", "aria-hidden": "true" }),
+        h(
+          "div",
+          { className: "projects-details-preview-content" },
+          h("img", {
+            src: mobileDetailsProject.image || "assets/images/locationkhuji.png",
+            alt: mobileDetailsProject.title,
+            className: "projects-details-hero-img"
+          })
+        ),
+        filteredProjects.length > 1 &&
+          h(
+            "button",
+            {
+              className: "projects-details-hero-arrow left",
+              onClick: handlePrevMobileDetails,
+              "aria-label": "Previous project"
+            },
+            h(IconChevronLeft, { size: 20 })
+          ),
+        filteredProjects.length > 1 &&
+          h(
+            "button",
+            {
+              className: "projects-details-hero-arrow right",
+              onClick: handleNextMobileDetails,
+              "aria-label": "Next project"
+            },
+            h(IconChevronRight, { size: 20 })
+          )
+      ),
+
+      // Title with orange gradient accent
+      h(
+        "h2",
+        { className: "projects-details-title" },
+        mobileDetailsProject.titlePrefix || mobileDetailsProject.title,
+        " ",
+        mobileDetailsProject.titleAccent &&
+          h("span", { className: "projects-title-gradient" }, mobileDetailsProject.titleAccent)
+      ),
+
+      // Description
+      h("p", { className: "projects-details-desc" }, mobileDetailsProject.description || mobileDetailsProject.summary),
+
+      // Complete Tech Badges
+      h(
+        "div",
+        { className: "projects-tech-tags-list" },
+        (mobileDetailsProject.tags || []).map((tag, idx) =>
+          h("span", { key: idx, className: "projects-tech-tag" }, tag)
+        )
+      ),
+
+      // Action Buttons Row
+      h(
+        "div",
+        { className: "projects-details-actions" },
+        mobileDetailsProject.liveUrl &&
+          h(
+            "a",
+            {
+              href: mobileDetailsProject.liveUrl,
+              target: "_blank",
+              rel: "noopener noreferrer",
+              className: "projects-btn-primary"
+            },
+            "Live Demo",
+            h(IconArrowRight, { size: 15 })
+          ),
+        mobileDetailsProject.githubUrl &&
+          h(
+            "a",
+            {
+              href: mobileDetailsProject.githubUrl,
+              target: "_blank",
+              rel: "noopener noreferrer",
+              className: "projects-btn-secondary"
+            },
+            h(IconGitHub, { size: 16 }),
+            "GitHub"
+          )
+      ),
+
+      // Key Features List
+      mobileDetailsProject.keyFeatures && mobileDetailsProject.keyFeatures.length > 0 &&
+        h(
+          "div",
+          { className: "projects-details-features-card" },
+          h(
+            "div",
+            { className: "projects-details-features-heading" },
+            h("span", { className: "projects-badge-dot" }),
+            "Key Features"
+          ),
+          mobileDetailsProject.keyFeatures.map((feat, idx) =>
+            h(
+              "div",
+              { key: idx, className: "projects-details-feature-row" },
+              h(
+                "div",
+                { className: "projects-details-feature-dot" },
+                h(IconFeatureBullet, { name: feat.icon, size: 14 })
+              ),
+              h(
+                "div",
+                null,
+                h("div", { className: "projects-details-feature-text" }, feat.title),
+                feat.desc && h("div", { className: "projects-details-feature-sub" }, feat.desc)
+              )
+            )
+          )
+        )
+    );
+  };
 
   return h(
     "section",
@@ -558,171 +718,10 @@ export function FeaturedProjects({
       "div",
       { className: "projects-container" },
 
-      // ====================================================================
-      // A. DEDICATED MOBILE PROJECT DETAILS VIEW (Triggered on Mobile tap)
-      // ====================================================================
-      mobileDetailsProject
-        ? h(
-            "div",
-            { className: "projects-mobile-details-view" },
-
-            // Top Bar: Back Button & Share Icon
-            h(
-              "div",
-              { className: "projects-details-topbar" },
-              h(
-                "button",
-                {
-                  className: "projects-details-back-btn",
-                  onClick: () => setMobileDetailsProject(null),
-                  "aria-label": "Back to Projects list"
-                },
-                h(IconChevronLeft, { size: 18 }),
-                "Back to Projects"
-              ),
-              h(
-                "a",
-                {
-                  href: mobileDetailsProject.liveUrl || mobileDetailsProject.githubUrl,
-                  target: "_blank",
-                  rel: "noopener noreferrer",
-                  className: "projects-details-share-btn",
-                  "aria-label": "Open project URL"
-                },
-                h(IconExternalArrow, { size: 16 })
-              )
-            ),
-
-            // Hero Device Preview with Wireframe Summitscape & Overlay Arrows
-            h(
-              "div",
-              { className: "projects-details-preview-hero" },
-              h("div", { className: "projects-details-preview-bg", "aria-hidden": "true" }),
-              h(
-                "div",
-                { className: "projects-details-preview-content" },
-                h("img", {
-                  src: mobileDetailsProject.image || "assets/images/locationkhuji.png",
-                  alt: mobileDetailsProject.title,
-                  className: "projects-details-hero-img"
-                })
-              ),
-              filteredProjects.length > 1 &&
-                h(
-                  "button",
-                  {
-                    className: "projects-details-hero-arrow left",
-                    onClick: handlePrevMobileDetails,
-                    "aria-label": "Previous project"
-                  },
-                  h(IconChevronLeft, { size: 20 })
-                ),
-              filteredProjects.length > 1 &&
-                h(
-                  "button",
-                  {
-                    className: "projects-details-hero-arrow right",
-                    onClick: handleNextMobileDetails,
-                    "aria-label": "Next project"
-                  },
-                  h(IconChevronRight, { size: 20 })
-                )
-            ),
-
-            // Title with orange gradient accent
-            h(
-              "h2",
-              { className: "projects-details-title" },
-              mobileDetailsProject.titlePrefix || mobileDetailsProject.title,
-              " ",
-              mobileDetailsProject.titleAccent &&
-                h("span", { className: "projects-title-gradient" }, mobileDetailsProject.titleAccent)
-            ),
-
-            // Description
-            h("p", { className: "projects-details-desc" }, mobileDetailsProject.description || mobileDetailsProject.summary),
-
-            // Complete Tech Badges
-            h(
-              "div",
-              { className: "projects-tech-tags-list" },
-              (mobileDetailsProject.tags || []).map((tag, idx) =>
-                h("span", { key: idx, className: "projects-tech-tag" }, tag)
-              )
-            ),
-
-            // Action Buttons Row
-            h(
-              "div",
-              { className: "projects-details-actions" },
-              mobileDetailsProject.liveUrl &&
-                h(
-                  "a",
-                  {
-                    href: mobileDetailsProject.liveUrl,
-                    target: "_blank",
-                    rel: "noopener noreferrer",
-                    className: "projects-btn-primary"
-                  },
-                  "Live Demo",
-                  h(IconArrowRight, { size: 15 })
-                ),
-              mobileDetailsProject.githubUrl &&
-                h(
-                  "a",
-                  {
-                    href: mobileDetailsProject.githubUrl,
-                    target: "_blank",
-                    rel: "noopener noreferrer",
-                    className: "projects-btn-secondary"
-                  },
-                  h(IconGitHub, { size: 16 }),
-                  "GitHub"
-                )
-            ),
-
-            // Key Features List
-            mobileDetailsProject.keyFeatures && mobileDetailsProject.keyFeatures.length > 0 &&
-              h(
-                "div",
-                { className: "projects-details-features-card" },
-                h(
-                  "div",
-                  { className: "projects-details-features-heading" },
-                  h("span", { className: "projects-badge-dot" }),
-                  "Key Features"
-                ),
-                mobileDetailsProject.keyFeatures.map((feat, idx) =>
-                  h(
-                    "div",
-                    { key: idx, className: "projects-details-feature-row" },
-                    h(
-                      "div",
-                      { className: "projects-details-feature-dot" },
-                      h(IconFeatureBullet, { name: feat.icon, size: 14 })
-                    ),
-                    h(
-                      "div",
-                      null,
-                      h("div", { className: "projects-details-feature-text" }, feat.title),
-                      feat.desc && h("div", { className: "projects-details-feature-sub" }, feat.desc)
-                    )
-                  )
-                )
-              )
-          )
-
-        // ====================================================================
-        // B. STANDARD VIEW (HEADER + FILTERS + DESKTOP HERO & GRID + MOBILE CAROUSEL)
-        // ====================================================================
-        : h(
-            React.Fragment,
-            null,
-
-            // Full-Width Section Summit Header with Title, Description, Stats, and Category Filters
-            h(
-              "header",
-              { className: "section-summit-header projects-summit-header" },
+      // Full-Width Section Summit Header with Title, Description, Stats, and Category Filters
+      h(
+        "header",
+        { className: "section-summit-header projects-summit-header" },
               h(
                 "div",
                 { className: "section-summit-bg", "aria-hidden": "true" },
@@ -1314,9 +1313,11 @@ export function FeaturedProjects({
                 "div",
                 { className: "projects-swipe-hint" },
                 "👆 Swipe left or right to explore more projects"
-              )
+              ),
+
+              // Inline Mobile Project Details (Sticks under the carousel when a project is selected)
+              renderMobileDetailsPanel()
             )
-          )
-    )
+      )
   );
 }

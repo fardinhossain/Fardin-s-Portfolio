@@ -160,7 +160,7 @@ export function mountHeroOrbit(host, options = {}) {
   }
 
   function canRender() {
-    return !disposed && inView && !document.hidden && width > 0 && height > 0;
+    return !disposed && (inView || checkInView()) && !document.hidden && width > 0 && height > 0;
   }
 
   function setPhase(value) {
@@ -209,10 +209,10 @@ export function mountHeroOrbit(host, options = {}) {
   function pose() {
     const narrow = width < 460;
     const isStatic = reduced || stationary;
-    const revealX = narrow ? 0.88 : 0.14;
+    const revealX = narrow ? 0.86 : 0.14;
     const revealY = narrow ? 0.28 : 0.54;
-    const landX = narrow ? 0.93 : 0.935;
-    const landY = narrow ? 0.70 : 0.82;
+    const landX = narrow ? 0.94 : 0.945;
+    const landY = narrow ? 0.48 : 0.82;
     let x = revealX;
     let y = revealY;
     let depth = 0;
@@ -238,8 +238,8 @@ export function mountHeroOrbit(host, options = {}) {
       setAssistant(0);
       const rawT = Math.max(0, Math.min(1, elapsed / entranceDuration));
       const t = easeOutCubic(rawT);
-      x = mix(1.24, revealX, t);
-      y = mix(-0.22, revealY, t) - 0.045 * Math.sin(Math.PI * rawT);
+      x = mix(narrow ? 1.18 : 1.24, revealX, t);
+      y = mix(narrow ? -0.15 : -0.22, revealY, t) - 0.045 * Math.sin(Math.PI * rawT);
       depth = -0.35 * (1 - t);
       bankZ = (1 - t) * (narrow ? 0.16 : 0.26);
       behind = !narrow;
@@ -343,7 +343,7 @@ export function mountHeroOrbit(host, options = {}) {
     // (face: x in 0.27..0.80, y in 0.13..0.66).
     const scale = stationary
       ? Math.min(width * 0.82 / 2.9, height * 0.84 / 4.6) * modelScale
-      : Math.min(width * (narrow ? 0.165 : 0.165) / 3.0, height * (narrow ? 0.21 : 0.21) / 4.05) * Math.min(modelScale, narrow ? 1.25 : 1.12);
+      : Math.min(width * (narrow ? 0.22 : 0.165) / 3.0, height * (narrow ? 0.27 : 0.21) / 4.05) * Math.min(modelScale, narrow ? 1.42 : 1.12);
     const depthScale = stationary ? 1 : 1 + 0.11 * depth;
     robot.scale.setScalar(scale * depthScale);
     robot.position.set(width * (x - 0.5), height * (0.5 - y), depth * 28);
@@ -527,10 +527,11 @@ export function mountHeroOrbit(host, options = {}) {
     }
     if (typeof IntersectionObserver !== 'undefined') {
       intersectionObserver = new IntersectionObserver((entries) => {
-        inView = entries.some((entry) => entry.isIntersecting);
+        const obsInView = entries.some((entry) => entry.isIntersecting);
+        inView = obsInView || checkInView();
         if (inView) resize();
         else sync();
-      }, { threshold: 0 });
+      }, { threshold: 0, rootMargin: '120px' });
       intersectionObserver.observe(host);
       if (host.parentElement) intersectionObserver.observe(host.parentElement);
     } else {
@@ -541,12 +542,20 @@ export function mountHeroOrbit(host, options = {}) {
     setStage(reduced || stationary ? 'settled' : 'enter');
     setReveal(reduced || stationary ? 1 : 0);
     setAssistant(reduced || stationary ? 1 : 0);
+    const wakeCheck = () => {
+      if (disposed) return;
+      if (!frame && canRender() && !reduced && !stationary && !paused) {
+        resize();
+      }
+    };
     resize();
     retryTimers.push(
-      setTimeout(resize, 60),
-      setTimeout(resize, 180),
-      setTimeout(resize, 450),
-      setTimeout(resize, 1000)
+      setTimeout(resize, 40),
+      setTimeout(wakeCheck, 120),
+      setTimeout(wakeCheck, 300),
+      setTimeout(wakeCheck, 600),
+      setTimeout(wakeCheck, 1200),
+      setTimeout(wakeCheck, 2000)
     );
   } catch (_) {
     dispose();
