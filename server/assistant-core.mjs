@@ -36,9 +36,21 @@ function normalizeModel(val) {
   return m.replace(/\s+/g, '-');
 }
 export function getConfiguration(env = process.env) {
-  const key = env.AI_API_KEY?.trim();
-  const rawModel = env.AI_MODEL?.trim();
-  if (!key || !rawModel) return null;
+  const rawKey = (env.AI_API_KEY || env.GEMINI_API_KEY)?.trim();
+  const rawModel = (env.AI_MODEL || env.GEMINI_MODEL)?.trim();
+  if (!rawKey || !rawModel) return null;
+
+  let key = rawKey;
+  let fallbackKey = (env.AI_FALLBACK_API_KEY || env.AI_SECONDARY_KEY || env.AI_SECONDARY_API_KEY || env.AI_FALLBACK_KEY || env.GEMINI_API_KEY_2)?.trim();
+
+  // Support multiple keys if provided comma-separated or newline-separated in AI_API_KEY
+  if (rawKey.includes(',') || rawKey.includes('\n')) {
+    const keyParts = rawKey.split(/[\r\n,]+/).map(s => s.trim()).filter(Boolean);
+    key = keyParts[0] || '';
+    if (!fallbackKey && keyParts.length > 1) {
+      fallbackKey = keyParts[1];
+    }
+  }
 
   let rawPrimary = rawModel;
   let rawFallback = (env.AI_FALLBACK_MODEL || env.AI_SECONDARY_MODEL)?.trim();
@@ -60,7 +72,7 @@ export function getConfiguration(env = process.env) {
       : 'https://api.openai.com/v1';
     const baseInput = env.AI_BASE_URL?.trim() || defaultBase;
     const base = new URL(baseInput);
-    const allText = key + model + (fallbackModel || '');
+    const allText = key + model + (fallbackModel || '') + (fallbackKey || '');
     if (!model || /[\r\n]/.test(allText) || base.protocol !== 'https:' || base.username || base.password || base.search || base.hash) return null;
 
     const cleanHref = base.href.replace(/\/+$/, '').replace(/\/chat\/completions$/, '');
@@ -70,15 +82,19 @@ export function getConfiguration(env = process.env) {
     if (endpoint.includes(key) || model.includes(key) || (fallbackModel && fallbackModel.includes(key))) return null;
 
     let fallback = null;
-    if (fallbackModel && fallbackModel !== model) {
-      const fbKey = env.AI_FALLBACK_API_KEY?.trim() || key;
+    const effectiveFbModel = fallbackModel || model;
+    const effectiveFbKey = fallbackKey || key;
+    const hasDifferentKey = fallbackKey && fallbackKey !== key;
+    const hasDifferentModel = fallbackModel && fallbackModel !== model;
+
+    if (hasDifferentKey || hasDifferentModel) {
       const fbBaseUrl = env.AI_FALLBACK_BASE_URL?.trim() || baseInput;
       const fbBase = new URL(fbBaseUrl);
       if (fbBase.protocol === 'https:' && !fbBase.username && !fbBase.password && !fbBase.search && !fbBase.hash) {
         const cleanFbHref = fbBase.href.replace(/\/+$/, '').replace(/\/chat\/completions$/, '');
         const fbEndpoint = `${cleanFbHref}/chat/completions`;
-        if (!fbEndpoint.includes(fbKey) && !fallbackModel.includes(fbKey)) {
-          fallback = { key: fbKey, model: fallbackModel, endpoint: fbEndpoint };
+        if (!fbEndpoint.includes(effectiveFbKey) && !effectiveFbModel.includes(effectiveFbKey)) {
+          fallback = { key: effectiveFbKey, model: effectiveFbModel, endpoint: fbEndpoint };
         }
       }
     }

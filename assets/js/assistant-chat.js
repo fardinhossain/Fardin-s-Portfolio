@@ -182,9 +182,9 @@ export function PortfolioAssistant({ open, onClose, returnFocusRef }) {
       setDraft(question);
       if (["AI_NOT_CONFIGURED", "NOT_CONFIGURED", "not_configured"].includes(failure.code)) setStatus("unconfigured");
       setError(pending.timedOut
-        ? "The request timed out. Your question is back in the box; you can try again."
-        : failure.code === "RATE_LIMITED" ? "Too many requests. Wait a minute before trying again. Your question has been kept."
-          : "No reply was received. Your question is back in the box; try again or contact Fardin.");
+        ? "The request timed out. Please try sending your question again."
+        : failure.code === "RATE_LIMITED" ? "Too many requests. Please wait a moment before trying again."
+          : "The assistant could not respond right now. Please try again or reach out to Fardin directly.");
     } finally {
       window.clearTimeout(pending.timer);
       if (pendingRef.current === pending) {
@@ -209,10 +209,10 @@ export function PortfolioAssistant({ open, onClose, returnFocusRef }) {
   }
 
   const statusText = {
-    idle: "Not connected yet.", checking: "Checking server configuration…",
-    configured: "Server configured · connection not verified",
-    unconfigured: "Not configured · not connected yet",
-    unavailable: "Server status unavailable · chat cannot send",
+    idle: "Connecting…", checking: "Connecting…",
+    configured: "Server configured · Ready to chat",
+    unconfigured: "Not configured · Offline",
+    unavailable: "Temporarily offline",
     preview: "Inspection preview: run local Node server for chat"
   }[status];
   const canSend = status === "configured" && !busy && draft.trim().length > 0 && draft.trim().length <= 1000;
@@ -227,14 +227,14 @@ export function PortfolioAssistant({ open, onClose, returnFocusRef }) {
     h("span", { className: "pc-robot" }, h(RobotIcon)),
     h("div", { className: "pc-heading" },
       h("h2", { id: `${uid}-title`, className: "pc-title" }, "Fardin's assistant"),
-      h("p", { className: "pc-eyebrow" }, "PORTFOLIO / ASK & EXPLORE")),
+      h("p", { className: "pc-eyebrow" }, "AI ASSISTANT · ASK & EXPLORE")),
     h("button", { type: "button", className: "pc-close", onClick: close, "aria-label": "Close assistant" },
       h("svg", { width: 18, height: 18, viewBox: "0 0 24 24", fill: "none", stroke: "currentColor", strokeWidth: 1.7, "aria-hidden": true }, h("path", { d: "m6 6 12 12M6 18 18 6" })))),
   h("p", { className: "pc-status", role: "status", "aria-live": "polite" }, statusText),
   h("div", { className: "pc-log", ref: logRef, role: "log", "aria-label": "Conversation", "aria-live": "polite", "aria-relevant": "additions text", tabIndex: 0, "data-lenis-prevent": "" },
     h("div", { className: "pc-welcome" },
-      h("p", { className: "pc-welcome-title" }, "A little context, a better conversation."),
-      h("p", { id: `${uid}-intro` }, "Ask about Fardin's projects, education, or experience. When connected, replies use the portfolio context available to the server and may be incomplete. This is not Fardin speaking.")),
+      h("p", { className: "pc-welcome-title" }, "Hi! I'm Fardin's AI Assistant 👋"),
+      h("p", { id: `${uid}-intro` }, "Ask me anything about Fardin's projects, experience, technical skills, or education.")),
     ...messages.map((message, index) => h("article", { className: `pc-message pc-message-${message.role}`, key: index },
       h("span", { className: "pc-speaker" }, message.role === "user" ? "You" : "Assistant"),
       h("p", { className: "pc-message-text" }, message.content))),
@@ -245,9 +245,9 @@ export function PortfolioAssistant({ open, onClose, returnFocusRef }) {
       onClick: () => { setDraft(question); inputRef.current?.focus({ preventScroll: true }); }
     }, label))),
     status !== "configured" ? h("p", { className: "pc-help", id: `${uid}-availability` },
-      status === "checking" ? "You can draft a question while configuration is checked."
+      status === "checking" ? "Connecting to assistant..."
         : status === "preview" ? "Chat requests are disabled in this static preview."
-          : "Not connected yet. You can still draft a question or use the contact links below.") : null,
+          : "The assistant is currently offline. You can reach out directly via email below.") : null,
     h("p", { className: "pc-error", role: "alert", id: `${uid}-error`, hidden: !error && !dialogError }, error || dialogError),
     h("form", { className: "pc-form", onSubmit: send },
       h("label", { className: "pc-sr-only", htmlFor: `${uid}-input` }, "Your question"),
@@ -266,7 +266,7 @@ export function PortfolioAssistant({ open, onClose, returnFocusRef }) {
     h("div", { className: "pc-footer" },
       h("span", { className: "pc-hint", id: `${uid}-hint` }, `${draft.length}/1000 · Shift+Enter for a new line`),
       h("a", { className: "pc-contact", href: `mailto:${PROFILE_DATA.email}` }, "Email Fardin")),
-    h("p", { className: "pc-privacy" }, "Recent messages stay in this tab's memory. Sending shares them with the chat server. Avoid sensitive information.")));
+    h("p", { className: "pc-privacy" }, "AI Assistant powered by Fardin's verified portfolio data.")));
   return typeof document === "undefined" ? null : createPortal(content, document.body);
 }
 

@@ -243,3 +243,29 @@ test('fallback to secondary model when primary model fails, and skip fallback wh
   code(resBoth, 502, 'AI_UNAVAILABLE');
   assert.ok(!resBoth.text.includes(fallbackEnv.AI_API_KEY));
 });
+
+test('multi-key support: comma-separated keys and secondary API keys trigger fallback on failure', async () => {
+  const keysCalled = [];
+  const multiKeyEnv = {
+    AI_API_KEY: 'primary-key-123, secondary-key-456',
+    AI_MODEL: 'gemini-2.5-flash'
+  };
+
+  const fn = createChatHandler({
+    env: multiKeyEnv,
+    limiter: createRateLimiter({ maxRequests: 100 }),
+    fetchImpl: async (url, options) => {
+      const auth = options.headers.Authorization;
+      keysCalled.push(auth);
+      if (auth.includes('primary-key-123')) {
+        return new Response('key 1 quota exceeded', { status: 403 });
+      }
+      return provider('Success with secondary key');
+    }
+  });
+
+  const res = await invoke(fn);
+  assert.equal(res.statusCode, 200);
+  assert.equal(res.body.reply, 'Success with secondary key');
+  assert.deepEqual(keysCalled, ['Bearer primary-key-123', 'Bearer secondary-key-456']);
+});
