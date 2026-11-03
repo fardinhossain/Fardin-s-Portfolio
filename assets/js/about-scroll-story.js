@@ -1,4 +1,4 @@
-import React, { useEffect, useRef, useState, useCallback } from "react";
+import React, { useEffect, useLayoutEffect, useRef, useState, useCallback } from "react";
 import { scrollToTarget } from "./smooth-scroll.js";
 import { getCurrentTheme, subscribeTheme } from "./theme-manager.js";
 
@@ -26,11 +26,15 @@ function useReducedMotion() {
 // Whitespace remains literal React text nodes (including newlines), not margins.
 // A single semantic copy avoids fragmented announcements of individual tokens.
 // Enhancement animates on entry but NEVER hides content while waiting for JS/IO.
-export function ScrollWordReveal({ text = "", className = "", delay = 0, as = "p", highlights = [], srText = text }) {
+// Optional `play` makes the reveal controlled (replays each time it turns true),
+// used by the one-chapter-at-a-time About stage.
+export function ScrollWordReveal({ text = "", className = "", delay = 0, as = "p", highlights = [], srText = text, play }) {
   const ref = useRef(null);
   const reduced = useReducedMotion();
   const [entered, setEntered] = useState(false);
+  const controlled = typeof play === "boolean";
   useEffect(() => {
+    if (controlled) { setEntered(play); return; }
     setEntered(false);
     if (reduced || !ref.current || typeof IntersectionObserver === "undefined") return;
     const observer = new IntersectionObserver(entries => {
@@ -41,7 +45,7 @@ export function ScrollWordReveal({ text = "", className = "", delay = 0, as = "p
     }, { threshold: 0.12 });
     observer.observe(ref.current);
     return () => observer.disconnect();
-  }, [text, reduced]);
+  }, [text, reduced, controlled, play]);
 
   let offset = 0;
   let word = 0;
@@ -66,41 +70,106 @@ export function ScrollWordReveal({ text = "", className = "", delay = 0, as = "p
 }
 
 const chapters = [
-  { id: "who-i-am", number: "01", title: "Who I Am", note: "Identity" },
-  { id: "what-i-build", number: "02", title: "What I Build", note: "Capabilities" },
-  { id: "why-me", number: "03", title: "Why Me", note: "Strengths" },
-  { id: "how-i-work", number: "04", title: "How I Work", note: "Process" }
+  { id: "who-i-am", number: "01", title: "Who I Am", lead: "Who", accent: "I Am", note: "Identity", icon: "user", arrow: "a quick snapshot" },
+  { id: "what-i-build", number: "02", title: "What I Build", lead: "What I", accent: "Build", note: "Capabilities", icon: "code2", arrow: "things I ship" },
+  { id: "why-me", number: "03", title: "Why Me", lead: "Why", accent: "Me", note: "Strengths", icon: "target", arrow: "what sets me apart" },
+  { id: "how-i-work", number: "04", title: "How I Work", lead: "How I", accent: "Work", note: "Process", icon: "refresh", arrow: "my build loop" }
+];
+const identity = [
+  ["CSE Student", "graduation", "#ff7048"],
+  ["Full-Stack Developer", "code2", "#ae79ed"],
+  ["Problem Solver", "solver", "#e2b53b"],
+  ["Lifelong Learner", "trending", "#39b59d"]
 ];
 const capabilities = [
-  ["frontend", "Frontend Development", "Responsive layouts and interactive interfaces that make applications easy to use."],
+  ["monitor", "Frontend Development", "Responsive layouts and interactive interfaces that make applications easy to use."],
   ["backend", "Backend Development", "Server-side logic and services that support reliable application behavior."],
   ["database", "Databases and APIs", "Structured data, clear queries, and API connections between application layers."],
   ["fullstack", "Full-Stack Applications", "Connected frontend, backend, and database systems built around real needs."]
+];
+const strengths = [
+  ["puzzle", "Problem Solving", "Break problems down before reaching for solutions."],
+  ["braces", "Clean Code", "Readable, maintainable code that is easy to grow."],
+  ["network", "Thoughtful Architecture", "Structures that stay simple as features are added."],
+  ["refresh", "Continuous Learning", "Always improving through testing and feedback."]
 ];
 const process = [
   ["understand", "Understand", "Clarify the problem, users, and requirements."],
   ["plan", "Plan", "Outline the structure and choose practical tools."],
   ["build", "Build", "Implement in small, maintainable steps."],
-  ["test", "Test", "Check behavior, edge cases, and usability."],
-  ["improve", "Improve", "Refine the work through feedback and learning."]
+  ["flask", "Test", "Check behavior, edge cases, and usability."],
+  ["sparkles", "Improve", "Refine the work through feedback and learning."]
 ];
 const iconPaths = {
   student: "m2 8 10-5 10 5-10 5z M6 10v7c4 3 8 3 12 0v-7 M22 8v8",
-  solver: "M9 18h6 M9 21h6 M8 14a7 7 0 1 1 8 0c-1 1-1 2-1 3H9c0-1 0-2-1-3",
+  solver: "M9 18h6 M10 22h4 M15 14c.2-1 .7-1.7 1.5-2.5 1-.9 1.5-2.2 1.5-3.5A6 6 0 0 0 6 8c0 1 .2 2.2 1.5 3.5.7.7 1.3 1.5 1.5 2.5",
   learner: "M3 3v18h19 M7 17v-5h3v5 M13 17V9h3v8 M19 17V5h3v12 M6 7l5-3 4 1 6-4",
+  user: "M19 21v-2a4 4 0 0 0-4-4H9a4 4 0 0 0-4 4v2 M12 11a4 4 0 1 0 0-8 4 4 0 0 0 0 8",
+  graduation: "M22 10 12 5 2 10l10 5 10-5z M6 12v5c3 3 9 3 12 0v-5 M22 10v6",
+  code2: "m18 16 4-4-4-4 M6 8l-4 4 4 4 M14.5 4l-5 16",
+  trending: "M22 7 13.5 15.5 8.5 10.5 2 17 M16 7h6v6",
+  target: "M12 22a10 10 0 1 0 0-20 10 10 0 0 0 0 20 M12 18a6 6 0 1 0 0-12 6 6 0 0 0 0 12 M12 14a2 2 0 1 0 0-4 2 2 0 0 0 0 4",
+  monitor: "M3 4h18v12H3z M8 20h8 M12 16v4",
   frontend: "M3 5h18v14H3z M3 9h18 M7 7h.01 M10 7h.01",
   backend: "M4 3h16v7H4z M4 14h16v7H4z M7 6.5h.01 M7 17.5h.01 M11 6.5h6 M11 17.5h6",
   database: "M4 6c0-4 16-4 16 0s-16 4-16 0v12c0 4 16 4 16 0V6 M4 12c0 4 16 4 16 0",
   fullstack: "m12 3 10 5-10 5L2 8z M2 12l10 5 10-5 M2 16l10 5 10-5",
-  understand: "M10 17a7 7 0 1 0 0-14 7 7 0 0 0 0 14 M15 15l6 6",
-  plan: "M7 3h10v4H7z M7 5H4v16h16V5h-3 M8 12h8 M8 16h5",
+  puzzle: "M10 3h4v2a2 2 0 1 0 4 0V3h3v7h-2a2 2 0 1 0 0 4h2v7h-7v-2a2 2 0 1 0-4 0v2H3v-7h2a2 2 0 1 0 0-4H3V3h7z",
+  braces: "M8 3H7a2 2 0 0 0-2 2v5a2 2 0 0 1-2 2 2 2 0 0 1 2 2v5a2 2 0 0 0 2 2h1 M16 21h1a2 2 0 0 0 2-2v-5a2 2 0 0 1 2-2 2 2 0 0 1-2-2V5a2 2 0 0 0-2-2h-1",
+  network: "M9 2h6v6H9z M2 16h6v6H2z M16 16h6v6h-6z M5 16v-4h14v4 M12 12V8",
+  refresh: "M3 12a9 9 0 0 1 15-6.7L21 8 M21 3v5h-5 M21 12a9 9 0 0 1-15 6.7L3 16 M3 21v-5h5",
+  understand: "M11 18a7 7 0 1 0 0-14 7 7 0 0 0 0 14 M21 21l-4.3-4.3",
+  plan: "M9 2h6v4H9z M16 4h2a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2H6a2 2 0 0 1-2-2V6a2 2 0 0 1 2-2h2 M9 12h6 M9 16h4",
   build: "m8 6-6 6 6 6 M16 6l6 6-6 6 M14 3l-4 18",
+  flask: "M9 3h6 M10 3v6L4.5 19a1.5 1.5 0 0 0 1.3 2h12.4a1.5 1.5 0 0 0 1.3-2L14 9V3 M7 15h10",
+  sparkles: "M12 3l1.9 5.1L19 10l-5.1 1.9L12 17l-1.9-5.1L5 10l5.1-1.9z M19 3v4 M17 5h4 M5 17v4 M3 19h4",
   test: "m5 12 4 4L19 6 M21 12v8H3V4h11",
-  improve: "M20 7a9 9 0 1 0 1 8 M20 2v5h-5"
+  improve: "M20 7a9 9 0 1 0 1 8 M20 2v5h-5",
+  chevronLeft: "m15 18-6-6 6-6",
+  chevronRight: "m9 18 6-6-6-6",
+  arrowDown: "M12 5v14 M19 12l-7 7-7-7"
 };
 function Icon({ name }) {
-  return h("svg", { className: "ae-icon", viewBox: "0 0 24 24", fill: "none", stroke: "currentColor", strokeWidth: 1.4, strokeLinecap: "round", strokeLinejoin: "round", "aria-hidden": "true", focusable: "false" },
+  return h("svg", { className: "ae-icon", viewBox: "0 0 24 24", fill: "none", stroke: "currentColor", strokeWidth: 1.6, strokeLinecap: "round", strokeLinejoin: "round", "aria-hidden": "true", focusable: "false" },
     h("path", { d: iconPaths[name] }));
+}
+
+// Hand-drawn style curved arrows; pathLength=1 lets CSS "draw" them in.
+const curvePaths = {
+  note: ["M4 8 C 24 2, 48 10, 54 36", "M45 30 L54 37 L58 26"],
+  over: ["M4 22 C 36 -4, 84 -4, 114 20", "M105 18 L114 20 L110 12"],
+  under: ["M4 34 C 36 60, 84 60, 114 36", "M110 44 L114 36 L105 38"],
+  vertical: ["M15 2 C 30 26, 0 50, 15 74", "M8 70 L15 74 L14 66"]
+};
+function CurvedArrow({ variant = "note", className = "" }) {
+  const [line, head] = curvePaths[variant];
+  const box = variant === "note" ? "0 0 62 44" : variant === "vertical" ? "0 0 30 80" : "0 0 120 58";
+  return h("svg", { className: `ae-curve ae-curve-${variant} ${className}`, viewBox: box, preserveAspectRatio: variant === "note" ? "xMidYMid meet" : "none", "aria-hidden": "true", focusable: "false" },
+    h("path", { d: line, pathLength: 1 }), h("path", { d: head, pathLength: 1, className: "ae-curve-head" }));
+}
+
+function ChapterHeader({ chapter, index }) {
+  const leadWords = chapter.lead.split(" ");
+  const title = [];
+  leadWords.forEach((word, i) => {
+    title.push(h("span", { key: `w${i}`, className: "ae-title-word", style: { "--d": `${140 + i * 90}ms` } }, word));
+    title.push(" ");
+  });
+  title.push(h("span", { key: "accent", className: "ae-title-serif", style: { "--d": `${140 + leadWords.length * 90 + 60}ms` } }, chapter.accent));
+  return h("header", { className: "ae-chapter-header" },
+    h("span", { className: "ae-numeral", "aria-hidden": "true" }, chapter.number),
+    h("span", { className: "ae-kicker ae-kicker-pill" },
+      h("span", { className: "ae-kicker-icon" }, h(Icon, { name: chapter.icon })),
+      `CHAPTER ${chapter.number}`,
+      h("span", { className: "ae-kicker-sep", "aria-hidden": "true" }, "Â·"),
+      chapter.note),
+    h("h3", { id: `ae-heading-${index}`, className: "ae-chapter-title" }, title));
+}
+
+function ArrowNote({ text }) {
+  return h("div", { className: "ae-arrow-note", "aria-hidden": "true" },
+    h("span", { className: "ae-arrow-text" }, text),
+    h(CurvedArrow, { variant: "note" }));
 }
 
 // A static, decorative echo of the hero. Import only when About is mounted;
@@ -195,19 +264,40 @@ function FlyingTrackerRobot({ isFlying, direction, isMobile }) {
   );
 }
 
+const PIN_QUERY = "(min-width: 901px) and (min-height: 680px)";
+const pinMatches = () => typeof window !== "undefined" && !!window.matchMedia?.(PIN_QUERY).matches;
+
+// One chapter at a time. Desktop ("pinned"): the stage sticks while the track
+// scrolls; each quarter of the track is one chapter. Smaller/short screens
+// ("tabs"): normal page scroll, chapters change via dots, Prev/Next or swipe.
 export function AboutScrollStory() {
   const [active, setActive] = useState(0);
+  const [mode, setMode] = useState(() => (pinMatches() ? "pinned" : "tabs"));
+  const [seen, setSeen] = useState(false);
+  const [nav, setNav] = useState(null);
   const refs = useRef([]);
   const sectionRef = useRef(null);
+  const trackRef = useRef(null);
+  const stageRef = useRef(null);
+  const panelRef = useRef(null);
   const navRef = useRef(null);
   const navLinksRef = useRef(null);
   const dotRefs = useRef([]);
+  const modeRef = useRef(mode);
+  const activeRef = useRef(active);
+  const lockRef = useRef(null);
+  const lockTimer = useRef(0);
+  const touch = useRef(null);
   const [robotPos, setRobotPos] = useState({ x: 0, y: 0, ready: false });
   const [isFlying, setIsFlying] = useState(false);
   const [flightDir, setFlightDir] = useState(1);
   const prevActiveRef = useRef(active);
   const [theme, setTheme] = useState(getCurrentTheme);
   const reduced = useReducedMotion();
+  const reducedRef = useRef(reduced);
+  modeRef.current = mode;
+  activeRef.current = active;
+  reducedRef.current = reduced;
 
   // Track active chapter change to trigger flight animation and tilt
   useEffect(() => {
@@ -239,7 +329,7 @@ export function AboutScrollStory() {
     updateRobotPosition();
     window.addEventListener("resize", updateRobotPosition);
     return () => window.removeEventListener("resize", updateRobotPosition);
-  }, [updateRobotPosition]);
+  }, [updateRobotPosition, mode]);
 
   useEffect(() => {
     const unsubscribe = subscribeTheme(setTheme);
@@ -247,67 +337,149 @@ export function AboutScrollStory() {
     return unsubscribe;
   }, []);
 
-  // One geometry contract for tracker selection, clicks and native anchors.
-  // The tracker itself is a direct sticky layout child (no short wrapper),
-  // so its containing block includes every chapter rather than a short aside.
+  useEffect(() => {
+    const media = window.matchMedia?.(PIN_QUERY);
+    if (!media) return;
+    const update = () => setMode(media.matches ? "pinned" : "tabs");
+    if (media.addEventListener) media.addEventListener("change", update);
+    else media.addListener(update);
+    return () => {
+      if (media.removeEventListener) media.removeEventListener("change", update);
+      else media.removeListener(update);
+    };
+  }, []);
+
+  // Arrival animations start only once the stage is actually on screen.
+  useEffect(() => {
+    if (seen) return;
+    const el = panelRef.current;
+    if (!el || typeof IntersectionObserver === "undefined") { setSeen(true); return; }
+    const io = new IntersectionObserver(entries => {
+      if (entries.some(entry => entry.isIntersecting)) { setSeen(true); io.disconnect(); }
+    }, { threshold: 0.2 });
+    io.observe(el);
+    return () => io.disconnect();
+  }, [seen]);
+
   const anchorOffset = () => {
     const section = sectionRef.current;
     const top = section ? parseFloat(getComputedStyle(section).getPropertyValue("--ae-nav-top")) || 0 : 64;
     return top + (window.matchMedia("(max-width: 700px)").matches ? navRef.current?.offsetHeight || 90 : 0) + 16;
   };
+  const stageGeometry = () => {
+    const track = trackRef.current;
+    const stage = stageRef.current;
+    if (!track || !stage) return null;
+    const stickyTop = parseFloat(getComputedStyle(stage).top) || 0;
+    const travel = Math.max(1, track.offsetHeight - stage.offsetHeight);
+    return { track, stickyTop, travel, segment: travel / chapters.length };
+  };
 
-  // Deterministic chapter selection: last heading above a viewport anchor wins.
-  // Unlike intersection-entry order, this also works for tall chapters and jumps.
+  // Pinned mode: active chapter is derived from progress through the track.
   useEffect(() => {
     let frame = 0;
     const measure = () => {
       frame = 0;
-      const anchor = anchorOffset();
-      sectionRef.current?.style.setProperty("--ae-anchor-offset", `${anchor}px`);
-      let next = 0;
-      refs.current.forEach((el, index) => {
-        if (el && el.getBoundingClientRect().top <= anchor + 2) next = index;
-      });
+      sectionRef.current?.style.setProperty("--ae-anchor-offset", `${anchorOffset()}px`);
+      if (modeRef.current !== "pinned" || lockRef.current !== null) return;
+      const geo = stageGeometry();
+      if (!geo) return;
+      const progress = Math.min(Math.max((geo.stickyTop - geo.track.getBoundingClientRect().top) / geo.travel, 0), 0.9999);
+      const next = Math.floor(progress * chapters.length);
       setActive(previous => previous === next ? previous : next);
     };
     const schedule = () => { if (!frame) frame = window.requestAnimationFrame(measure); };
     window.addEventListener("scroll", schedule, { passive: true });
     window.addEventListener("resize", schedule);
     const observer = typeof ResizeObserver !== "undefined" ? new ResizeObserver(schedule) : null;
-    refs.current.forEach(el => { if (el) observer?.observe(el); });
+    if (trackRef.current) observer?.observe(trackRef.current);
     if (navRef.current) observer?.observe(navRef.current);
-    if (sectionRef.current) observer?.observe(sectionRef.current);
-    const reveals = typeof IntersectionObserver !== "undefined" ? new IntersectionObserver(entries => {
-      entries.forEach(entry => { if (entry.isIntersecting) { entry.target.classList.add("ae-entered"); reveals.unobserve(entry.target); } });
-    }, { threshold: 0.08 }) : null;
-    refs.current.forEach(el => { if (el) reveals?.observe(el); });
     schedule();
     return () => {
-      reveals?.disconnect();
       window.removeEventListener("scroll", schedule);
       window.removeEventListener("resize", schedule);
       if (frame) window.cancelAnimationFrame(frame);
       observer?.disconnect();
+      clearTimeout(lockTimer.current);
     };
+  }, [mode]);
+
+  const goTo = useCallback((index, options = {}) => {
+    const next = Math.max(0, Math.min(chapters.length - 1, index));
+    setActive(next);
+    setNav({ index: next, tick: Date.now() + Math.random(), ...options });
   }, []);
 
-  const navigate = (event, index) => {
+  // Runs after the new chapter is committed (no longer inert / display:none),
+  // so scrolling and focus target the visible chapter.
+  useLayoutEffect(() => {
+    if (!nav) return;
+    const { index, immediate, focus } = nav;
+    const instant = immediate || reducedRef.current;
     const target = refs.current[index];
-    if (!target || event.button !== 0 || event.metaKey || event.ctrlKey || event.shiftKey || event.altKey) return;
+    if (modeRef.current === "pinned") {
+      const geo = stageGeometry();
+      if (geo) {
+        const top = geo.track.getBoundingClientRect().top + window.scrollY - geo.stickyTop + geo.segment * (index + 0.25);
+        lockRef.current = index;
+        clearTimeout(lockTimer.current);
+        const release = () => { lockRef.current = null; };
+        scrollToTarget(top, { offset: 0, immediate: instant, onComplete: release });
+        lockTimer.current = setTimeout(release, instant ? 60 : 1300);
+      }
+    } else if (target) {
+      scrollToTarget(target, { offset: -anchorOffset(), immediate: instant });
+    }
+    if (focus) target?.focus({ preventScroll: true });
+  }, [nav]);
+
+  // Deep links (#why-me etc.) open the right chapter.
+  useEffect(() => {
+    const index = chapters.findIndex(chapter => `#${chapter.id}` === window.location.hash);
+    if (index < 0) return;
+    const t = setTimeout(() => goTo(index, { immediate: true }), 150);
+    return () => clearTimeout(t);
+  }, [goTo]);
+
+  const navigate = (event, index) => {
+    if (event.button !== 0 || event.metaKey || event.ctrlKey || event.shiftKey || event.altKey) return;
     event.preventDefault();
-    // Explicit instant bypasses any global CSS smooth scrolling in reduced mode.
-    scrollToTarget(target, { offset: -anchorOffset(), immediate: reduced });
     history.pushState(history.state, "", `#${chapters[index].id}`);
-    target.focus({ preventScroll: true });
+    goTo(index, { focus: true });
   };
-  const article = (index, ...content) => h("article", {
-    key: chapters[index].id, id: chapters[index].id, className: "ae-chapter",
-    ref: el => { refs.current[index] = el; }, tabIndex: -1,
-    "aria-labelledby": `ae-heading-${index}`
-  }, h("header", { className: "ae-chapter-header" },
-    h("span", { className: "ae-kicker" }, `CHAPTER ${chapters[index].number}`),
-    h("h3", { id: `ae-heading-${index}`, className: "ae-chapter-title" }, chapters[index].title)), ...content);
-  const paragraph = text => h(ScrollWordReveal, { text, className: "ae-copy" });
+
+  const onTouchStart = event => {
+    if (modeRef.current !== "tabs") return;
+    const t = event.touches[0];
+    touch.current = { x: t.clientX, y: t.clientY };
+  };
+  const onTouchEnd = event => {
+    const start = touch.current;
+    touch.current = null;
+    if (!start) return;
+    const t = event.changedTouches[0];
+    const dx = t.clientX - start.x;
+    const dy = t.clientY - start.y;
+    if (Math.abs(dx) > 50 && Math.abs(dx) > Math.abs(dy) * 1.5) goTo(activeRef.current + (dx < 0 ? 1 : -1));
+  };
+
+  const article = (index, ...content) => {
+    const chapter = chapters[index];
+    const isCurrent = index === active;
+    const state = isCurrent ? "active" : index < active ? "before" : "after";
+    return h("article", {
+      key: chapter.id, id: chapter.id,
+      className: `ae-chapter ae-chapter-${chapter.id}${isCurrent && seen ? " is-active" : ""}`,
+      "data-state": state,
+      ref: el => { refs.current[index] = el; }, tabIndex: -1,
+      "aria-labelledby": `ae-heading-${index}`,
+      "aria-hidden": isCurrent ? undefined : "true",
+      inert: isCurrent ? undefined : ""
+    }, h(ChapterHeader, { chapter, index }), ...content);
+  };
+  const playing = index => index === active && seen && !reduced;
+  const paragraph = (index, text, highlights = []) => h(ScrollWordReveal, { text, className: "ae-copy", delay: 300, play: playing(index), highlights });
+  const stagger = i => ({ "--i": i });
 
   return h("section", { ref: sectionRef, id: "about", className: "ae-section", "aria-labelledby": "ae-title" },
     h("div", { className: "ae-inner" },
@@ -354,8 +526,9 @@ export function AboutScrollStory() {
           srText: "“I turn complex problems into practical digital experiences.”",
           highlights: ["complex problems", "digital experiences"]
         })),
-      h("div", { className: "ae-layout" },
-        h("nav", { ref: navRef, className: "ae-nav ae-sidebar", "aria-label": "About chapters" },
+      h("div", { ref: trackRef, className: "ae-layout", "data-mode": mode },
+        h("div", { ref: stageRef, className: "ae-stage" },
+          h("nav", { ref: navRef, className: "ae-nav ae-sidebar", "aria-label": "About chapters" },
             h("div", { ref: navLinksRef, className: "ae-nav-links", style: { "--ae-progress": active / 3 } },
               h("span", { className: "ae-nav-progress", "aria-hidden": "true" }),
               chapters.map((chapter, index) =>
@@ -378,24 +551,48 @@ export function AboutScrollStory() {
               })) : null
             ),
             h("p", { className: "ae-mobile-current" }, `${chapters[active].number} / ${chapters[active].title}`)),
-        h("div", { className: "ae-content" },
-          article(0,
-            paragraph("I’m a Computer Science and Engineering student and full-stack developer who enjoys turning ideas into reliable, user-friendly software. I build web applications, connect frontend experiences with backend services and databases, and focus on writing maintainable code."),
-            h("ul", { className: "ae-labels", "aria-label": "At a glance" }, ["CSE Student", "Full-Stack Developer", "Problem Solver", "Lifelong Learner"].map(label => h("li", { className: "ae-label", key: label }, h(Icon, { name: label === "CSE Student" ? "student" : label === "Full-Stack Developer" ? "build" : label === "Problem Solver" ? "solver" : "learner" }), label)))),
-          article(1,
-            paragraph("I build responsive web applications, interactive user interfaces, backend APIs, database-driven systems, and practical full-stack products."),
-            h("div", { className: "ae-capabilities" }, capabilities.map(([icon, title, description]) =>
-              h("div", { className: "ae-capability", key: title }, h(Icon, { name: icon }),
-                h("h4", { className: "ae-small-title" }, title), h("p", { className: "ae-detail" }, description))))),
-          article(2,
-            paragraph("I combine a solid computer science foundation with a practical approach to software development. I enjoy understanding problems before choosing solutions, writing maintainable code, debugging complex issues, and improving my work through testing and feedback."),
-            h("ul", { className: "ae-strengths", "aria-label": "Core strengths" }, ["Problem Solving", "Clean Code", "Thoughtful Architecture", "Continuous Learning"].map((label, index) =>
-              h("li", { className: "ae-strength", key: label }, h(Icon, { name: ["understand", "build", "fullstack", "improve"][index] }), label)))),
-          article(3,
-            h("p", { className: "ae-copy" }, "A thoughtful process, from the first question to the next iteration."),
-            h("ol", { className: "ae-process", "aria-label": "Development process" }, process.map(([icon, title, description], index) =>
-              h("li", { className: "ae-step", key: title, style: { "--ae-step": index } },
-                h("div", { className: "ae-step-node" }, h(Icon, { name: icon })),
-                h("span", { className: "ae-step-number", "aria-hidden": "true" }, `0${index + 1}`),
-                h("h4", { className: "ae-small-title" }, title), h("p", { className: "ae-detail" }, description))))))))) ;
+          h("div", { ref: panelRef, className: "ae-content ae-panel", onTouchStart, onTouchEnd },
+            h("div", { className: "ae-chapters" },
+              article(0,
+                paragraph(0, "I’m a Computer Science and Engineering student and full-stack developer who enjoys turning ideas into reliable, user-friendly software. I build web applications, connect frontend experiences with backend services and databases, and focus on writing maintainable code.", ["full-stack developer", "maintainable code"]),
+                h(ArrowNote, { text: chapters[0].arrow }),
+                h("ul", { className: "ae-labels", "aria-label": "At a glance" }, identity.map(([label, icon, color], i) =>
+                  h("li", { className: "ae-label ae-stagger", key: label, style: { ...stagger(i), "--c": color } },
+                    h("span", { className: "ae-label-icon" }, h(Icon, { name: icon })), label)))),
+              article(1,
+                paragraph(1, "I build responsive web applications, interactive user interfaces, backend APIs, database-driven systems, and practical full-stack products.", ["responsive web applications", "full-stack products"]),
+                h(ArrowNote, { text: chapters[1].arrow }),
+                h("div", { className: "ae-capabilities" }, capabilities.map(([icon, title, description], i) =>
+                  h("div", { className: "ae-capability ae-stagger", key: title, style: stagger(i) },
+                    h("div", { className: "ae-cap-head" },
+                      h("span", { className: "ae-cap-icon" }, h(Icon, { name: icon })),
+                      h("span", { className: "ae-cap-tag", "aria-hidden": "true" }, `/0${i + 1}`)),
+                    h("h4", { className: "ae-small-title" }, title), h("p", { className: "ae-detail" }, description))))),
+              article(2,
+                paragraph(2, "I combine a solid computer science foundation with a practical approach to software development. I enjoy understanding problems before choosing solutions, writing maintainable code, debugging complex issues, and improving my work through testing and feedback.", ["solid computer science foundation", "practical approach"]),
+                h(ArrowNote, { text: chapters[2].arrow }),
+                h("ul", { className: "ae-strengths", "aria-label": "Core strengths" }, strengths.map(([icon, label, description], i) =>
+                  h("li", { className: "ae-strength ae-stagger", key: label, style: stagger(i) },
+                    h("span", { className: "ae-strength-icon" }, h(Icon, { name: icon })),
+                    h("span", { className: "ae-strength-body" },
+                      h("strong", null, label),
+                      h("span", null, description)))))),
+              article(3,
+                h("p", { className: "ae-copy" }, "A thoughtful process, from the first question to the next iteration."),
+                h(ArrowNote, { text: chapters[3].arrow }),
+                h("ol", { className: "ae-process", "aria-label": "Development process" }, process.map(([icon, title, description], index) =>
+                  h("li", { className: "ae-step ae-stagger", key: title, style: { "--ae-step": index, ...stagger(index) } },
+                    h("div", { className: "ae-step-node" }, h(Icon, { name: icon })),
+                    index < process.length - 1 ? h(CurvedArrow, { variant: index % 2 ? "under" : "over", className: "ae-step-arrow ae-step-arrow-h" }) : null,
+                    index < process.length - 1 ? h(CurvedArrow, { variant: "vertical", className: "ae-step-arrow ae-step-arrow-v" }) : null,
+                    h("span", { className: "ae-step-number", "aria-hidden": "true" }, `0${index + 1}`),
+                    h("h4", { className: "ae-small-title" }, title), h("p", { className: "ae-detail" }, description)))))),
+            h("div", { className: "ae-panel-footer" },
+              h("span", { className: "ae-progress-track", "aria-hidden": "true" },
+                h("span", { className: "ae-progress-fill", style: { width: `${((active + 1) / chapters.length) * 100}%` } })),
+              h("span", { className: "ae-counter" }, h("strong", null, chapters[active].number), ` / 0${chapters.length}`),
+              mode === "pinned" ? h("span", { className: "ae-scroll-hint", "aria-hidden": "true" }, active < chapters.length - 1 ? "Scroll to continue" : "Keep scrolling", h(Icon, { name: "arrowDown" })) : null,
+              h("div", { className: "ae-pager" },
+                h("button", { type: "button", className: "ae-pager-btn ae-pager-prev", onClick: () => goTo(active - 1), disabled: active === 0, "aria-label": "Previous chapter" }, h(Icon, { name: "chevronLeft" })),
+                h("button", { type: "button", className: "ae-pager-btn ae-pager-next", onClick: () => goTo(active + 1), disabled: active === chapters.length - 1, "aria-label": "Next chapter" }, h(Icon, { name: "chevronRight" })))))))));
 }
