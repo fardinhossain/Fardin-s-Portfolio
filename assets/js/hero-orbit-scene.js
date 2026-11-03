@@ -207,12 +207,24 @@ export function mountHeroOrbit(host, options = {}) {
   }
 
   function pose() {
-    const narrow = width < 460;
+    const narrow = width < 700;
     const isStatic = reduced || stationary;
-    const revealX = narrow ? 0.86 : 0.14;
-    const revealY = narrow ? 0.28 : 0.54;
-    const landX = narrow ? 0.94 : 0.945;
-    const landY = narrow ? 0.48 : 0.82;
+    const revealX = narrow ? 0.78 : 0.14;
+    const revealY = narrow ? 0.25 : 0.54;
+    let landX = narrow ? 0.82 : 0.965;
+    let landY = narrow ? 0.88 : 0.78;
+
+    if (narrow && typeof document !== 'undefined') {
+      const anchor = document.querySelector('.fh-robot-mobile-anchor') || document.querySelector('.fh-resume');
+      if (anchor && host) {
+        const aRect = anchor.getBoundingClientRect();
+        const hRect = host.getBoundingClientRect();
+        if (hRect.width > 0 && hRect.height > 0) {
+          landX = Math.max(0.05, Math.min(0.95, (aRect.left + aRect.width / 2 - hRect.left) / hRect.width));
+          landY = Math.max(0.05, Math.min(0.95, (aRect.top + aRect.height / 2 - hRect.top) / hRect.height));
+        }
+      }
+    }
     let x = revealX;
     let y = revealY;
     let depth = 0;
@@ -343,7 +355,7 @@ export function mountHeroOrbit(host, options = {}) {
     // (face: x in 0.27..0.80, y in 0.13..0.66).
     const scale = stationary
       ? Math.min(width * 0.82 / 2.9, height * 0.84 / 4.6) * modelScale
-      : Math.min(width * (narrow ? 0.22 : 0.165) / 3.0, height * (narrow ? 0.27 : 0.21) / 4.05) * Math.min(modelScale, narrow ? 1.42 : 1.12);
+      : Math.min(width * (narrow ? 0.17 : 0.165) / 3.0, height * (narrow ? 0.15 : 0.21) / 4.05) * Math.min(modelScale, narrow ? 1.3 : 1.12);
     const depthScale = stationary ? 1 : 1 + 0.11 * depth;
     robot.scale.setScalar(scale * depthScale);
     robot.position.set(width * (x - 0.5), height * (0.5 - y), depth * 28);
@@ -357,10 +369,10 @@ export function mountHeroOrbit(host, options = {}) {
     const pulse = isStatic ? 1 : 1 + 0.045 * Math.sin(motionTime * 5.5);
     for (const flame of flames) flame.scale.y = flame.userData.baseY * pulse;
     const bounds = boundsForRobot();
-    const intersectsFace = bounds.x < width * 0.80 && bounds.x + bounds.width > width * 0.27
-      && bounds.y < height * 0.66 && bounds.y + bounds.height > height * 0.13;
+    const intersectsFace = !narrow && (bounds.x < width * 0.80 && bounds.x + bounds.width > width * 0.27
+      && bounds.y < height * 0.66 && bounds.y + bounds.height > height * 0.13);
     const layerBehind = !stationary && behind;
-    host.style.zIndex = layerBehind ? '1' : '3';
+    host.style.zIndex = layerBehind ? '1' : '4';
     bounds.visible = interactiveReady && !layerBehind && !intersectsFace
       && bounds.x + bounds.width > 0 && bounds.x < width
       && bounds.y + bounds.height > 0 && bounds.y < height;

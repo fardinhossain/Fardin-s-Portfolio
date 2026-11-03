@@ -338,7 +338,7 @@ export function AboutScrollStory() {
         h("div", { className: "section-summit-inner" },
           h("div", { className: "section-summit-content" },
             h("h2", { id: "ae-title", className: "ae-title section-summit-title" },
-              "About",
+              "About ",
               h("span", { className: "ae-title-accent section-summit-accent" }, "Me")
             ),
             h("p", { className: "section-summit-desc" },

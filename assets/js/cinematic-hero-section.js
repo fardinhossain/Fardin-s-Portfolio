@@ -131,13 +131,12 @@ export function HeroAuraFlyingRobot({ onActivate, open = false, onRevealProgress
 
             const labelEl = labelRef.current;
             if (labelEl && position.visible && position.width > 0 && el.clientWidth > 0 && el.clientHeight > 0) {
-              const labelW = labelEl.offsetWidth || 168;
-              const labelH = labelEl.offsetHeight || 28;
+              const labelH = labelEl.offsetHeight || 22;
               const centerX = position.x + position.width / 2;
-              const clampedLeft = Math.max(8, Math.min(el.clientWidth - labelW - 8, centerX - labelW / 2));
-              const clampedTop = Math.max(8, Math.min(el.clientHeight - labelH - 8, position.y - labelH - 6));
-              labelEl.style.left = `${Math.round(clampedLeft)}px`;
-              labelEl.style.top = `${Math.round(clampedTop)}px`;
+              // Center horizontally directly above the middle of the robot head
+              labelEl.style.left = `${Math.round(centerX)}px`;
+              labelEl.style.top = `${Math.round(position.y - labelH - 7)}px`;
+              labelEl.style.transform = `translateX(-50%)`;
               labelEl.style.visibility = "visible";
             } else if (labelEl && (!position.visible || position.width === 0)) {
               labelEl.style.opacity = "0";
@@ -304,7 +303,6 @@ export function CinematicHeroSection({ resumeUrl = PROFILE_DATA.resumeUrl, onNav
   const [theme, setTheme] = useState(getCurrentTheme);
   const [mobileName, setMobileName] = useState(() => window.matchMedia("(max-width: 700px)").matches);
   const [chatOpen, setChatOpen] = useState(false);
-  const [resumeModalOpen, setResumeModalOpen] = useState(false);
   const lastLauncher = useRef(null);
   const progress = useRef(0);
   const revealed = useRef(false);
@@ -408,35 +406,26 @@ export function CinematicHeroSection({ resumeUrl = PROFILE_DATA.resumeUrl, onNav
               href: resumeHref,
               className: "fh-resume",
               target: "_blank",
-              rel: "noopener noreferrer",
-              onClick: (e) => {
-                e.preventDefault();
-                setResumeModalOpen(true);
-              }
+              rel: "noopener noreferrer"
             },
-              h("svg", { viewBox: "0 0 24 24", fill: "none", stroke: "currentColor", strokeWidth: 1.6, "aria-hidden": true }, h("path", { d: "M12 3v12m-4-4 4 4 4-4M5 16v5h14v-5" })), "VIEW RESUME"))),
+              h("svg", { viewBox: "0 0 24 24", fill: "none", stroke: "currentColor", strokeWidth: 1.6, "aria-hidden": true }, h("path", { d: "M12 3v12m-4-4 4 4 4-4M5 16v5h14v-5" })), "VIEW RESUME"),
+            h("div", { className: "fh-robot-mobile-anchor", "aria-hidden": true }))),
         h("div", { className: "fh-visual" },
           h("div", { className: "fh-portrait" }, h("picture", { "data-portrait-theme": theme },
             h("img", { src: portraitSrc,
               alt: "Md. Fardin Hossain in a brown T-shirt with an orange halo", width: 1087, height: 1447,
               loading: "eager", fetchPriority: "high", decoding: "async", draggable: false }))),
-          h(HeroAuraFlyingRobot, {
-            onActivate: activate,
-            open: chatOpen,
-            onRevealProgress: revealName,
-            onAssistantProgress: assistantProgress,
-            onPhase: phase,
-            onStage: stage
-          }),
-          mobileName && identity)),
+          mobileName && identity),
+        h(HeroAuraFlyingRobot, {
+          onActivate: activate,
+          open: chatOpen,
+          onRevealProgress: revealName,
+          onAssistantProgress: assistantProgress,
+          onPhase: phase,
+          onStage: stage
+        })),
       h("ul", { className: "fh-strengths", "aria-label": "Areas of focus" }, STRENGTHS.map(([type, first, second]) =>
         h("li", { key: type }, h("span", { className: "fh-strength-icon" }, h(StrengthIcon, { type })), h("span", null, first, h("br"), second))))),
-    h(PortfolioAssistant, { open: chatOpen, onClose: () => setChatOpen(false), returnFocusRef: lastLauncher }),
-    resumeModalOpen && h(ResumeModal, {
-      open: resumeModalOpen,
-      onClose: () => setResumeModalOpen(false),
-      resumeUrl: resumeHref,
-      previewImage: "/assets/images/fardin-resume-preview.png"
-    })
+    h(PortfolioAssistant, { open: chatOpen, onClose: () => setChatOpen(false), returnFocusRef: lastLauncher })
   );
 }

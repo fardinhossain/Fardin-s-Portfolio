@@ -762,21 +762,36 @@ function PortfolioApp() {
             h(
               "span",
               { className: "theme-toggle-icon-box", "aria-hidden": "true" },
-              h(
-                "svg",
-                {
-                  width: "12",
-                  height: "12",
-                  viewBox: "0 0 24 24",
-                  fill: "none",
-                  stroke: "#E85D3B",
-                  strokeWidth: "2.5",
-                  strokeLinecap: "round",
-                  strokeLinejoin: "round"
-                },
-                h("circle", { cx: "12", cy: "12", r: "4", fill: "#E85D3B" }),
-                h("path", { d: "M12 2v2M12 20v2M4.93 4.93l1.41 1.41M17.66 17.66l1.41 1.41M2 12h2M20 12h2M6.34 17.66l-1.41 1.41M19.07 4.93l-1.41 1.41" })
-              )
+              theme === "dark"
+                ? h(
+                    "svg",
+                    {
+                      width: "12",
+                      height: "12",
+                      viewBox: "0 0 24 24",
+                      fill: "none",
+                      stroke: "#E85D3B",
+                      strokeWidth: "2.2",
+                      strokeLinecap: "round",
+                      strokeLinejoin: "round"
+                    },
+                    h("path", { d: "M12 3a6 6 0 0 0 9 9 9 9 0 1 1-9-9Z", fill: "rgba(232, 93, 59, 0.25)" })
+                  )
+                : h(
+                    "svg",
+                    {
+                      width: "12",
+                      height: "12",
+                      viewBox: "0 0 24 24",
+                      fill: "none",
+                      stroke: "#E85D3B",
+                      strokeWidth: "2.2",
+                      strokeLinecap: "round",
+                      strokeLinejoin: "round"
+                    },
+                    h("circle", { cx: "12", cy: "12", r: "4", fill: "#E85D3B" }),
+                    h("path", { d: "M12 2v2M12 20v2M4.93 4.93l1.41 1.41M17.66 17.66l1.41 1.41M2 12h2M20 12h2M6.34 17.66l-1.41 1.41M19.07 4.93l-1.41 1.41" })
+                  )
             ),
             h(
               "span",
@@ -901,7 +916,7 @@ function PortfolioApp() {
                   h(
                     "span",
                     { className: "theme-toggle-icon-box" },
-                    theme === "dark" ? "☀️" : "🌙"
+                    theme === "dark" ? "🌙" : "☀️"
                   )
                 )
               )
