@@ -12,6 +12,7 @@ const MIME = {
   '.png': 'image/png', '.jpg': 'image/jpeg', '.jpeg': 'image/jpeg',
   '.webp': 'image/webp', '.gif': 'image/gif', '.ico': 'image/x-icon',
   '.pdf': 'application/pdf', '.woff': 'font/woff', '.woff2': 'font/woff2',
+  '.otf': 'font/otf', '.ttf': 'font/ttf',
   '.mp4': 'video/mp4', '.txt': 'text/plain; charset=utf-8'
 };
 const aliases = new Set(['/', '/index', '/index.html', '/journey', '/experience/flyrank-ai']);

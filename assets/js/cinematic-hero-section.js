@@ -191,11 +191,120 @@ export function HeroAuraFlyingRobot({ onActivate, open = false, onRevealProgress
   );
 }
 
+function ResumeModal({ open, onClose, resumeUrl, previewImage }) {
+  useEffect(() => {
+    if (!open) return;
+    const prevOverflow = document.body.style.overflow;
+    document.body.style.overflow = "hidden";
+    const handleKey = (e) => {
+      if (e.key === "Escape") onClose();
+    };
+    window.addEventListener("keydown", handleKey);
+    return () => {
+      document.body.style.overflow = prevOverflow;
+      window.removeEventListener("keydown", handleKey);
+    };
+  }, [open, onClose]);
+
+  if (!open || typeof document === "undefined") return null;
+
+  return createPortal(
+    h(
+      "div",
+      {
+        className: "resume-modal-backdrop",
+        role: "dialog",
+        "aria-modal": "true",
+        "aria-label": "Md. Fardin Hossain Résumé Preview",
+        onClick: (e) => {
+          if (e.target === e.currentTarget) onClose();
+        }
+      },
+      h(
+        "div",
+        { className: "resume-modal-dialog" },
+        h(
+          "div",
+          { className: "resume-modal-header" },
+          h(
+            "div",
+            { className: "resume-modal-title-wrap" },
+            h("span", { className: "resume-modal-badge" }, "PDF"),
+            h("h3", { className: "resume-modal-title" }, "Md. Fardin Hossain — Résumé")
+          ),
+          h(
+            "div",
+            { className: "resume-modal-actions" },
+            h(
+              "a",
+              {
+                href: resumeUrl,
+                download: "Md_Fardin_Hossain_Resume.pdf",
+                className: "resume-action-btn resume-action-btn-primary",
+                "aria-label": "Download Resume PDF"
+              },
+              h(
+                "svg",
+                { width: 14, height: 14, viewBox: "0 0 24 24", fill: "none", stroke: "currentColor", strokeWidth: 2, "aria-hidden": true },
+                h("path", { d: "M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4" }),
+                h("polyline", { points: "7 10 12 15 17 10" }),
+                h("line", { x1: 12, y1: 15, x2: 12, y2: 3 })
+              ),
+              h("span", null, "Download")
+            ),
+            h(
+              "a",
+              {
+                href: resumeUrl,
+                target: "_blank",
+                rel: "noopener noreferrer",
+                className: "resume-action-btn",
+                "aria-label": "Open PDF in new tab"
+              },
+              h(
+                "svg",
+                { width: 14, height: 14, viewBox: "0 0 24 24", fill: "none", stroke: "currentColor", strokeWidth: 2, "aria-hidden": true },
+                h("path", { d: "M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6" }),
+                h("polyline", { points: "15 3 21 3 21 9" }),
+                h("line", { x1: 10, y1: 14, x2: 21, y2: 3 })
+              ),
+              h("span", null, "Open PDF")
+            ),
+            h(
+              "button",
+              {
+                type: "button",
+                className: "resume-modal-close",
+                onClick: onClose,
+                "aria-label": "Close preview"
+              },
+              "✕"
+            )
+          )
+        ),
+        h(
+          "div",
+          { className: "resume-modal-body" },
+          h("img", {
+            src: previewImage,
+            alt: "Md. Fardin Hossain Résumé Preview",
+            className: "resume-preview-sheet",
+            loading: "eager",
+            decoding: "async"
+          })
+        )
+      )
+    ),
+    document.body
+  );
+}
+
 export function CinematicHeroSection({ resumeUrl = PROFILE_DATA.resumeUrl, onNavigateContact }) {
   const root = useRef(null);
   const [theme, setTheme] = useState(getCurrentTheme);
   const [mobileName, setMobileName] = useState(() => window.matchMedia("(max-width: 700px)").matches);
   const [chatOpen, setChatOpen] = useState(false);
+  const [resumeModalOpen, setResumeModalOpen] = useState(false);
   const lastLauncher = useRef(null);
   const progress = useRef(0);
   const revealed = useRef(false);
@@ -295,7 +404,16 @@ export function CinematicHeroSection({ resumeUrl = PROFILE_DATA.resumeUrl, onNav
           !mobileName && identity,
           h("div", { className: "fh-actions" },
             h("a", { href: "#contact", className: "fh-contact", onClick: contact }, "LET’S TALK", h("span", { "aria-hidden": true }, "→")),
-            h("a", { href: resumeHref, className: "fh-resume", target: "_blank", rel: "noopener noreferrer" },
+            h("a", {
+              href: resumeHref,
+              className: "fh-resume",
+              target: "_blank",
+              rel: "noopener noreferrer",
+              onClick: (e) => {
+                e.preventDefault();
+                setResumeModalOpen(true);
+              }
+            },
               h("svg", { viewBox: "0 0 24 24", fill: "none", stroke: "currentColor", strokeWidth: 1.6, "aria-hidden": true }, h("path", { d: "M12 3v12m-4-4 4 4 4-4M5 16v5h14v-5" })), "VIEW RESUME"))),
         h("div", { className: "fh-visual" },
           h("div", { className: "fh-portrait" }, h("picture", { "data-portrait-theme": theme },
@@ -313,6 +431,12 @@ export function CinematicHeroSection({ resumeUrl = PROFILE_DATA.resumeUrl, onNav
           mobileName && identity)),
       h("ul", { className: "fh-strengths", "aria-label": "Areas of focus" }, STRENGTHS.map(([type, first, second]) =>
         h("li", { key: type }, h("span", { className: "fh-strength-icon" }, h(StrengthIcon, { type })), h("span", null, first, h("br"), second))))),
-    h(PortfolioAssistant, { open: chatOpen, onClose: () => setChatOpen(false), returnFocusRef: lastLauncher })
+    h(PortfolioAssistant, { open: chatOpen, onClose: () => setChatOpen(false), returnFocusRef: lastLauncher }),
+    resumeModalOpen && h(ResumeModal, {
+      open: resumeModalOpen,
+      onClose: () => setResumeModalOpen(false),
+      resumeUrl: resumeHref,
+      previewImage: "/assets/images/fardin-resume-preview.png"
+    })
   );
 }
