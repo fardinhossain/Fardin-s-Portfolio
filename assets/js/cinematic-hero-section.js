@@ -312,25 +312,35 @@ export function CinematicHeroSection({ resumeUrl = PROFILE_DATA.resumeUrl, onNav
     if (value >= 1) revealed.current = true;
     const heroEl = root.current;
     if (!heroEl) return;
-    const nameEl = heroEl.querySelector(".fh-name");
-    if (nameEl) {
+    const nameEls = heroEl.querySelectorAll(".fh-name");
+    nameEls.forEach(nameEl => {
       nameEl.style.setProperty("--name-bar-opacity", String(Math.max(0, Math.min(1, value * 2.5))));
-    }
-    heroEl.querySelectorAll(".fh-name-word").forEach((word, index) => {
-      const amount = Math.max(0, Math.min(1, value * 3 - index));
-      word.style.opacity = amount;
-      word.style.transform = `translateY(${(1 - amount) * 8}px)`;
+    });
+    // Ensure word containers keep neutral opacity so character-by-character typewriter works cleanly
+    heroEl.querySelectorAll(".fh-name-word").forEach(word => {
+      word.style.opacity = "1";
+      word.style.transform = "none";
     });
     const chars = heroEl.querySelectorAll(".fh-name-char");
     const totalChars = chars.length;
+    if (totalChars === 0) return;
+    const cursor = value * totalChars;
+    const activeIdx = Math.floor(cursor);
     chars.forEach((charEl, idx) => {
-      const charAmount = value >= 1 ? 1 : Math.max(0, Math.min(1, value * (totalChars + 2) - idx));
-      charEl.style.opacity = charAmount.toFixed(3);
-      charEl.style.transform = `translateY(${((1 - charAmount) * 10).toFixed(2)}px)`;
-      const glow = Math.sin(charAmount * Math.PI);
-      charEl.style.textShadow = glow > 0.05 && value < 1
-        ? `0 0 ${Math.round(glow * 16)}px rgba(255, 108, 64, ${(glow * 0.85).toFixed(2)})`
-        : "";
+      if (value >= 1 || idx < activeIdx) {
+        charEl.style.opacity = "1";
+        charEl.style.transform = "none";
+        charEl.style.textShadow = "";
+      } else if (idx === activeIdx) {
+        const frac = Math.min(1, Math.max(0, (cursor - idx) * 1.5));
+        charEl.style.opacity = Math.max(0.2, frac).toFixed(3);
+        charEl.style.transform = `translateY(${((1 - frac) * 5).toFixed(2)}px)`;
+        charEl.style.textShadow = "0 0 16px rgba(255, 114, 64, 0.95), 0 0 5px rgba(255, 255, 255, 0.85)";
+      } else {
+        charEl.style.opacity = "0";
+        charEl.style.transform = "translateY(6px)";
+        charEl.style.textShadow = "";
+      }
     });
     heroEl.dataset.nameRevealed = value >= 1 ? "true" : "false";
   }, []);

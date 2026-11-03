@@ -305,7 +305,7 @@ body { background: var(--folio-ground); }
 .fh-sr-only { position: absolute; width: 1px; height: 1px; margin: -1px; padding: 0; border: 0; overflow: hidden; clip: rect(0,0,0,0); white-space: nowrap; }
 .fh-name-visual { display: inline; }
 .fh-name-word { display: inline-block; will-change: opacity, transform; }
-.fh-name-char { display: inline-block; will-change: opacity, transform; }
+.fh-name-char { display: inline-block; will-change: opacity, transform, text-shadow; transition: text-shadow 0.15s ease, opacity 0.12s ease; }
 
 /* Phase 5: "Fardin's AI Assistant" badge above the landed robot */
 .fh-assistant-label {

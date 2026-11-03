@@ -61,8 +61,8 @@ export function mountHeroOrbit(host, options = {}) {
   let assistantProgress = -1;
   const stationary = Boolean(options.stationary);
   const modelScale = Number.isFinite(options.modelScale) && options.modelScale > 0 ? options.modelScale : 1;
-  const entranceDuration = 1.0;
-  const revealDuration = 1.15;
+  const entranceDuration = 0.95;
+  const revealDuration = 1.45;
   const orbitDuration = 2.40;
   const landDuration = 0.85;
   const assistantDuration = 1.10;
@@ -206,11 +206,51 @@ export function mountHeroOrbit(host, options = {}) {
     return { x: left, y: top, width: right - left, height: bottom - top, visible: false };
   }
 
+  let cachedCharPositions = null;
+  let lastCharMeasure = 0;
+
+  function measureNameChars(narrow) {
+    if (typeof document === 'undefined' || !host) return null;
+    const now = performance.now();
+    if (cachedCharPositions && now - lastCharMeasure < 120) return cachedCharPositions;
+    const hRect = host.getBoundingClientRect();
+    if (hRect.width <= 0 || hRect.height <= 0) return null;
+
+    const nameEl = (narrow && document.querySelector('.fh-name-mobile'))
+      || document.querySelector('.fh-copy .fh-name')
+      || document.querySelector('.fh-name');
+    if (!nameEl) return null;
+
+    const charEls = Array.from(nameEl.querySelectorAll('.fh-name-char'));
+    if (charEls.length === 0) return null;
+
+    const offsetPx = narrow ? 16 : 22;
+    cachedCharPositions = charEls.map(c => {
+      const cr = c.getBoundingClientRect();
+      return {
+        x: Math.max(0.04, Math.min(0.96, (cr.right + offsetPx - hRect.left) / hRect.width)),
+        y: Math.max(0.04, Math.min(0.96, (cr.top + cr.height * 0.38 - hRect.top) / hRect.height))
+      };
+    });
+    lastCharMeasure = now;
+    return cachedCharPositions;
+  }
+
   function pose() {
     const narrow = width < 700;
     const isStatic = reduced || stationary;
-    const revealX = narrow ? 0.78 : 0.14;
-    const revealY = narrow ? 0.25 : 0.54;
+    const chars = measureNameChars(narrow);
+
+    const defaultStartX = narrow ? 0.277 : 0.109;
+    const defaultStartY = narrow ? 0.478 : 0.589;
+    const defaultEndX = narrow ? 0.882 : 0.408;
+    const defaultEndY = narrow ? 0.478 : 0.589;
+
+    const startWriteX = chars && chars.length > 0 ? chars[0].x : defaultStartX;
+    const startWriteY = chars && chars.length > 0 ? chars[0].y : defaultStartY;
+    const endWriteX = chars && chars.length > 0 ? chars[chars.length - 1].x : defaultEndX;
+    const endWriteY = chars && chars.length > 0 ? chars[chars.length - 1].y : defaultEndY;
+
     let landX = narrow ? 0.82 : 0.965;
     let landY = narrow ? 0.88 : 0.78;
 
@@ -225,8 +265,8 @@ export function mountHeroOrbit(host, options = {}) {
         }
       }
     }
-    let x = revealX;
-    let y = revealY;
+    let x = startWriteX;
+    let y = startWriteY;
     let depth = 0;
     let gesture = 0;
     let bankZ = 0;
@@ -243,30 +283,43 @@ export function mountHeroOrbit(host, options = {}) {
       y = stationary ? 0.56 : landY;
       interactiveReady = true;
     } else if (elapsed < entranceDuration) {
-      // Phase 1: Robot Arrival — fly in from outside the viewport
+      // Phase 1: Robot Arrival — fly in from outside the viewport directly to start of name (character 'M')
       setPhase('enter');
       setStage('enter');
       setReveal(0);
       setAssistant(0);
       const rawT = Math.max(0, Math.min(1, elapsed / entranceDuration));
       const t = easeOutCubic(rawT);
-      x = mix(narrow ? 1.18 : 1.24, revealX, t);
-      y = mix(narrow ? -0.15 : -0.22, revealY, t) - 0.045 * Math.sin(Math.PI * rawT);
+      x = mix(narrow ? 1.16 : 1.22, startWriteX, t);
+      y = mix(narrow ? -0.15 : -0.20, startWriteY, t) - 0.045 * Math.sin(Math.PI * rawT);
       depth = -0.35 * (1 - t);
       bankZ = (1 - t) * (narrow ? 0.16 : 0.26);
       behind = !narrow;
     } else if (elapsed < revealEnd) {
-      // Phase 2: Name Reveal — hover near portrait & reveal "Md. Fardin Hossain"
+      // Phase 2: Sequential Name Writing — robot hovers beside active character and writes "MD. FARDIN HOSSAIN"
       setPhase('reveal');
       setStage('reveal');
       setAssistant(0);
       const rawT = Math.max(0, Math.min(1, (elapsed - entranceDuration) / revealDuration));
-      setReveal(smooth(rawT));
-      gesture = Math.sin(Math.PI * rawT) ** 2;
-      x = revealX + (narrow ? -0.014 : 0.018) * Math.sin(rawT * Math.PI);
-      y = revealY - 0.018 * Math.sin(rawT * Math.PI * 2);
-      depth = 0.22 * Math.sin(rawT * Math.PI);
-      bankZ = -0.05 * Math.sin(rawT * Math.PI);
+      setReveal(rawT);
+
+      if (chars && chars.length > 0) {
+        const progress = rawT * (chars.length - 1);
+        const idx = Math.min(chars.length - 2, Math.floor(progress));
+        const frac = progress - idx;
+        const curr = chars[idx];
+        const next = chars[Math.min(chars.length - 1, idx + 1)];
+        x = mix(curr.x, next.x, smooth(frac));
+        y = mix(curr.y, next.y, smooth(frac)) + 0.006 * Math.sin(rawT * Math.PI * 16);
+      } else {
+        x = mix(startWriteX, endWriteX, rawT);
+        y = mix(startWriteY, endWriteY, rawT) + 0.006 * Math.sin(rawT * Math.PI * 16);
+      }
+
+      depth = 0.22;
+      bankZ = -0.06 + 0.02 * Math.sin(rawT * Math.PI * 8);
+      gesture = 0.45 * Math.sin(rawT * Math.PI * 16) ** 2;
+      nodX = 0.04 * Math.sin(rawT * Math.PI * 8);
       behind = false;
     } else if (elapsed < orbitEnd) {
       // Phase 3: Fly Around the Portrait — 3D loop behind & in front of the portrait
@@ -276,14 +329,15 @@ export function mountHeroOrbit(host, options = {}) {
       const rawU = Math.max(0, Math.min(1, (elapsed - revealEnd) / orbitDuration));
       const u = smooth(rawU);
       if (u < 0.5) {
-        // First half: pass BEHIND the portrait (occluded by cutout head/halo/shoulders)
+        // First half: lift off from the end of HOSSAIN and pass BEHIND the portrait
         setStage('orbit-behind');
         const p = u * 2; // 0 -> 1
-        const startX = revealX;
+        const startX = endWriteX;
+        const startY = endWriteY;
         const endX = narrow ? 0.14 : 0.86;
         const endY = narrow ? 0.28 : 0.30;
         x = mix(startX, endX, smooth(p));
-        y = mix(revealY, endY, smooth(p)) - 0.16 * Math.sin(Math.PI * p);
+        y = mix(startY, endY, smooth(p)) - 0.16 * Math.sin(Math.PI * p);
         depth = -Math.sin(Math.PI * p);
         bankZ = (narrow ? 0.18 : -0.20) * Math.sin(Math.PI * p);
         behind = true;
@@ -411,6 +465,7 @@ export function mountHeroOrbit(host, options = {}) {
 
   function resize() {
     if (disposed) return;
+    cachedCharPositions = null;
     inView = checkInView();
     const bounds = host.getBoundingClientRect();
     width = Math.max(0, bounds.width);
