@@ -664,6 +664,67 @@
   transition: opacity .5s ease .12s, transform .6s var(--ae-ease) .12s, filter .5s ease .12s, visibility 0s;
 }
 
+@media (max-width: 700px) {
+  .ae-layout[data-mode="pinned"] {
+    height: calc(100vh - 36px + 4 * 60vh);
+  }
+  .ae-layout[data-mode="pinned"] .ae-stage {
+    display: flex;
+    flex-direction: column;
+    position: sticky;
+    top: 36px;
+    height: calc(100vh - 36px - 44px);
+    max-height: calc(100dvh - 36px - 44px);
+    padding-top: 0;
+    overflow: hidden;
+    z-index: 20;
+  }
+  .ae-layout[data-mode="pinned"] .ae-sidebar {
+    position: relative;
+    top: auto;
+    width: 100%;
+    padding-right: 0;
+    border-right: 0;
+    flex-shrink: 0;
+  }
+  .ae-layout[data-mode="pinned"] .ae-nav {
+    position: relative;
+    top: auto;
+    width: 100%;
+    margin-left: 0;
+    margin-right: 0;
+    margin-top: 0;
+    margin-bottom: 8px;
+    padding: 8px 12px 10px;
+    border-radius: 12px;
+    flex-shrink: 0;
+  }
+  .ae-layout[data-mode="pinned"] .ae-content.ae-panel {
+    flex: 1 1 auto;
+    min-height: 0;
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+    overflow-y: auto;
+    -webkit-overflow-scrolling: touch;
+    padding: 0 2px;
+  }
+  .ae-layout[data-mode="pinned"] .ae-chapters {
+    display: grid;
+    flex: 1 1 auto;
+  }
+  .ae-layout[data-mode="pinned"] .ae-chapter {
+    grid-area: 1 / 1;
+    min-width: 0;
+  }
+  .ae-layout[data-mode="pinned"] .ae-panel-footer {
+    flex-shrink: 0;
+    margin-top: auto;
+    padding-top: 8px;
+    padding-bottom: 4px;
+  }
+}
+
 /* Tabs mode: only the current chapter takes up space */
 .ae-layout[data-mode="tabs"] .ae-chapter:not([data-state="active"]) { display: none; }
 .ae-layout[data-mode="tabs"] .ae-panel { touch-action: pan-y; }
@@ -707,6 +768,15 @@
 }
 .ae-kicker-icon .ae-icon { width: 12px; height: 12px; }
 .ae-kicker-sep { color: var(--ae-accent); }
+.ae-kicker-dot {
+  display: inline-block;
+  width: 3.5px;
+  height: 3.5px;
+  border-radius: 50%;
+  background: var(--ae-accent);
+  opacity: 0.85;
+  margin: 0 1px;
+}
 .ae-chapter-title {
   margin: 14px 0 0;
   color: var(--ae-ink);
@@ -729,27 +799,7 @@
 }
 .ae-chapter .ae-copy { max-width: 68ch; }
 
-/* Hand-drawn curved arrow + note */
-.ae-arrow-note {
-  display: flex;
-  align-items: flex-end;
-  gap: 2px;
-  margin: 4px 0 -10px;
-  padding-left: clamp(24px, 20vw, 300px);
-  color: var(--ae-accent);
-  pointer-events: none;
-}
-.ae-arrow-text {
-  margin-bottom: 16px;
-  color: var(--ae-muted);
-  font-family: 'Instrument Serif', Georgia, serif;
-  font-size: clamp(16px, 1.45vw, 21px);
-  font-style: italic;
-  white-space: nowrap;
-  transform: rotate(-4deg);
-}
 .ae-curve { display: block; overflow: visible; color: var(--ae-accent); }
-.ae-curve-note { width: 58px; height: 42px; flex: 0 0 58px; }
 .ae-curve path { fill: none; stroke: currentColor; stroke-width: 1.7; stroke-linecap: round; stroke-linejoin: round; stroke-dasharray: 1; stroke-dashoffset: 0; }
 
 /* Ch 01 — identity cards */
@@ -898,9 +948,6 @@
 .is-active .ae-title-serif { animation: ae-slide-in .6s var(--ae-ease) backwards; animation-delay: var(--d, 0ms); }
 .is-active .ae-title-serif { animation-name: ae-serif-in; animation-duration: .75s; }
 .is-active > .ae-copy:not(.ae-reveal) { animation: ae-slide-in .6s var(--ae-ease) .3s backwards; }
-.is-active .ae-curve-note path { animation: ae-draw .7s cubic-bezier(.65, 0, .35, 1) .5s backwards; }
-.is-active .ae-curve-note .ae-curve-head { animation-delay: 1.15s; animation-duration: .25s; }
-.is-active .ae-arrow-text { animation: ae-fade-in .5s ease 1s backwards; }
 .is-active .ae-stagger { animation: ae-rise .6s var(--ae-ease) backwards; animation-delay: calc(600ms + var(--i, 0) * 90ms); }
 .is-active .ae-step-arrow path { animation: ae-draw .55s cubic-bezier(.65, 0, .35, 1) backwards; animation-delay: calc(900ms + var(--ae-step, 0) * 160ms); }
 .is-active .ae-step-arrow .ae-curve-head { animation-delay: calc(1350ms + var(--ae-step, 0) * 160ms); animation-duration: .2s; }
@@ -922,9 +969,7 @@
 
 @media (max-width: 700px) {
   .ae-numeral { font-size: 92px; top: -.06em; }
-  .ae-chapter-title { font-size: 32px; }
-  .ae-arrow-note { padding-left: 14px; margin-top: 8px; }
-  .ae-arrow-text { font-size: 16px; }
+  .ae-chapter-title { font-size: clamp(25px, 6.5vw, 32px); }
   .ae-labels .ae-label { padding: 10px; gap: 8px; font-size: 11px; }
   .ae-label-icon { width: 30px; height: 30px; flex-basis: 30px; }
   .ae-chapter .ae-capabilities, .ae-chapter .ae-strengths { grid-template-columns: minmax(0, 1fr); gap: 10px; }

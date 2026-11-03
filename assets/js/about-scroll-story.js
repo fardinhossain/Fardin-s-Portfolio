@@ -70,10 +70,10 @@ export function ScrollWordReveal({ text = "", className = "", delay = 0, as = "p
 }
 
 const chapters = [
-  { id: "who-i-am", number: "01", title: "Who I Am", lead: "Who", accent: "I Am", note: "Identity", icon: "user", arrow: "a quick snapshot" },
-  { id: "what-i-build", number: "02", title: "What I Build", lead: "What I", accent: "Build", note: "Capabilities", icon: "code2", arrow: "things I ship" },
-  { id: "why-me", number: "03", title: "Why Me", lead: "Why", accent: "Me", note: "Strengths", icon: "target", arrow: "what sets me apart" },
-  { id: "how-i-work", number: "04", title: "How I Work", lead: "How I", accent: "Work", note: "Process", icon: "refresh", arrow: "my build loop" }
+  { id: "who-i-am", number: "01", title: "Who I Am", lead: "Who", accent: "I Am", note: "Identity", icon: "user" },
+  { id: "what-i-build", number: "02", title: "What I Build", lead: "What I", accent: "Build", note: "Capabilities", icon: "code2" },
+  { id: "why-me", number: "03", title: "Why Me", lead: "Why", accent: "Me", note: "Strengths", icon: "target" },
+  { id: "how-i-work", number: "04", title: "How I Work", lead: "How I", accent: "Work", note: "Process", icon: "refresh" }
 ];
 const identity = [
   ["CSE Student", "graduation", "#ff7048"],
@@ -161,15 +161,9 @@ function ChapterHeader({ chapter, index }) {
     h("span", { className: "ae-kicker ae-kicker-pill" },
       h("span", { className: "ae-kicker-icon" }, h(Icon, { name: chapter.icon })),
       `CHAPTER ${chapter.number}`,
-      h("span", { className: "ae-kicker-sep", "aria-hidden": "true" }, "Â·"),
+      h("span", { className: "ae-kicker-dot", "aria-hidden": "true" }),
       chapter.note),
     h("h3", { id: `ae-heading-${index}`, className: "ae-chapter-title" }, title));
-}
-
-function ArrowNote({ text }) {
-  return h("div", { className: "ae-arrow-note", "aria-hidden": "true" },
-    h("span", { className: "ae-arrow-text" }, text),
-    h(CurvedArrow, { variant: "note" }));
 }
 
 // A static, decorative echo of the hero. Import only when About is mounted;
@@ -264,7 +258,7 @@ function FlyingTrackerRobot({ isFlying, direction, isMobile }) {
   );
 }
 
-const PIN_QUERY = "(min-width: 901px) and (min-height: 680px)";
+const PIN_QUERY = "(min-height: 480px)";
 const pinMatches = () => typeof window !== "undefined" && !!window.matchMedia?.(PIN_QUERY).matches;
 
 // One chapter at a time. Desktop ("pinned"): the stage sticks while the track
@@ -449,7 +443,6 @@ export function AboutScrollStory() {
   };
 
   const onTouchStart = event => {
-    if (modeRef.current !== "tabs") return;
     const t = event.touches[0];
     touch.current = { x: t.clientX, y: t.clientY };
   };
@@ -555,13 +548,11 @@ export function AboutScrollStory() {
             h("div", { className: "ae-chapters" },
               article(0,
                 paragraph(0, "I’m a Computer Science and Engineering student and full-stack developer who enjoys turning ideas into reliable, user-friendly software. I build web applications, connect frontend experiences with backend services and databases, and focus on writing maintainable code.", ["full-stack developer", "maintainable code"]),
-                h(ArrowNote, { text: chapters[0].arrow }),
                 h("ul", { className: "ae-labels", "aria-label": "At a glance" }, identity.map(([label, icon, color], i) =>
                   h("li", { className: "ae-label ae-stagger", key: label, style: { ...stagger(i), "--c": color } },
                     h("span", { className: "ae-label-icon" }, h(Icon, { name: icon })), label)))),
               article(1,
                 paragraph(1, "I build responsive web applications, interactive user interfaces, backend APIs, database-driven systems, and practical full-stack products.", ["responsive web applications", "full-stack products"]),
-                h(ArrowNote, { text: chapters[1].arrow }),
                 h("div", { className: "ae-capabilities" }, capabilities.map(([icon, title, description], i) =>
                   h("div", { className: "ae-capability ae-stagger", key: title, style: stagger(i) },
                     h("div", { className: "ae-cap-head" },
@@ -570,7 +561,6 @@ export function AboutScrollStory() {
                     h("h4", { className: "ae-small-title" }, title), h("p", { className: "ae-detail" }, description))))),
               article(2,
                 paragraph(2, "I combine a solid computer science foundation with a practical approach to software development. I enjoy understanding problems before choosing solutions, writing maintainable code, debugging complex issues, and improving my work through testing and feedback.", ["solid computer science foundation", "practical approach"]),
-                h(ArrowNote, { text: chapters[2].arrow }),
                 h("ul", { className: "ae-strengths", "aria-label": "Core strengths" }, strengths.map(([icon, label, description], i) =>
                   h("li", { className: "ae-strength ae-stagger", key: label, style: stagger(i) },
                     h("span", { className: "ae-strength-icon" }, h(Icon, { name: icon })),
@@ -579,7 +569,6 @@ export function AboutScrollStory() {
                       h("span", null, description)))))),
               article(3,
                 h("p", { className: "ae-copy" }, "A thoughtful process, from the first question to the next iteration."),
-                h(ArrowNote, { text: chapters[3].arrow }),
                 h("ol", { className: "ae-process", "aria-label": "Development process" }, process.map(([icon, title, description], index) =>
                   h("li", { className: "ae-step ae-stagger", key: title, style: { "--ae-step": index, ...stagger(index) } },
                     h("div", { className: "ae-step-node" }, h(Icon, { name: icon })),
