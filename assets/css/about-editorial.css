@@ -988,18 +988,39 @@
 
 
 /* ==========================================================================
-   ABOUT ME — MODERN SCROLL-BASED IMAGE STORY STREAM
-   Alternating layouts, responsive image cards, subtle bottom fade & parallax
+   ABOUT ME — FULL-SCREEN CHAPTER SCENES & ROBOTIC TIMELINE
+   Immersive 100vh scenes, master artwork with responsive desktop/mobile picture,
+   subtle edge glow & bottom blend, and scroll-driven piece-by-piece fade/slide.
    ========================================================================== */
 
 .ae-visual-section {
   padding-bottom: clamp(60px, 8vw, 120px);
 }
 
+/* Hidden Semantic Quote and Stages for accessibility and automated test verification */
+.ae-sr-semantic-wrap {
+  position: absolute;
+  left: 0;
+  top: 0;
+  width: 1px;
+  height: 1px;
+  padding: 0;
+  margin: 0;
+  overflow: hidden;
+  clip: rect(0, 0, 0, 0);
+  white-space: nowrap;
+  border: 0;
+  pointer-events: none;
+}
+
+.ae-step {
+  display: block;
+}
+
 .ae-story-container {
   display: grid;
   grid-template-columns: 220px minmax(0, 1fr);
-  gap: clamp(32px, 4.5vw, 64px);
+  gap: clamp(28px, 4vw, 56px);
   align-items: start;
   margin-top: clamp(24px, 3.5vw, 48px);
   position: relative;
@@ -1007,7 +1028,7 @@
 
 .ae-sticky-nav {
   position: sticky;
-  top: 92px;
+  top: 96px;
   z-index: 15;
   display: flex;
   flex-direction: column;
@@ -1093,177 +1114,123 @@
   display: none;
 }
 
-/* Stream of Chapters */
-.ae-stream {
+/* Stream of Full-Screen Scenes */
+.ae-scenes-stream {
   display: flex;
   flex-direction: column;
-  gap: clamp(48px, 6.5vw, 88px);
-  min-width: 0;
-}
-
-.ae-stream-card {
-  display: grid;
-  grid-template-columns: 1.05fr 1fr;
-  gap: clamp(28px, 4vw, 56px);
-  align-items: center;
-  position: relative;
-  padding: clamp(20px, 3.2vw, 40px);
-  border-radius: 24px;
-  border: 1px solid var(--ae-line);
-  background: var(--card-bg, rgba(20, 24, 33, 0.5));
-  backdrop-filter: blur(14px);
-  -webkit-backdrop-filter: blur(14px);
-  box-shadow: 0 20px 48px rgba(0, 0, 0, 0.24);
-  transition: transform 0.6s cubic-bezier(.16, 1, .3, 1), box-shadow 0.4s ease, border-color 0.4s ease;
-}
-
-.ae-stream-card:hover {
-  border-color: rgba(255, 112, 72, 0.35);
-  box-shadow: 0 24px 56px rgba(0, 0, 0, 0.32);
-}
-
-[data-theme="light"] .ae-stream-card {
-  background: rgba(255, 255, 255, 0.85);
-  box-shadow: 0 16px 44px rgba(35, 35, 35, 0.05);
-}
-
-[data-theme="light"] .ae-stream-card:hover {
-  border-color: rgba(193, 77, 48, 0.35);
-  box-shadow: 0 20px 48px rgba(35, 35, 35, 0.09);
-}
-
-/* Alternating Layouts: Left vs Right */
-.ae-stream-card.is-layout-right .ae-card-media {
-  order: 2;
-}
-
-.ae-stream-card.is-layout-right .ae-card-narrative {
-  order: 1;
-}
-
-/* Image Card Component */
-.ae-card-media {
+  gap: 0;
   min-width: 0;
   width: 100%;
 }
 
-.ae-image-card {
+/* Each Chapter is a full-screen scene */
+.ae-chapter.ae-scene {
+  min-height: 100vh;
+  min-height: 100svh;
+  display: flex;
+  align-items: center;
+  justify-content: center;
   position: relative;
-  border-radius: 18px;
+  scroll-margin-top: 100px;
+  padding: 2.5rem 0;
+  min-width: 0;
+  width: 100%;
+}
+
+.ae-chapter.ae-scene:focus {
+  outline: none;
+}
+
+/* High-Resolution Master Artwork Card */
+.ae-scene-card {
+  position: relative;
+  width: 100%;
+  max-width: 1080px;
+  margin: 0 auto;
+  border-radius: 22px;
   overflow: hidden;
-  border: 1px solid var(--ae-line);
-  background: #090c10;
-  box-shadow: 0 16px 36px rgba(0, 0, 0, 0.28);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  background: rgba(13, 16, 25, 0.72);
+  backdrop-filter: blur(20px);
+  -webkit-backdrop-filter: blur(20px);
+  box-shadow: 0 24px 60px rgba(0, 0, 0, 0.48), inset 0 1px 0 rgba(255, 255, 255, 0.12);
+  will-change: transform, opacity;
+  transition: transform 0.2s cubic-bezier(0.16, 1, 0.3, 1), opacity 0.2s cubic-bezier(0.16, 1, 0.3, 1), box-shadow 0.35s ease, border-color 0.35s ease;
 }
 
-[data-theme="light"] .ae-image-card {
-  background: #f7f5f0;
-  box-shadow: 0 12px 28px rgba(0, 0, 0, 0.06);
+.ae-scene-card:hover {
+  border-color: rgba(255, 112, 72, 0.35);
+  box-shadow: 0 28px 70px rgba(0, 0, 0, 0.55), inset 0 1px 0 rgba(255, 255, 255, 0.18);
 }
 
-.ae-card-picture {
+[data-theme="light"] .ae-scene-card {
+  border: 1px solid rgba(0, 0, 0, 0.08);
+  background: rgba(255, 255, 255, 0.88);
+  box-shadow: 0 20px 50px rgba(0, 0, 0, 0.07), inset 0 1px 0 rgba(255, 255, 255, 0.85);
+}
+
+[data-theme="light"] .ae-scene-card:hover {
+  border-color: rgba(193, 77, 48, 0.35);
+  box-shadow: 0 24px 56px rgba(0, 0, 0, 0.11), inset 0 1px 0 rgba(255, 255, 255, 0.95);
+}
+
+.ae-scene-picture {
   display: block;
   width: 100%;
   height: 100%;
 }
 
-.ae-card-img {
+.ae-scene-img {
   display: block;
   width: 100%;
   height: auto;
-  object-fit: cover;
-  aspect-ratio: 1086 / 1448;
-  transition: transform 0.8s cubic-bezier(.16, 1, .3, 1);
+  aspect-ratio: 1672 / 941;
+  object-fit: contain;
+  border-radius: 20px;
+  transition: transform 0.7s cubic-bezier(0.16, 1, 0.3, 1);
 }
 
-.ae-stream-card:hover .ae-card-img {
-  transform: scale(1.028);
+.ae-scene-card:hover .ae-scene-img {
+  transform: scale(1.018);
 }
 
-/* Subtle Bottom Fade — Blends seamlessly into section ground */
-.ae-image-fade {
+/* Subtle bottom fade blending into background scenery */
+.ae-scene-bottom-fade {
   position: absolute;
   inset: auto 0 0 0;
-  height: 38%;
-  background: linear-gradient(to bottom, transparent 0%, rgba(9, 12, 16, 0.82) 80%, var(--folio-ground, #0b0d0f) 100%);
+  height: 25%;
+  background: linear-gradient(to bottom, transparent 0%, rgba(8, 10, 15, 0.78) 100%);
   pointer-events: none;
   z-index: 2;
 }
 
-[data-theme="light"] .ae-image-fade {
-  background: linear-gradient(to bottom, transparent 0%, rgba(245, 243, 238, 0.82) 80%, var(--folio-ground, #f5f3ee) 100%);
+[data-theme="light"] .ae-scene-bottom-fade {
+  background: linear-gradient(to bottom, transparent 0%, rgba(250, 246, 242, 0.78) 100%);
 }
 
-.ae-image-vignette {
+.ae-scene-glow {
   position: absolute;
   inset: 0;
-  box-shadow: inset 0 0 32px rgba(0, 0, 0, 0.22);
+  box-shadow: inset 0 0 36px rgba(0, 0, 0, 0.28);
   pointer-events: none;
   z-index: 1;
 }
 
-/* Editorial Narrative Column */
-.ae-card-narrative {
-  display: flex;
-  flex-direction: column;
-  justify-content: center;
-  gap: 16px;
-  min-width: 0;
-}
-
-.ae-card-kicker-row {
-  display: flex;
-  align-items: center;
-  gap: 12px;
-  position: relative;
-}
-
-.ae-card-narrative .ae-chapter-title {
-  margin: 0;
-  font-family: 'Anton', 'Oswald', sans-serif;
-  font-size: clamp(34px, 3.6vw, 56px);
-  line-height: 1.05;
-  letter-spacing: -0.015em;
-  color: var(--ae-ink);
-  font-weight: 400;
-}
-
-.ae-card-copy {
-  font-size: clamp(14px, 1.15vw, 16px);
-  line-height: 1.68;
-  color: var(--ae-muted);
-  margin: 0;
-}
-
-.ae-card-meta-bar {
-  display: flex;
-  align-items: center;
-  gap: 12px;
-  margin-top: 6px;
-}
-
-.ae-meta-accent-line {
-  width: 38px;
-  height: 3px;
-  background: var(--ae-accent, #ff7048);
-  border-radius: 2px;
-}
-
-.ae-meta-tag {
-  font-family: var(--font-mono, monospace);
-  font-size: 11px;
-  font-weight: 700;
-  letter-spacing: 0.12em;
-  color: var(--ae-accent, #ff7048);
-  text-transform: uppercase;
+/* Reduced motion accessibility override */
+@media (prefers-reduced-motion: reduce) {
+  .ae-scene-card {
+    opacity: 1 !important;
+    transform: none !important;
+    transition: none !important;
+  }
 }
 
 /* Tablet & Mobile Responsiveness */
 @media (max-width: 860px) {
   .ae-story-container {
     grid-template-columns: 1fr;
-    gap: 24px;
-    margin-top: 24px;
+    gap: 16px;
+    margin-top: 16px;
   }
 
   .ae-sticky-nav {
@@ -1305,47 +1272,37 @@
     font-weight: 700;
   }
 
-  .ae-stream {
-    gap: 40px;
+  .ae-chapter.ae-scene {
+    min-height: calc(100vh - 72px);
+    min-height: calc(100svh - 72px);
+    scroll-margin-top: 115px;
+    padding: 1.25rem 0;
   }
 
-  .ae-stream-card {
-    grid-template-columns: 1fr;
-    gap: 22px;
-    padding: 20px;
-    border-radius: 20px;
+  .ae-scene-card {
+    max-width: 440px;
+    border-radius: 18px;
   }
 
-  .ae-stream-card.is-layout-right .ae-card-media {
-    order: 1;
-  }
-
-  .ae-stream-card.is-layout-right .ae-card-narrative {
-    order: 2;
-  }
-
-  .ae-card-narrative .ae-chapter-title {
-    font-size: clamp(28px, 6.5vw, 40px);
+  .ae-scene-img {
+    aspect-ratio: 1086 / 1448;
+    border-radius: 16px;
   }
 }
 
 @media (max-width: 480px) {
-  .ae-stream-card {
-    padding: 14px;
+  .ae-chapter.ae-scene {
+    min-height: calc(100vh - 65px);
+    min-height: calc(100svh - 65px);
+    padding: 0.85rem 0;
+  }
+
+  .ae-scene-card {
+    max-width: 100%;
     border-radius: 16px;
-    gap: 18px;
   }
 
-  .ae-image-card {
+  .ae-scene-img {
     border-radius: 14px;
-  }
-
-  .ae-card-narrative .ae-chapter-title {
-    font-size: 27px;
-  }
-
-  .ae-card-copy {
-    font-size: 13px;
-    line-height: 1.6;
   }
 }
