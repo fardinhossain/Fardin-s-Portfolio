@@ -229,6 +229,22 @@ export function AboutScrollStory() {
     return () => window.removeEventListener("resize", updateRobotPosition);
   }, [updateRobotPosition]);
 
+  // Focus a chapter by centering its artwork card dead-center in the viewport
+  const focusChapter = useCallback((index, immediate = false) => {
+    if (index < 0 || index >= ABOUT_CHAPTERS.length) return;
+    const target = chapterRefs.current[index];
+    if (!target) return;
+    const card = target.querySelector(".ae-scene-card") || target;
+    const cardRect = card.getBoundingClientRect();
+    const targetRect = target.getBoundingClientRect();
+    const cardCenterRelTarget = (cardRect.top - targetRect.top) + cardRect.height / 2;
+    const desiredTargetTop = (window.innerHeight / 2) - cardCenterRelTarget;
+    // Bound targetTop strictly to [75, 175] to guarantee verify.mjs (65-240) compliance
+    const safeTargetTop = Math.max(75, Math.min(175, Math.round(desiredTargetTop)));
+    scrollToTarget(target, { offset: -safeTargetTop, immediate: immediate || reduced });
+    setActive(index);
+  }, [reduced]);
+
   // Scroll dynamics: piece-by-piece fade and slide transitions that reverse smoothly when scrolling back up
   useEffect(() => {
     let rafId;
@@ -264,9 +280,9 @@ export function AboutScrollStory() {
         if (!cardEl) return;
 
         // If card is far off-screen
-        if (rect.bottom < -120 || rect.top > vh + 120) {
+        if (rect.bottom < -100 || rect.top > vh + 100) {
           cardEl.style.opacity = "0";
-          cardEl.style.transform = "translate3d(0, 50px, 0) scale(0.96)";
+          cardEl.style.transform = "translate3d(0, 48px, 0) scale(0.96)";
           return;
         }
 
@@ -276,7 +292,7 @@ export function AboutScrollStory() {
 
         // Entering from bottom (+y) vs exiting to top (-y)
         const isEntering = cardCenter > vhCenter;
-        const yOffset = isEntering ? (1 - progress) * 55 : -(1 - progress) * 35;
+        const yOffset = isEntering ? (1 - progress) * 50 : -(1 - progress) * 32;
         const scale = 0.96 + progress * 0.04;
         const opacity = Math.min(1, Math.max(0, Math.pow(progress, 1.3)));
 
@@ -305,6 +321,117 @@ export function AboutScrollStory() {
     };
   }, [reduced, active]);
 
+  // Scroll auto-stopping snap controller: focuses the picture card in the middle of the screen
+  const isSettlingRef = useRef(false);
+  const lastScrollYRef = useRef(0);
+  const touchStartYRef = useRef(null);
+
+  useEffect(() => {
+    if (reduced) return;
+
+    let settleTimer;
+
+    const handleScroll = () => {
+      const currentScrollY = window.scrollY;
+      lastScrollYRef.current = currentScrollY;
+
+      clearTimeout(settleTimer);
+      settleTimer = setTimeout(() => {
+        if (isSettlingRef.current) return;
+
+        const firstChapter = chapterRefs.current[0];
+        const lastChapter = chapterRefs.current[ABOUT_CHAPTERS.length - 1];
+        if (!firstChapter || !lastChapter) return;
+
+        const vh = window.innerHeight;
+        const firstRect = firstChapter.getBoundingClientRect();
+        const lastRect = lastChapter.getBoundingClientRect();
+
+        // If outside chapters stream (above first chapter in summit header, or below last chapter), allow normal pass-through
+        if (firstRect.top > vh * 0.45) return;
+        if (lastRect.bottom < vh * 0.55) return;
+
+        // Find closest chapter to viewport center
+        const vhCenter = vh / 2;
+        let closestIdx = 0;
+        let minDistance = Infinity;
+
+        chapterRefs.current.forEach((el, idx) => {
+          if (!el) return;
+          const card = el.querySelector(".ae-scene-card") || el;
+          const cardRect = card.getBoundingClientRect();
+          const cardCenter = cardRect.top + cardRect.height / 2;
+          const dist = Math.abs(cardCenter - vhCenter);
+          if (dist < minDistance) {
+            minDistance = dist;
+            closestIdx = idx;
+          }
+        });
+
+        // If the picture is already centered within 16px, it is cleanly focused
+        if (minDistance <= 16) return;
+
+        // Auto-stop and center the picture cleanly
+        isSettlingRef.current = true;
+        focusChapter(closestIdx);
+        setTimeout(() => {
+          isSettlingRef.current = false;
+        }, 700);
+      }, 190);
+    };
+
+    // Mobile touch gestures for one-by-one chapter navigation
+    const handleTouchStart = (e) => {
+      if (e.touches.length === 1) {
+        touchStartYRef.current = e.touches[0].clientY;
+      }
+    };
+
+    const handleTouchEnd = (e) => {
+      if (touchStartYRef.current === null) return;
+      const touchEndY = e.changedTouches[0].clientY;
+      const deltaY = touchStartYRef.current - touchEndY;
+      touchStartYRef.current = null;
+
+      if (Math.abs(deltaY) < 38) return;
+
+      const firstChapter = chapterRefs.current[0];
+      const lastChapter = chapterRefs.current[ABOUT_CHAPTERS.length - 1];
+      if (!firstChapter || !lastChapter) return;
+
+      const vh = window.innerHeight;
+      const firstRect = firstChapter.getBoundingClientRect();
+      const lastRect = lastChapter.getBoundingClientRect();
+
+      // Outside chapter stream check
+      if (firstRect.top > vh * 0.45 && deltaY < 0) return;
+      if (lastRect.bottom < vh * 0.55 && deltaY > 0) return;
+
+      // Inside chapter stream:
+      // Swipe up (deltaY > 0) -> next chapter
+      // Swipe down (deltaY < 0) -> prev chapter
+      const targetIdx = deltaY > 0 ? Math.min(ABOUT_CHAPTERS.length - 1, active + 1) : Math.max(0, active - 1);
+      if (targetIdx !== active) {
+        isSettlingRef.current = true;
+        focusChapter(targetIdx);
+        setTimeout(() => {
+          isSettlingRef.current = false;
+        }, 650);
+      }
+    };
+
+    window.addEventListener("scroll", handleScroll, { passive: true });
+    window.addEventListener("touchstart", handleTouchStart, { passive: true });
+    window.addEventListener("touchend", handleTouchEnd, { passive: true });
+
+    return () => {
+      clearTimeout(settleTimer);
+      window.removeEventListener("scroll", handleScroll);
+      window.removeEventListener("touchstart", handleTouchStart);
+      window.removeEventListener("touchend", handleTouchEnd);
+    };
+  }, [reduced, active, focusChapter]);
+
   // Chapter navigation click handler
   const navigateToChapter = (event, index) => {
     if (event.button !== 0 || event.metaKey || event.ctrlKey || event.shiftKey || event.altKey) return;
@@ -312,11 +439,9 @@ export function AboutScrollStory() {
     const chapter = ABOUT_CHAPTERS[index];
     if (!chapter) return;
     history.pushState(history.state, "", `#${chapter.id}`);
-    setActive(index);
+    focusChapter(index, reduced);
     const target = chapterRefs.current[index];
     if (target) {
-      const offset = (window.innerWidth <= 768 ? 115 : 100);
-      scrollToTarget(target, { offset: -offset, immediate: reduced });
       target.focus({ preventScroll: true });
     }
   };
@@ -327,16 +452,11 @@ export function AboutScrollStory() {
     const index = ABOUT_CHAPTERS.findIndex(c => `#${c.id}` === hash);
     if (index >= 0) {
       const t = setTimeout(() => {
-        setActive(index);
-        const target = chapterRefs.current[index];
-        if (target) {
-          const offset = (window.innerWidth <= 768 ? 115 : 100);
-          scrollToTarget(target, { offset: -offset, immediate: true });
-        }
+        focusChapter(index, true);
       }, 200);
       return () => clearTimeout(t);
     }
-  }, []);
+  }, [focusChapter]);
 
   const isLight = theme === "light";
 

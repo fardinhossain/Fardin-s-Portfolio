@@ -994,7 +994,7 @@
    ========================================================================== */
 
 .ae-visual-section {
-  padding-bottom: clamp(60px, 8vw, 120px);
+  padding-bottom: clamp(40px, 6vw, 80px);
 }
 
 /* Hidden Semantic Quote and Stages for accessibility and automated test verification */
@@ -1020,15 +1020,15 @@
 .ae-story-container {
   display: grid;
   grid-template-columns: 220px minmax(0, 1fr);
-  gap: clamp(28px, 4vw, 56px);
+  gap: clamp(24px, 3.5vw, 48px);
   align-items: start;
-  margin-top: clamp(24px, 3.5vw, 48px);
+  margin-top: clamp(16px, 2.5vw, 32px);
   position: relative;
 }
 
 .ae-sticky-nav {
   position: sticky;
-  top: 96px;
+  top: 92px;
   z-index: 15;
   display: flex;
   flex-direction: column;
@@ -1114,7 +1114,7 @@
   display: none;
 }
 
-/* Stream of Full-Screen Scenes */
+/* Stream of Focused Scenes */
 .ae-scenes-stream {
   display: flex;
   flex-direction: column;
@@ -1123,16 +1123,16 @@
   width: 100%;
 }
 
-/* Each Chapter is a full-screen scene */
+/* Each Chapter is a focused scene with reduced vertical gaps */
 .ae-chapter.ae-scene {
-  min-height: 100vh;
-  min-height: 100svh;
+  min-height: clamp(600px, 80vh, 760px);
+  min-height: clamp(600px, 80svh, 760px);
   display: flex;
   align-items: center;
   justify-content: center;
   position: relative;
-  scroll-margin-top: 100px;
-  padding: 2.5rem 0;
+  scroll-margin-top: 90px;
+  padding: 0.75rem 0;
   min-width: 0;
   width: 100%;
 }
@@ -1153,25 +1153,25 @@
   background: rgba(13, 16, 25, 0.72);
   backdrop-filter: blur(20px);
   -webkit-backdrop-filter: blur(20px);
-  box-shadow: 0 24px 60px rgba(0, 0, 0, 0.48), inset 0 1px 0 rgba(255, 255, 255, 0.12);
+  box-shadow: 0 20px 50px rgba(0, 0, 0, 0.45), inset 0 1px 0 rgba(255, 255, 255, 0.12);
   will-change: transform, opacity;
   transition: transform 0.2s cubic-bezier(0.16, 1, 0.3, 1), opacity 0.2s cubic-bezier(0.16, 1, 0.3, 1), box-shadow 0.35s ease, border-color 0.35s ease;
 }
 
 .ae-scene-card:hover {
   border-color: rgba(255, 112, 72, 0.35);
-  box-shadow: 0 28px 70px rgba(0, 0, 0, 0.55), inset 0 1px 0 rgba(255, 255, 255, 0.18);
+  box-shadow: 0 24px 60px rgba(0, 0, 0, 0.52), inset 0 1px 0 rgba(255, 255, 255, 0.18);
 }
 
 [data-theme="light"] .ae-scene-card {
   border: 1px solid rgba(0, 0, 0, 0.08);
   background: rgba(255, 255, 255, 0.88);
-  box-shadow: 0 20px 50px rgba(0, 0, 0, 0.07), inset 0 1px 0 rgba(255, 255, 255, 0.85);
+  box-shadow: 0 16px 40px rgba(0, 0, 0, 0.06), inset 0 1px 0 rgba(255, 255, 255, 0.85);
 }
 
 [data-theme="light"] .ae-scene-card:hover {
   border-color: rgba(193, 77, 48, 0.35);
-  box-shadow: 0 24px 56px rgba(0, 0, 0, 0.11), inset 0 1px 0 rgba(255, 255, 255, 0.95);
+  box-shadow: 0 20px 48px rgba(0, 0, 0, 0.09), inset 0 1px 0 rgba(255, 255, 255, 0.95);
 }
 
 .ae-scene-picture {
@@ -1229,8 +1229,8 @@
 @media (max-width: 860px) {
   .ae-story-container {
     grid-template-columns: 1fr;
-    gap: 16px;
-    margin-top: 16px;
+    gap: 12px;
+    margin-top: 12px;
   }
 
   .ae-sticky-nav {
@@ -1273,10 +1273,10 @@
   }
 
   .ae-chapter.ae-scene {
-    min-height: calc(100vh - 72px);
-    min-height: calc(100svh - 72px);
+    min-height: clamp(480px, 72vh, 580px);
+    min-height: clamp(480px, 72svh, 580px);
     scroll-margin-top: 115px;
-    padding: 1.25rem 0;
+    padding: 0.4rem 0;
   }
 
   .ae-scene-card {
@@ -1292,9 +1292,9 @@
 
 @media (max-width: 480px) {
   .ae-chapter.ae-scene {
-    min-height: calc(100vh - 65px);
-    min-height: calc(100svh - 65px);
-    padding: 0.85rem 0;
+    min-height: clamp(440px, 68vh, 540px);
+    min-height: clamp(440px, 68svh, 540px);
+    padding: 0.25rem 0;
   }
 
   .ae-scene-card {
