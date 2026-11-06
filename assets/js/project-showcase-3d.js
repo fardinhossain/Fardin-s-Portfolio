@@ -13,10 +13,21 @@
 // ==========================================================================
 
 import React, { useState, useEffect, useRef, useMemo, useCallback } from "react";
+import { motion as motionImport, AnimatePresence as AnimatePresenceImport } from "framer-motion";
 import * as THREE from "three";
 import { getCurrentTheme, subscribeTheme } from "./theme-manager.js";
 
 const h = React.createElement;
+
+const motion = typeof motionImport !== "undefined" ? motionImport : {
+  div: "div",
+  span: "span",
+  button: "button",
+  h3: "h3",
+  h4: "h4",
+  p: "p"
+};
+const AnimatePresence = typeof AnimatePresenceImport !== "undefined" ? AnimatePresenceImport : ({ children }) => children;
 
 // --------------------------------------------------------------------------
 // 1. INLINE SVG ICONS
@@ -192,6 +203,58 @@ function IconFeatureBullet({ name = "sparkle", size = 14, color = "currentColor"
         "svg",
         { width: size, height: size, viewBox: "0 0 24 24", fill: "none", stroke: color, strokeWidth: "2" },
         h("path", { d: "M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z" })
+      );
+    case "metric":
+      return h(
+        "svg",
+        { width: size, height: size, viewBox: "0 0 24 24", fill: "none", stroke: color, strokeWidth: "2", strokeLinecap: "round", strokeLinejoin: "round" },
+        h("path", { d: "M22 12h-4l-3 9L9 3l-3 9H2" })
+      );
+    case "db":
+      return h(
+        "svg",
+        { width: size, height: size, viewBox: "0 0 24 24", fill: "none", stroke: color, strokeWidth: "2", strokeLinecap: "round", strokeLinejoin: "round" },
+        h("ellipse", { cx: "12", cy: "5", rx: "9", ry: "3" }),
+        h("path", { d: "M21 12c0 1.66-4 3-9 3s-9-1.34-9-3" }),
+        h("path", { d: "M3 5v14c0 1.66 4 3 9 3s9-1.34 9-3V5" })
+      );
+    case "book":
+      return h(
+        "svg",
+        { width: size, height: size, viewBox: "0 0 24 24", fill: "none", stroke: color, strokeWidth: "2", strokeLinecap: "round", strokeLinejoin: "round" },
+        h("path", { d: "M4 19.5A2.5 2.5 0 0 1 6.5 17H20" }),
+        h("path", { d: "M6.5 2H20v20H6.5A2.5 2.5 0 0 1 4 19.5v-15A2.5 2.5 0 0 1 6.5 2z" })
+      );
+    case "code":
+      return h(
+        "svg",
+        { width: size, height: size, viewBox: "0 0 24 24", fill: "none", stroke: color, strokeWidth: "2", strokeLinecap: "round", strokeLinejoin: "round" },
+        h("polyline", { points: "16 18 22 12 16 6" }),
+        h("polyline", { points: "8 6 2 12 8 18" })
+      );
+    case "scan":
+      return h(
+        "svg",
+        { width: size, height: size, viewBox: "0 0 24 24", fill: "none", stroke: color, strokeWidth: "2", strokeLinecap: "round", strokeLinejoin: "round" },
+        h("path", { d: "M3 7V5a2 2 0 0 1 2-2h2" }),
+        h("path", { d: "M17 3h2a2 2 0 0 1 2 2v2" }),
+        h("path", { d: "M21 17v2a2 2 0 0 1-2 2h-2" }),
+        h("path", { d: "M7 21H5a2 2 0 0 1-2-2v-2" })
+      );
+    case "alert":
+      return h(
+        "svg",
+        { width: size, height: size, viewBox: "0 0 24 24", fill: "none", stroke: color, strokeWidth: "2", strokeLinecap: "round", strokeLinejoin: "round" },
+        h("path", { d: "M10.29 3.86L1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z" }),
+        h("line", { x1: "12", y1: "9", x2: "12", y2: "13" }),
+        h("line", { x1: "12", y1: "17", x2: "12.01", y2: "17" })
+      );
+    case "offline":
+      return h(
+        "svg",
+        { width: size, height: size, viewBox: "0 0 24 24", fill: "none", stroke: color, strokeWidth: "2", strokeLinecap: "round", strokeLinejoin: "round" },
+        h("rect", { x: "3", y: "11", width: "18", height: "11", rx: "2", ry: "2" }),
+        h("path", { d: "M7 11V7a5 5 0 0 1 10 0v4" })
       );
     default:
       return h(
@@ -412,7 +475,59 @@ export function createFlyingRobot3D() {
 }
 
 // --------------------------------------------------------------------------
-// 3. MAIN FEATURED PROJECTS COMPONENT (`FeaturedProjects`)
+// 3. MACOS WINDOW MOCKUP COMPONENT
+// --------------------------------------------------------------------------
+function MacWindowMockup({
+  imageSrc,
+  alt = "Project Preview",
+  title = "",
+  className = "",
+  aspectRatio = "16 / 10",
+  showTitle = false,
+  isFeatured = false
+}) {
+  return h(
+    "div",
+    {
+      className: `mac-window-mockup ${isFeatured ? "featured-mockup" : ""} ${className}`.trim(),
+      style: { aspectRatio }
+    },
+    // macOS Header Bar with 3 traffic light dots & optional centered title/URL
+    h(
+      "div",
+      { className: "mac-window-topbar" },
+      h(
+        "div",
+        { className: "mac-window-dots", "aria-hidden": "true" },
+        h("span", { className: "mac-dot mac-dot-red" }),
+        h("span", { className: "mac-dot mac-dot-yellow" }),
+        h("span", { className: "mac-dot mac-dot-green" })
+      ),
+      showTitle && title
+        ? h(
+            "div",
+            { className: "mac-window-title-tab" },
+            h("span", { className: "mac-window-title-text" }, title)
+          )
+        : null
+    ),
+    // Window Content Frame with Image
+    h(
+      "div",
+      { className: "mac-window-content" },
+      h("img", {
+        src: imageSrc,
+        alt: alt,
+        className: "mac-window-img",
+        loading: "lazy",
+        decoding: "async"
+      })
+    )
+  );
+}
+
+// --------------------------------------------------------------------------
+// 4. MAIN FEATURED PROJECTS COMPONENT (`FeaturedProjects`)
 // --------------------------------------------------------------------------
 export function FeaturedProjects({
   projectsList = [],
@@ -422,6 +537,7 @@ export function FeaturedProjects({
 }) {
   const [activeCategory, setActiveCategory] = useState("all");
   const [featuredIndex, setFeaturedIndex] = useState(0);
+  const [sliderProgress, setSliderProgress] = useState(0);
   const [mobileDetailsProject, setMobileDetailsProject] = useState(null);
   const [activeMobileCardIndex, setActiveMobileCardIndex] = useState(0);
   const [theme, setTheme] = useState(getCurrentTheme);
@@ -449,6 +565,9 @@ export function FeaturedProjects({
   useEffect(() => {
     setFeaturedIndex(0);
     setActiveMobileCardIndex(0);
+    if (sliderTrackRef.current) {
+      sliderTrackRef.current.scrollTo({ left: 0, behavior: "smooth" });
+    }
   }, [activeCategory]);
 
   const activeFeatured = useMemo(() => {
@@ -462,16 +581,51 @@ export function FeaturedProjects({
     return filteredProjects;
   }, [filteredProjects]);
 
+  // Update slider progress percentage based on scroll position
+  const updateSliderProgress = useCallback(() => {
+    if (!sliderTrackRef.current) return;
+    const { scrollLeft, scrollWidth, clientWidth } = sliderTrackRef.current;
+    const maxScroll = scrollWidth - clientWidth;
+    if (maxScroll <= 0) {
+      setSliderProgress(100);
+    } else {
+      const pct = Math.min(100, Math.max(0, (scrollLeft / maxScroll) * 100));
+      setSliderProgress(pct);
+    }
+  }, []);
+
+  useEffect(() => {
+    updateSliderProgress();
+    const handleResize = () => updateSliderProgress();
+    window.addEventListener("resize", handleResize);
+    return () => window.removeEventListener("resize", handleResize);
+  }, [updateSliderProgress, sliderProjects]);
+
+  // Handle clicking on the slider progress bar track
+  const handleProgressTrackClick = useCallback((e) => {
+    if (!sliderTrackRef.current) return;
+    const rect = e.currentTarget.getBoundingClientRect();
+    const clickX = e.clientX - rect.left;
+    const pct = Math.max(0, Math.min(1, clickX / rect.width));
+    const maxScroll = sliderTrackRef.current.scrollWidth - sliderTrackRef.current.clientWidth;
+    sliderTrackRef.current.scrollTo({
+      left: pct * maxScroll,
+      behavior: "smooth"
+    });
+  }, []);
+
   // Left-to-right slider scroll controls
   const handleSlideLeft = useCallback(() => {
     if (!sliderTrackRef.current) return;
-    const scrollAmount = sliderTrackRef.current.clientWidth;
+    const cardEl = sliderTrackRef.current.querySelector(".projects-grid-card");
+    const scrollAmount = cardEl ? cardEl.clientWidth + 24 : sliderTrackRef.current.clientWidth * 0.75;
     sliderTrackRef.current.scrollBy({ left: -scrollAmount, behavior: "smooth" });
   }, []);
 
   const handleSlideRight = useCallback(() => {
     if (!sliderTrackRef.current) return;
-    const scrollAmount = sliderTrackRef.current.clientWidth;
+    const cardEl = sliderTrackRef.current.querySelector(".projects-grid-card");
+    const scrollAmount = cardEl ? cardEl.clientWidth + 24 : sliderTrackRef.current.clientWidth * 0.75;
     sliderTrackRef.current.scrollBy({ left: scrollAmount, behavior: "smooth" });
   }, []);
 
@@ -578,7 +732,7 @@ export function FeaturedProjects({
         )
       ),
 
-      // Hero Device Preview with Wireframe Summitscape & Overlay Arrows
+      // Hero Device Preview with macOS Mockup & Overlay Arrows
       h(
         "div",
         { className: "projects-details-preview-hero" },
@@ -586,10 +740,10 @@ export function FeaturedProjects({
         h(
           "div",
           { className: "projects-details-preview-content" },
-          h("img", {
-            src: mobileDetailsProject.image || "assets/images/locationkhuji.png",
+          h(MacWindowMockup, {
+            imageSrc: mobileDetailsProject.image || "assets/images/projects/locationkhuji-desktop.png",
             alt: mobileDetailsProject.title,
-            className: "projects-details-hero-img"
+            aspectRatio: "16 / 10"
           })
         ),
         filteredProjects.length > 1 &&
@@ -722,602 +876,644 @@ export function FeaturedProjects({
       h(
         "header",
         { className: "section-summit-header projects-summit-header reveal-on-scroll" },
+        h(
+          "div",
+          { className: "section-summit-bg", "aria-hidden": "true" },
+          h(
+            "picture",
+            { className: "section-summit-pic" },
+            h("source", {
+              srcSet:
+                theme === "light"
+                  ? "/assets/images/about-summitscape-light.webp"
+                  : "/assets/images/about-summitscape.webp",
+              type: "image/webp"
+            }),
+            h("img", {
+              src:
+                theme === "light"
+                  ? "/assets/images/about-summitscape-light.png"
+                  : "/assets/images/about-summitscape.png",
+              alt: "",
+              width: 1568,
+              height: 627,
+              loading: "lazy",
+              decoding: "async",
+              className: "section-summit-img"
+            })
+          ),
+          h("div", { className: "section-summit-glow" }),
+          h("div", { className: "section-summit-overlay" })
+        ),
+        h(
+          "div",
+          { className: "section-summit-inner projects-summit-inner" },
+          h(
+            "div",
+            { className: "projects-header-row" },
+            h(
+              "div",
+              { className: "section-summit-content projects-header-left" },
               h(
-                "div",
-                { className: "section-summit-bg", "aria-hidden": "true" },
-                h(
-                  "picture",
-                  { className: "section-summit-pic" },
-                  h("source", {
-                    srcSet:
-                      theme === "light"
-                        ? "/assets/images/about-summitscape-light.webp"
-                        : "/assets/images/about-summitscape.webp",
-                    type: "image/webp"
-                  }),
-                  h("img", {
-                    src:
-                      theme === "light"
-                        ? "/assets/images/about-summitscape-light.png"
-                        : "/assets/images/about-summitscape.png",
-                    alt: "",
-                    width: 1568,
-                    height: 627,
-                    loading: "lazy",
-                    decoding: "async",
-                    className: "section-summit-img"
-                  })
-                ),
-                h("div", { className: "section-summit-glow" }),
-                h("div", { className: "section-summit-overlay" })
+                "h2",
+                { id: "projects-title", className: "section-summit-title projects-title" },
+                "Pro",
+                h("span", { className: "section-summit-accent projects-title-gradient" }, "jects")
               ),
               h(
-                "div",
-                { className: "section-summit-inner projects-summit-inner" },
-                h(
-                  "div",
-                  { className: "projects-header-row" },
-                  h(
-                    "div",
-                    { className: "section-summit-content projects-header-left" },
-                    h(
-                      "h2",
-                      { id: "projects-title", className: "section-summit-title projects-title" },
-                      "Pro",
-                      h("span", { className: "section-summit-accent projects-title-gradient" }, "jects")
-                    ),
-                    h(
-                      "p",
-                      { className: "section-summit-desc projects-subtitle" },
-                      "A collection of projects where I explore ideas, solve real problems, and turn concepts into usable products."
-                    )
-                  ),
-
-                  // Desktop Top-Right Stats
-                  h(
-                    "div",
-                    { className: "projects-stats-row" },
-                    h(
-                      "div",
-                      { className: "projects-stat-card" },
-                      h("div", { className: "projects-stat-icon-box" }, h(IconCube, { size: 20 })),
-                      h(
-                        "div",
-                        { className: "projects-stat-info" },
-                        h("span", { className: "projects-stat-number" }, "5+"),
-                        h("span", { className: "projects-stat-label" }, "Projects Built")
-                      )
-                    ),
-                    h(
-                      "div",
-                      { className: "projects-stat-card" },
-                      h("div", { className: "projects-stat-icon-box" }, h(IconCodeBrackets, { size: 20 })),
-                      h(
-                        "div",
-                        { className: "projects-stat-info" },
-                        h("span", { className: "projects-stat-number" }, "10+"),
-                        h("span", { className: "projects-stat-label" }, "Technologies")
-                      )
-                    ),
-                    h(
-                      "div",
-                      { className: "projects-stat-card" },
-                      h("div", { className: "projects-stat-icon-box" }, h(IconUsersGroup, { size: 20 })),
-                      h(
-                        "div",
-                        { className: "projects-stat-info" },
-                        h("span", { className: "projects-stat-number" }, "Real"),
-                        h("span", { className: "projects-stat-label" }, "World Focus")
-                      )
-                    )
-                  )
-                ),
-
-                // Category Filter Buttons Bar inside Projects Header
-                h(
-                  "div",
-                  { className: "projects-filters-bar", role: "tablist", "aria-label": "Filter projects by category" },
-                  categories.map((cat) =>
-                    h(
-                      "button",
-                      {
-                        key: cat.id,
-                        role: "tab",
-                        "aria-selected": activeCategory === cat.id,
-                        className: `projects-filter-btn ${activeCategory === cat.id ? "active" : ""}`,
-                        onClick: () => setActiveCategory(cat.id)
-                      },
-                      h(IconCategory, { type: cat.id || cat.icon, size: 15 }),
-                      cat.label
-                    )
-                  )
-                )
+                "p",
+                { className: "section-summit-desc projects-subtitle" },
+                "A collection of projects where I explore ideas, solve real problems, and turn concepts into usable products."
               )
             ),
 
-            // ----------------------------------------------------------------
-            // DESKTOP SECTION: FEATURED PROJECT SHOWCASE CARD
-            // ----------------------------------------------------------------
-            activeFeatured &&
+            // Desktop Top-Right Stats
+            h(
+              "div",
+              { className: "projects-stats-row" },
               h(
                 "div",
-                { className: "projects-featured-card reveal-on-scroll" },
-
-                // Left: High Fidelity Laptop & Phone Dual Mockup Presentation
+                { className: "projects-stat-card" },
+                h("div", { className: "projects-stat-icon-box" }, h(IconCube, { size: 20 })),
                 h(
                   "div",
-                  { className: "projects-featured-preview-box" },
+                  { className: "projects-stat-info" },
+                  h("span", { className: "projects-stat-number" }, "5+"),
+                  h("span", { className: "projects-stat-label" }, "Projects Built")
+                )
+              ),
+              h(
+                "div",
+                { className: "projects-stat-card" },
+                h("div", { className: "projects-stat-icon-box" }, h(IconCodeBrackets, { size: 20 })),
+                h(
+                  "div",
+                  { className: "projects-stat-info" },
+                  h("span", { className: "projects-stat-number" }, "10+"),
+                  h("span", { className: "projects-stat-label" }, "Technologies")
+                )
+              ),
+              h(
+                "div",
+                { className: "projects-stat-card" },
+                h("div", { className: "projects-stat-icon-box" }, h(IconUsersGroup, { size: 20 })),
+                h(
+                  "div",
+                  { className: "projects-stat-info" },
+                  h("span", { className: "projects-stat-number" }, "Real"),
+                  h("span", { className: "projects-stat-label" }, "World Focus")
+                )
+              )
+            )
+          ),
+
+          // Category Filter Buttons Bar inside Projects Header
+          h(
+            "div",
+            { className: "projects-filters-bar", role: "tablist", "aria-label": "Filter projects by category" },
+            categories.map((cat) =>
+              h(
+                "button",
+                {
+                  key: cat.id,
+                  role: "tab",
+                  "aria-selected": activeCategory === cat.id,
+                  className: `projects-filter-btn ${activeCategory === cat.id ? "active" : ""}`,
+                  onClick: () => setActiveCategory(cat.id)
+                },
+                h(IconCategory, { type: cat.id || cat.icon, size: 15 }),
+                cat.label
+              )
+            )
+          )
+        )
+      ),
+
+      // ----------------------------------------------------------------
+      // DESKTOP SECTION: FEATURED PROJECT SHOWCASE CARD (Reference Image 2)
+      // ----------------------------------------------------------------
+      activeFeatured &&
+        h(
+          "div",
+          { className: "projects-featured-card reveal-on-scroll" },
+          h(
+            AnimatePresence,
+            { mode: "wait" },
+            h(
+              motion.div,
+              {
+                key: activeFeatured.id,
+                initial: { opacity: 0, y: 12 },
+                animate: { opacity: 1, y: 0 },
+                exit: { opacity: 0, y: -12 },
+                transition: { duration: 0.32, ease: [0.16, 1, 0.3, 1] },
+                className: "projects-featured-card-grid"
+              },
+
+              // Left: High Fidelity macOS Window Mockup
+              h(
+                "div",
+                { className: "projects-featured-preview-box" },
+                h(MacWindowMockup, {
+                  imageSrc: activeFeatured.image || "assets/images/projects/locationkhuji-desktop.png",
+                  alt: activeFeatured.title,
+                  title: `${activeFeatured.title} — ${activeFeatured.summary || activeFeatured.shortCategory || "Featured"}`,
+                  showTitle: true,
+                  isFeatured: true,
+                  aspectRatio: "16 / 10"
+                })
+              ),
+
+              // Right: Content, Badges, Features, Tags & Actions
+              h(
+                "div",
+                { className: "projects-featured-content" },
+
+                // Top Meta Bar: Badge & Counter
+                h(
+                  "div",
+                  { className: "projects-featured-top-meta" },
+                  h(
+                    "span",
+                    { className: "projects-featured-badge" },
+                    h(IconStar, { size: 12 }),
+                    "FEATURED PROJECT"
+                  ),
                   h(
                     "div",
-                    { className: "projects-showcase-mockup-frame" },
-                    h("img", {
-                      src: activeFeatured.image || "assets/images/locationkhuji.png",
-                      alt: activeFeatured.title,
-                      className: "projects-showcase-mockup-img"
-                    })
+                    { className: "projects-featured-counter" },
+                    activeFeatured.number || "01",
+                    h(
+                      "span",
+                      { className: "projects-featured-counter-muted" },
+                      ` /0${filteredProjects.length || 6}`
+                    )
                   )
                 ),
 
-                // Right: Content, Badges, Features, Tags & Actions
+                // Title with Orange Accent
                 h(
-                  "div",
-                  { className: "projects-featured-content" },
+                  "h3",
+                  { className: "projects-featured-title" },
+                  activeFeatured.titlePrefix || activeFeatured.title,
+                  " ",
+                  activeFeatured.titleAccent &&
+                    h("span", { className: "projects-title-gradient" }, activeFeatured.titleAccent)
+                ),
 
-                  // Top Meta Bar
+                // Description
+                h(
+                  "p",
+                  { className: "projects-featured-desc" },
+                  activeFeatured.description || activeFeatured.summary
+                ),
+
+                // Key Features 2x2 Grid
+                activeFeatured.keyFeatures && activeFeatured.keyFeatures.length > 0 &&
                   h(
                     "div",
-                    { className: "projects-featured-top-meta" },
-                    h(
-                      "span",
-                      { className: "projects-featured-badge" },
-                      h(IconStar, { size: 12 }),
-                      "Featured Project"
-                    ),
-                    h(
-                      "div",
-                      { className: "projects-featured-counter" },
-                      activeFeatured.number || "01",
-                      h("span", { className: "projects-featured-counter-muted" }, ` /0${filteredProjects.length || 5}`)
-                    )
-                  ),
-
-                  // Title with Orange Accent
-                  h(
-                    "h3",
-                    { className: "projects-featured-title" },
-                    activeFeatured.titlePrefix || activeFeatured.title,
-                    " ",
-                    activeFeatured.titleAccent &&
-                      h("span", { className: "projects-title-gradient" }, activeFeatured.titleAccent)
-                  ),
-
-                  // Description
-                  h("p", { className: "projects-featured-desc" }, activeFeatured.description || activeFeatured.summary),
-
-                  // Key Features 2x2 Grid
-                  activeFeatured.keyFeatures && activeFeatured.keyFeatures.length > 0 &&
-                    h(
-                      "div",
-                      { className: "projects-features-grid" },
-                      activeFeatured.keyFeatures.map((feat, idx) =>
+                    { className: "projects-features-grid" },
+                    activeFeatured.keyFeatures.map((feat, idx) =>
+                      h(
+                        "div",
+                        { key: idx, className: "projects-feature-item" },
                         h(
                           "div",
-                          { key: idx, className: "projects-feature-item" },
-                          h(
-                            "div",
-                            { className: "projects-feature-icon" },
-                            h(IconFeatureBullet, { name: feat.icon, size: 13 })
-                          ),
-                          h("div", { className: "projects-feature-title" }, feat.title)
-                        )
+                          { className: "projects-feature-icon" },
+                          h(IconFeatureBullet, { name: feat.icon, size: 14 })
+                        ),
+                        h("div", { className: "projects-feature-title" }, feat.title)
                       )
-                    ),
-
-                  // Technology Badges
-                  h(
-                    "div",
-                    { className: "projects-tech-tags-list" },
-                    (activeFeatured.tags || []).map((tag, idx) =>
-                      h("span", { key: idx, className: "projects-tech-tag" }, tag)
                     )
                   ),
 
-                  // Action Buttons & Nav Chevrons
+                // Technology Badges
+                h(
+                  "div",
+                  { className: "projects-tech-tags-list" },
+                  (activeFeatured.tags || []).map((tag, idx) =>
+                    h("span", { key: idx, className: "projects-tech-tag" }, tag)
+                  )
+                ),
+
+                // Action Buttons & Nav Chevrons
+                h(
+                  "div",
+                  { className: "projects-featured-actions-row" },
                   h(
                     "div",
-                    { className: "projects-featured-actions-row" },
+                    { className: "projects-action-buttons-group" },
+                    activeFeatured.liveUrl &&
+                      h(
+                        "a",
+                        {
+                          href: activeFeatured.liveUrl,
+                          target: "_blank",
+                          rel: "noopener noreferrer",
+                          className: "projects-btn-primary"
+                        },
+                        "Live Demo",
+                        h(IconArrowRight, { size: 15 })
+                      ),
+                    activeFeatured.githubUrl &&
+                      h(
+                        "a",
+                        {
+                          href: activeFeatured.githubUrl,
+                          target: "_blank",
+                          rel: "noopener noreferrer",
+                          className: "projects-btn-secondary"
+                        },
+                        h(IconGitHub, { size: 16 }),
+                        "GitHub"
+                      ),
+                    h(
+                      "button",
+                      {
+                        type: "button",
+                        className: "projects-btn-secondary",
+                        onClick: () => handleOpenDetails(activeFeatured)
+                      },
+                      "View Details",
+                      h(IconArrowRight, { size: 14 })
+                    )
+                  ),
+
+                  // Prev / Next Chevron Arrows
+                  filteredProjects.length > 1 &&
                     h(
                       "div",
-                      { className: "projects-action-buttons-group" },
-                      activeFeatured.liveUrl &&
-                        h(
-                          "a",
-                          {
-                            href: activeFeatured.liveUrl,
-                            target: "_blank",
-                            rel: "noopener noreferrer",
-                            className: "projects-btn-primary"
-                          },
-                          "Live Demo",
-                          h(IconArrowRight, { size: 15 })
-                        ),
-                      activeFeatured.githubUrl &&
-                        h(
-                          "a",
-                          {
-                            href: activeFeatured.githubUrl,
-                            target: "_blank",
-                            rel: "noopener noreferrer",
-                            className: "projects-btn-secondary"
-                          },
-                          h(IconGitHub, { size: 16 }),
-                          "GitHub"
-                        ),
+                      { className: "projects-nav-controls" },
                       h(
                         "button",
                         {
                           type: "button",
-                          className: "projects-btn-secondary",
-                          onClick: () => handleOpenDetails(activeFeatured)
+                          className: "projects-nav-arrow-btn",
+                          onClick: handlePrevFeatured,
+                          "aria-label": "Previous featured project"
                         },
-                        "View Details",
-                        h(IconArrowRight, { size: 14 })
-                      )
-                    ),
-
-                    // Prev / Next Chevron Arrows
-                    filteredProjects.length > 1 &&
+                        h(IconChevronLeft, { size: 18 })
+                      ),
                       h(
-                        "div",
-                        { className: "projects-nav-controls" },
-                        h(
-                          "button",
-                          {
-                            type: "button",
-                            className: "projects-nav-arrow-btn",
-                            onClick: handlePrevFeatured,
-                            "aria-label": "Previous featured project"
-                          },
-                          h(IconChevronLeft, { size: 18 })
-                        ),
-                        h(
-                          "button",
-                          {
-                            type: "button",
-                            className: "projects-nav-arrow-btn",
-                            onClick: handleNextFeatured,
-                            "aria-label": "Next featured project"
-                          },
-                          h(IconChevronRight, { size: 18 })
-                        )
+                        "button",
+                        {
+                          type: "button",
+                          className: "projects-nav-arrow-btn",
+                          onClick: handleNextFeatured,
+                          "aria-label": "Next featured project"
+                        },
+                        h(IconChevronRight, { size: 18 })
                       )
-                  )
+                    )
                 )
-              ),
+              )
+            )
+          )
+        ),
 
-            // ----------------------------------------------------------------
-            // DESKTOP SECTION: ALL PROJECTS LEFT-TO-RIGHT SLIDER (01 - 06)
-            // ----------------------------------------------------------------
-            sliderProjects.length > 0 &&
+      // ----------------------------------------------------------------
+      // DESKTOP SECTION: ALL PROJECTS LEFT-TO-RIGHT SLIDER (Reference Image 1)
+      // ----------------------------------------------------------------
+      sliderProjects.length > 0 &&
+        h(
+          "div",
+          { className: "projects-slider-section" },
+
+          // Slider Header: Title, Count Badge, Hint, & Left / Right Nav Arrows
+          h(
+            "div",
+            { className: "projects-slider-header" },
+            h(
+              "div",
+              { className: "projects-slider-header-left" },
+              h("h4", { className: "projects-slider-title" }, "All Projects"),
               h(
-                "div",
-                { className: "projects-slider-section" },
+                "span",
+                { className: "projects-slider-count-badge" },
+                `${sliderProjects.length} PROJECTS`
+              ),
+              h(
+                "span",
+                { className: "projects-slider-hint" },
+                "Slide left or right to explore all work"
+              )
+            ),
+            h(
+              "div",
+              { className: "projects-slider-nav-btns" },
+              h(
+                "button",
+                {
+                  type: "button",
+                  className: "projects-slider-arrow-btn",
+                  onClick: handleSlideLeft,
+                  "aria-label": "Slide left to previous projects"
+                },
+                h(IconChevronLeft, { size: 18 })
+              ),
+              h(
+                "button",
+                {
+                  type: "button",
+                  className: "projects-slider-arrow-btn",
+                  onClick: handleSlideRight,
+                  "aria-label": "Slide right to next projects"
+                },
+                h(IconChevronRight, { size: 18 })
+              )
+            )
+          ),
 
-                // Slider Header: Title, Count Badge, Hint, & Left / Right Nav Arrows
+          // Horizontal Slider Track (Scroll-snap with all projects)
+          h(
+            "div",
+            {
+              ref: sliderTrackRef,
+              className: "projects-slider-track",
+              onScroll: updateSliderProgress
+            },
+            sliderProjects.map((project, idx) => {
+              const isFeatured = activeFeatured && activeFeatured.id === project.id;
+              return h(
+                motion.div,
+                {
+                  key: project.id || idx,
+                  className: `projects-grid-card ${isFeatured ? "is-featured-active" : ""}`,
+                  whileHover: { y: -4, scale: 1.015 },
+                  transition: { duration: 0.22, ease: "easeOut" },
+                  onClick: () => {
+                    const pIdx = filteredProjects.findIndex((p) => p.id === project.id);
+                    if (pIdx >= 0) setFeaturedIndex(pIdx);
+                  }
+                },
+
+                // Card Meta: Category + Featured Pill + Number
                 h(
                   "div",
-                  { className: "projects-slider-header" },
+                  { className: "projects-grid-card-meta" },
                   h(
-                    "div",
-                    { className: "projects-slider-header-left" },
-                    h("h4", { className: "projects-slider-title" }, "All Projects"),
-                    h(
-                      "span",
-                      { className: "projects-slider-count-badge" },
-                      `${sliderProjects.length} Projects`
-                    ),
-                    h(
-                      "span",
-                      { className: "projects-slider-hint" },
-                      "Slide left or right to explore all work"
-                    )
+                    "span",
+                    { className: "projects-grid-card-category" },
+                    project.shortCategory || "PROJECT"
                   ),
+                  isFeatured &&
+                    h("span", { className: "projects-active-pill" }, "Featured Now"),
                   h(
-                    "div",
-                    { className: "projects-slider-nav-btns" },
-                    h(
-                      "button",
-                      {
-                        type: "button",
-                        className: "projects-slider-arrow-btn",
-                        onClick: handleSlideLeft,
-                        "aria-label": "Slide left to previous projects"
-                      },
-                      h(IconChevronLeft, { size: 18 })
-                    ),
-                    h(
-                      "button",
-                      {
-                        type: "button",
-                        className: "projects-slider-arrow-btn",
-                        onClick: handleSlideRight,
-                        "aria-label": "Slide right to next projects"
-                      },
-                      h(IconChevronRight, { size: 18 })
-                    )
+                    "span",
+                    { className: "projects-grid-card-number" },
+                    project.number || `0${idx + 1}`
                   )
                 ),
 
-                // Horizontal Slider Track (Scroll-snap with all 6 projects)
+                // macOS Window Mockup Thumbnail
+                h(
+                  "div",
+                  { className: "projects-grid-thumbnail-box" },
+                  h(MacWindowMockup, {
+                    imageSrc: project.image || "assets/images/projects/locationkhuji-desktop.png",
+                    alt: project.title,
+                    aspectRatio: "16 / 10"
+                  })
+                ),
+
+                // Title
+                h("h4", { className: "projects-grid-card-title" }, project.title),
+
+                // Short Summary
+                h(
+                  "p",
+                  { className: "projects-grid-card-desc" },
+                  project.summary || project.description
+                ),
+
+                // Tech Chips
+                h(
+                  "div",
+                  { className: "projects-grid-card-tags" },
+                  (project.tags || []).slice(0, 4).map((t, tIdx) =>
+                    h("span", { key: tIdx, className: "projects-grid-card-tag" }, t)
+                  )
+                ),
+
+                // Actions
                 h(
                   "div",
                   {
-                    ref: sliderTrackRef,
-                    className: "projects-slider-track"
+                    className: "projects-grid-card-actions",
+                    onClick: (e) => e.stopPropagation()
                   },
-                  sliderProjects.map((project, idx) => {
-                    const isFeatured = activeFeatured && activeFeatured.id === project.id;
-                    return h(
-                      "div",
+                  project.liveUrl &&
+                    h(
+                      "a",
                       {
-                        key: project.id || idx,
-                        className: `projects-grid-card ${isFeatured ? "is-featured-active" : ""}`,
-                        onClick: () => {
-                          const pIdx = filteredProjects.findIndex((p) => p.id === project.id);
-                          if (pIdx >= 0) setFeaturedIndex(pIdx);
-                          handleOpenDetails(project);
-                        }
+                        href: project.liveUrl,
+                        target: "_blank",
+                        rel: "noopener noreferrer",
+                        className: "projects-grid-card-btn-primary"
                       },
-
-                      // Card Meta: Category + Featured Pill + Number
-                      h(
-                        "div",
-                        { className: "projects-grid-card-meta" },
-                        h(
-                          "span",
-                          { className: "projects-grid-card-category" },
-                          project.shortCategory || "PROJECT"
-                        ),
-                        isFeatured &&
-                          h("span", { className: "projects-active-pill" }, "Featured Now"),
-                        h(
-                          "span",
-                          { className: "projects-grid-card-number" },
-                          project.number || `0${idx + 1}`
-                        )
-                      ),
-
-                      // Thumbnail Box (High fidelity dual mockup)
-                      h(
-                        "div",
-                        { className: "projects-grid-thumbnail-box" },
-                        h("img", {
-                          src: project.image || "assets/images/locationkhuji.png",
-                          alt: project.title,
-                          className: "projects-grid-thumbnail-img",
-                          loading: "lazy"
-                        })
-                      ),
-
-                      // Title
-                      h("h4", { className: "projects-grid-card-title" }, project.title),
-
-                      // Short Summary
-                      h(
-                        "p",
-                        { className: "projects-grid-card-desc" },
-                        project.summary || project.description
-                      ),
-
-                      // Tech Chips
-                      h(
-                        "div",
-                        { className: "projects-grid-card-tags" },
-                        (project.tags || []).slice(0, 4).map((t, tIdx) =>
-                          h("span", { key: tIdx, className: "projects-grid-card-tag" }, t)
-                        )
-                      ),
-
-                      // Actions
-                      h(
-                        "div",
-                        {
-                          className: "projects-grid-card-actions",
-                          onClick: (e) => e.stopPropagation()
-                        },
-                        project.liveUrl &&
-                          h(
-                            "a",
-                            {
-                              href: project.liveUrl,
-                              target: "_blank",
-                              rel: "noopener noreferrer",
-                              className: "projects-grid-card-btn-primary"
-                            },
-                            "Live Demo",
-                            h(IconArrowRight, { size: 13 })
-                          ),
-                        project.githubUrl &&
-                          h(
-                            "a",
-                            {
-                              href: project.githubUrl,
-                              target: "_blank",
-                              rel: "noopener noreferrer",
-                              className: "projects-grid-card-btn-ghost",
-                              "aria-label": `${project.title} GitHub repository`
-                            },
-                            h(IconGitHub, { size: 14 }),
-                            h(IconExternalArrow, { size: 11 })
-                          )
-                      )
-                    );
-                  })
+                      "Live Demo",
+                      h(IconArrowRight, { size: 13 })
+                    ),
+                  project.githubUrl &&
+                    h(
+                      "a",
+                      {
+                        href: project.githubUrl,
+                        target: "_blank",
+                        rel: "noopener noreferrer",
+                        className: "projects-grid-card-btn-ghost",
+                        "aria-label": `${project.title} GitHub repository`
+                      },
+                      h(IconGitHub, { size: 14 }),
+                      h(IconExternalArrow, { size: 11 })
+                    )
                 )
-              ),
+              );
+            })
+          ),
 
-            // ----------------------------------------------------------------
-            // MOBILE SECTION: HORIZONTALLY SWIPEABLE CAROUSEL & PEAKING CARDS
-            // ----------------------------------------------------------------
-            h(
-              "div",
-              { className: "projects-mobile-section" },
+          // Horizontal Slider Scroll Progress Bar (Reference Image 1)
+          h(
+            "div",
+            {
+              className: "projects-slider-progress-wrap",
+              onClick: handleProgressTrackClick,
+              role: "progressbar",
+              "aria-valuenow": Math.round(sliderProgress),
+              "aria-valuemin": 0,
+              "aria-valuemax": 100,
+              "aria-label": "Projects slider scroll progress"
+            },
+            h("div", {
+              className: "projects-slider-progress-bar",
+              style: {
+                width: `${Math.max(16, sliderProgress)}%`
+              }
+            })
+          )
+        ),
 
-              // Horizontally Swipeable Viewport
+      // ----------------------------------------------------------------
+      // MOBILE SECTION: HORIZONTALLY SWIPEABLE CAROUSEL & PEAKING CARDS
+      // ----------------------------------------------------------------
+      h(
+        "div",
+        { className: "projects-mobile-section" },
+
+        // Horizontally Swipeable Viewport
+        h(
+          "div",
+          {
+            ref: carouselRef,
+            className: "projects-carousel-viewport",
+            onScroll: handleCarouselScroll
+          },
+          h(
+            "div",
+            { className: "projects-carousel-track" },
+            filteredProjects.map((project, idx) =>
               h(
                 "div",
                 {
-                  ref: carouselRef,
-                  className: "projects-carousel-viewport",
-                  onScroll: handleCarouselScroll
+                  key: project.id || idx,
+                  className: `projects-mobile-card ${activeMobileCardIndex === idx ? "active-card" : ""}`,
+                  onClick: () => handleOpenDetails(project)
                 },
+
+                // Card Top Bar: Featured Badge & Heart/Save Icon
                 h(
                   "div",
-                  { className: "projects-carousel-track" },
-                  filteredProjects.map((project, idx) =>
-                    h(
-                      "div",
-                      {
-                        key: project.id || idx,
-                        className: `projects-mobile-card ${activeMobileCardIndex === idx ? "active-card" : ""}`,
-                        onClick: () => handleOpenDetails(project)
-                      },
+                  { className: "projects-mobile-card-topbar" },
+                  h(
+                    "span",
+                    { className: "projects-mobile-badge" },
+                    h(IconStar, { size: 11 }),
+                    project.featured ? "Featured" : project.shortCategory
+                  ),
+                  h(
+                    "button",
+                    {
+                      type: "button",
+                      className: "projects-mobile-heart-btn",
+                      onClick: (e) => e.stopPropagation(),
+                      "aria-label": "Favorite project"
+                    },
+                    h(IconHeart, { size: 15 })
+                  )
+                ),
 
-                      // Card Top Bar: Featured Badge & Heart/Save Icon
-                      h(
-                        "div",
-                        { className: "projects-mobile-card-topbar" },
-                        h(
-                          "span",
-                          { className: "projects-mobile-badge" },
-                          h(IconStar, { size: 11 }),
-                          project.featured ? "Featured" : project.shortCategory
-                        ),
-                        h(
-                          "button",
-                          {
-                            type: "button",
-                            className: "projects-mobile-heart-btn",
-                            onClick: (e) => e.stopPropagation(),
-                            "aria-label": "Favorite project"
-                          },
-                          h(IconHeart, { size: 15 })
-                        )
-                      ),
+                // Preview Box with macOS Window Mockup
+                h(
+                  "div",
+                  { className: "projects-mobile-preview-box" },
+                  h(MacWindowMockup, {
+                    imageSrc: project.image || "assets/images/projects/locationkhuji-desktop.png",
+                    alt: project.title,
+                    aspectRatio: "16 / 10"
+                  })
+                ),
 
-                      // Preview Box
-                      h(
-                        "div",
-                        { className: "projects-mobile-preview-box" },
-                        h("img", {
-                          src: project.image || "assets/images/locationkhuji.png",
-                          alt: project.title,
-                          className: "projects-mobile-preview-img",
-                          loading: "lazy"
-                        })
-                      ),
+                // Title
+                h(
+                  "h3",
+                  { className: "projects-mobile-title" },
+                  project.titlePrefix || project.title,
+                  " ",
+                  project.titleAccent &&
+                    h("span", { className: "projects-title-gradient" }, project.titleAccent)
+                ),
 
-                      // Title
-                      h(
-                        "h3",
-                        { className: "projects-mobile-title" },
-                        project.titlePrefix || project.title,
-                        " ",
-                        project.titleAccent &&
-                          h("span", { className: "projects-title-gradient" }, project.titleAccent)
-                      ),
+                // Description
+                h("p", { className: "projects-mobile-desc" }, project.summary || project.description),
 
-                      // Description
-                      h("p", { className: "projects-mobile-desc" }, project.summary || project.description),
+                // 3 Tech Badges
+                h(
+                  "div",
+                  { className: "projects-mobile-tags" },
+                  (project.tags || []).slice(0, 3).map((t, tIdx) =>
+                    h("span", { key: tIdx, className: "projects-mobile-tag" }, t)
+                  )
+                ),
 
-                      // 3 Tech Badges
-                      h(
-                        "div",
-                        { className: "projects-mobile-tags" },
-                        (project.tags || []).slice(0, 3).map((t, tIdx) =>
-                          h("span", { key: tIdx, className: "projects-mobile-tag" }, t)
-                        )
-                      ),
-
-                      // Actions Row: Live Demo, GitHub, and Number
-                      h(
-                        "div",
+                // Actions Row: Live Demo, GitHub, and Number
+                h(
+                  "div",
+                  {
+                    className: "projects-mobile-actions",
+                    onClick: (e) => e.stopPropagation()
+                  },
+                  project.liveUrl
+                    ? h(
+                        "a",
                         {
-                          className: "projects-mobile-actions",
-                          onClick: (e) => e.stopPropagation()
+                          href: project.liveUrl,
+                          target: "_blank",
+                          rel: "noopener noreferrer",
+                          className: "projects-btn-primary",
+                          style: { padding: "0.5rem 1rem", fontSize: "0.78rem" }
                         },
-                        project.liveUrl
-                          ? h(
-                              "a",
-                              {
-                                href: project.liveUrl,
-                                target: "_blank",
-                                rel: "noopener noreferrer",
-                                className: "projects-btn-primary",
-                                style: { padding: "0.5rem 1rem", fontSize: "0.78rem" }
-                              },
-                              "Live Demo",
-                              h(IconArrowRight, { size: 13 })
-                            )
-                          : h(
-                              "button",
-                              {
-                                type: "button",
-                                onClick: () => handleOpenDetails(project),
-                                className: "projects-btn-primary",
-                                style: { padding: "0.5rem 1rem", fontSize: "0.78rem" }
-                              },
-                              "Details"
-                            ),
-                        project.githubUrl &&
-                          h(
-                            "a",
-                            {
-                              href: project.githubUrl,
-                              target: "_blank",
-                              rel: "noopener noreferrer",
-                              className: "projects-btn-secondary",
-                              style: { padding: "0.5rem 0.85rem", fontSize: "0.78rem" }
-                            },
-                            h(IconGitHub, { size: 14 }),
-                            "GitHub"
-                          ),
-                        h(
-                          "span",
-                          { className: "projects-mobile-number" },
-                          project.number || `0${idx + 1}`
-                        )
+                        "Live Demo",
+                        h(IconArrowRight, { size: 13 })
                       )
-                    )
+                    : h(
+                        "button",
+                        {
+                          type: "button",
+                          onClick: () => handleOpenDetails(project),
+                          className: "projects-btn-primary",
+                          style: { padding: "0.5rem 1rem", fontSize: "0.78rem" }
+                        },
+                        "Details"
+                      ),
+                  project.githubUrl &&
+                    h(
+                      "a",
+                      {
+                        href: project.githubUrl,
+                        target: "_blank",
+                        rel: "noopener noreferrer",
+                        className: "projects-btn-secondary",
+                        style: { padding: "0.5rem 0.85rem", fontSize: "0.78rem" }
+                      },
+                      h(IconGitHub, { size: 14 }),
+                      "GitHub"
+                    ),
+                  h(
+                    "span",
+                    { className: "projects-mobile-number" },
+                    project.number || `0${idx + 1}`
                   )
                 )
-              ),
-
-              // Pagination Dots
-              h(
-                "div",
-                { className: "projects-pagination-dots" },
-                filteredProjects.map((_, dIdx) =>
-                  h("button", {
-                    key: dIdx,
-                    type: "button",
-                    className: `projects-dot ${activeMobileCardIndex === dIdx ? "active" : ""}`,
-                    onClick: () => scrollToMobileCard(dIdx),
-                    "aria-label": `Scroll to project ${dIdx + 1}`
-                  })
-                )
-              ),
-
-              // Swipe Hint
-              h(
-                "div",
-                { className: "projects-swipe-hint" },
-                "👆 Swipe left or right to explore more projects"
-              ),
-
-              // Inline Mobile Project Details (Sticks under the carousel when a project is selected)
-              renderMobileDetailsPanel()
+              )
             )
+          )
+        ),
+
+        // Pagination Dots
+        h(
+          "div",
+          { className: "projects-pagination-dots" },
+          filteredProjects.map((_, dIdx) =>
+            h("button", {
+              key: dIdx,
+              type: "button",
+              className: `projects-dot ${activeMobileCardIndex === dIdx ? "active" : ""}`,
+              onClick: () => scrollToMobileCard(dIdx),
+              "aria-label": `Scroll to project ${dIdx + 1}`
+            })
+          )
+        ),
+
+        // Swipe Hint
+        h(
+          "div",
+          { className: "projects-swipe-hint" },
+          "👆 Swipe left or right to explore more projects"
+        ),
+
+        // Inline Mobile Project Details (Sticks under the carousel when a project is selected)
+        renderMobileDetailsPanel()
       )
+    )
   );
 }
