@@ -316,16 +316,21 @@ export function CinematicHeroSection({ resumeUrl = PROFILE_DATA.resumeUrl, onNav
     nameEls.forEach(nameEl => {
       nameEl.style.setProperty("--name-bar-opacity", String(Math.max(0, Math.min(1, value * 2.5))));
     });
-    // Ensure word containers keep neutral opacity so character-by-character typewriter works cleanly
-    heroEl.querySelectorAll(".fh-name-word").forEach(word => {
-      word.style.opacity = "1";
-      word.style.transform = "none";
-    });
     const chars = heroEl.querySelectorAll(".fh-name-char");
     const totalChars = chars.length;
     if (totalChars === 0) return;
     const cursor = value * totalChars;
     const activeIdx = Math.floor(cursor);
+    const wordBoundaries = [0, 3, 9, 16];
+    heroEl.querySelectorAll(".fh-name-word").forEach((word, wIdx) => {
+      const start = wordBoundaries[wIdx] ?? 0;
+      if (value >= 1 || cursor > start) {
+        word.style.opacity = "1";
+      } else {
+        word.style.opacity = "0";
+      }
+      word.style.transform = "none";
+    });
     chars.forEach((charEl, idx) => {
       if (value >= 1 || idx < activeIdx) {
         charEl.style.opacity = "1";
@@ -423,7 +428,7 @@ export function CinematicHeroSection({ resumeUrl = PROFILE_DATA.resumeUrl, onNav
         h("div", { className: "fh-visual" },
           h("div", { className: "fh-portrait" }, h("picture", { "data-portrait-theme": theme },
             h("img", { src: portraitSrc,
-              alt: "Md. Fardin Hossain in a brown T-shirt with an orange halo", width: 1087, height: 1447,
+              alt: "Md. Fardin Hossain in a brown button-up shirt with an orange halo", width: 838, height: 1024,
               loading: "eager", fetchPriority: "high", decoding: "async", draggable: false }))),
           mobileName && identity),
         h(HeroAuraFlyingRobot, {
