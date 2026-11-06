@@ -193,6 +193,17 @@ export function AboutScrollStory() {
   const [flightDir, setFlightDir] = useState(1);
   const prevActiveRef = useRef(active);
 
+  // Mobile detection & Facebook story state
+  const [isMobile, setIsMobile] = useState(() => typeof window !== "undefined" && window.innerWidth <= 768);
+  const [showPopupHint, setShowPopupHint] = useState(false);
+  const hasShownHintRef = useRef(false);
+
+  useEffect(() => {
+    const checkMobile = () => setIsMobile(window.innerWidth <= 768);
+    window.addEventListener("resize", checkMobile);
+    return () => window.removeEventListener("resize", checkMobile);
+  }, []);
+
   useEffect(() => {
     const unsubscribe = subscribeTheme(setTheme);
     setTheme(getCurrentTheme());
@@ -211,7 +222,7 @@ export function AboutScrollStory() {
     }
   }, [active]);
 
-  // Position robot beside active chapter dot
+  // Position robot beside active chapter dot in navigation rail
   const updateRobotPosition = useCallback(() => {
     const container = navLinksRef.current;
     const targetDot = dotRefs.current[active];
@@ -245,8 +256,45 @@ export function AboutScrollStory() {
     setActive(index);
   }, [reduced]);
 
-  // Scroll dynamics: piece-by-piece fade and slide transitions that reverse smoothly when scrolling back up
+  // Switch story on mobile with smooth transition and URL hash update
+  const goToStory = useCallback((index) => {
+    if (index < 0 || index >= ABOUT_CHAPTERS.length) return;
+    setActive(index);
+    const chapter = ABOUT_CHAPTERS[index];
+    if (chapter) {
+      history.pushState(history.state, "", `#${chapter.id}`);
+    }
+  }, []);
+
+  // 2-Second Robotic Popup Instruction with Bot F-01 when entering About section on mobile
   useEffect(() => {
+    if (!isMobile || typeof IntersectionObserver === "undefined") return;
+    const section = sectionRef.current;
+    if (!section) return;
+
+    let timer;
+    const observer = new IntersectionObserver((entries) => {
+      entries.forEach((entry) => {
+        if (entry.isIntersecting && !hasShownHintRef.current) {
+          hasShownHintRef.current = true;
+          setShowPopupHint(true);
+          timer = setTimeout(() => {
+            setShowPopupHint(false);
+          }, 2000); // Exactly 2 seconds
+        }
+      });
+    }, { threshold: 0.2 });
+
+    observer.observe(section);
+    return () => {
+      observer.disconnect();
+      clearTimeout(timer);
+    };
+  }, [isMobile]);
+
+  // Desktop scroll dynamics: piece-by-piece fade and slide transitions that reverse smoothly when scrolling back up
+  useEffect(() => {
+    if (isMobile) return;
     let rafId;
 
     const updateScenes = () => {
@@ -319,25 +367,37 @@ export function AboutScrollStory() {
       window.removeEventListener("scroll", onScroll);
       window.removeEventListener("resize", onScroll);
     };
-  }, [reduced, active]);
+  }, [isMobile, reduced, active]);
 
-  // Scroll auto-stopping snap controller: focuses the picture card in the middle of the screen
+  // Desktop Auto-stopping snap controller: focuses the picture card in the middle of the screen
   const isSettlingRef = useRef(false);
-  const lastScrollYRef = useRef(0);
-  const touchStartYRef = useRef(null);
 
   useEffect(() => {
-    if (reduced) return;
+    if (reduced || isMobile) return;
 
     let settleTimer;
+    let userWheelTimer;
+    let isUserWheeling = false;
+
+    const onUserWheel = (e) => {
+      // Ignore if wheel is over a dialog, prevent container, textarea, or input
+      if (e.target.closest?.('[role="dialog"], [data-lenis-prevent], textarea, select')) return;
+      if (document.querySelector('[role="dialog"]')) return;
+      isUserWheeling = true;
+      clearTimeout(userWheelTimer);
+      userWheelTimer = setTimeout(() => {
+        isUserWheeling = false;
+      }, 800);
+    };
 
     const handleScroll = () => {
-      const currentScrollY = window.scrollY;
-      lastScrollYRef.current = currentScrollY;
-
       clearTimeout(settleTimer);
+      if (!isUserWheeling) return; // Only settle when user is actively wheeling through the page
+      if (document.querySelector('[role="dialog"]')) return; // Never steal scroll from dialogs or modals
+
       settleTimer = setTimeout(() => {
-        if (isSettlingRef.current) return;
+        if (isSettlingRef.current || !isUserWheeling) return;
+        if (document.querySelector('[role="dialog"]')) return;
 
         const firstChapter = chapterRefs.current[0];
         const lastChapter = chapterRefs.current[ABOUT_CHAPTERS.length - 1];
@@ -348,8 +408,8 @@ export function AboutScrollStory() {
         const lastRect = lastChapter.getBoundingClientRect();
 
         // If outside chapters stream (above first chapter in summit header, or below last chapter), allow normal pass-through
-        if (firstRect.top > vh * 0.45) return;
-        if (lastRect.bottom < vh * 0.55) return;
+        if (firstRect.top > vh * 0.40) return;
+        if (lastRect.bottom < vh * 0.60) return;
 
         // Find closest chapter to viewport center
         const vhCenter = vh / 2;
@@ -368,6 +428,9 @@ export function AboutScrollStory() {
           }
         });
 
+        // If further than 220px from center, user is transitioning between areas; do not hijack
+        if (minDistance > 220) return;
+
         // If the picture is already centered within 16px, it is cleanly focused
         if (minDistance <= 16) return;
 
@@ -377,60 +440,60 @@ export function AboutScrollStory() {
         setTimeout(() => {
           isSettlingRef.current = false;
         }, 700);
-      }, 190);
+      }, 220);
     };
 
-    // Mobile touch gestures for one-by-one chapter navigation
-    const handleTouchStart = (e) => {
-      if (e.touches.length === 1) {
-        touchStartYRef.current = e.touches[0].clientY;
-      }
-    };
-
-    const handleTouchEnd = (e) => {
-      if (touchStartYRef.current === null) return;
-      const touchEndY = e.changedTouches[0].clientY;
-      const deltaY = touchStartYRef.current - touchEndY;
-      touchStartYRef.current = null;
-
-      if (Math.abs(deltaY) < 38) return;
-
-      const firstChapter = chapterRefs.current[0];
-      const lastChapter = chapterRefs.current[ABOUT_CHAPTERS.length - 1];
-      if (!firstChapter || !lastChapter) return;
-
-      const vh = window.innerHeight;
-      const firstRect = firstChapter.getBoundingClientRect();
-      const lastRect = lastChapter.getBoundingClientRect();
-
-      // Outside chapter stream check
-      if (firstRect.top > vh * 0.45 && deltaY < 0) return;
-      if (lastRect.bottom < vh * 0.55 && deltaY > 0) return;
-
-      // Inside chapter stream:
-      // Swipe up (deltaY > 0) -> next chapter
-      // Swipe down (deltaY < 0) -> prev chapter
-      const targetIdx = deltaY > 0 ? Math.min(ABOUT_CHAPTERS.length - 1, active + 1) : Math.max(0, active - 1);
-      if (targetIdx !== active) {
-        isSettlingRef.current = true;
-        focusChapter(targetIdx);
-        setTimeout(() => {
-          isSettlingRef.current = false;
-        }, 650);
-      }
-    };
-
+    window.addEventListener("wheel", onUserWheel, { passive: true });
     window.addEventListener("scroll", handleScroll, { passive: true });
-    window.addEventListener("touchstart", handleTouchStart, { passive: true });
-    window.addEventListener("touchend", handleTouchEnd, { passive: true });
-
     return () => {
       clearTimeout(settleTimer);
+      clearTimeout(userWheelTimer);
+      window.removeEventListener("wheel", onUserWheel);
       window.removeEventListener("scroll", handleScroll);
-      window.removeEventListener("touchstart", handleTouchStart);
-      window.removeEventListener("touchend", handleTouchEnd);
     };
-  }, [reduced, active, focusChapter]);
+  }, [reduced, isMobile, focusChapter]);
+
+  // Touch handling on mobile: distinguishes horizontal story swipes from fast vertical page scrolling
+  const touchStartRef = useRef({ x: 0, y: 0 });
+  const isHorizontalSwipeRef = useRef(false);
+
+  const handleTouchStart = (e) => {
+    if (e.touches.length !== 1) return;
+    touchStartRef.current = {
+      x: e.touches[0].clientX,
+      y: e.touches[0].clientY
+    };
+    isHorizontalSwipeRef.current = false;
+  };
+
+  const handleTouchMove = (e) => {
+    if (e.touches.length !== 1) return;
+    const dx = e.touches[0].clientX - touchStartRef.current.x;
+    const dy = e.touches[0].clientY - touchStartRef.current.y;
+
+    // Detect horizontal swipe intent only when horizontal movement distinctly exceeds vertical
+    if (!isHorizontalSwipeRef.current) {
+      if (Math.abs(dx) > Math.abs(dy) + 12 && Math.abs(dx) > 18) {
+        isHorizontalSwipeRef.current = true;
+      }
+    }
+  };
+
+  const handleTouchEnd = (e) => {
+    if (!isHorizontalSwipeRef.current) return;
+    const dx = e.changedTouches[0].clientX - touchStartRef.current.x;
+    isHorizontalSwipeRef.current = false;
+
+    if (Math.abs(dx) > 38) {
+      if (dx < 0) {
+        // Swiped left -> next story
+        goToStory(Math.min(ABOUT_CHAPTERS.length - 1, active + 1));
+      } else {
+        // Swiped right -> previous story
+        goToStory(Math.max(0, active - 1));
+      }
+    }
+  };
 
   // Chapter navigation click handler
   const navigateToChapter = (event, index) => {
@@ -439,9 +502,11 @@ export function AboutScrollStory() {
     const chapter = ABOUT_CHAPTERS[index];
     if (!chapter) return;
     history.pushState(history.state, "", `#${chapter.id}`);
-    focusChapter(index, reduced);
+    setActive(index);
     const target = chapterRefs.current[index];
     if (target) {
+      const offset = (window.innerWidth <= 768 ? 115 : 100);
+      scrollToTarget(target, { offset: -offset, immediate: reduced });
       target.focus({ preventScroll: true });
     }
   };
@@ -452,11 +517,16 @@ export function AboutScrollStory() {
     const index = ABOUT_CHAPTERS.findIndex(c => `#${c.id}` === hash);
     if (index >= 0) {
       const t = setTimeout(() => {
-        focusChapter(index, true);
+        setActive(index);
+        const target = chapterRefs.current[index];
+        if (target) {
+          const offset = (window.innerWidth <= 768 ? 115 : 100);
+          scrollToTarget(target, { offset: -offset, immediate: true });
+        }
       }, 200);
       return () => clearTimeout(t);
     }
-  }, [focusChapter]);
+  }, []);
 
   const isLight = theme === "light";
 
@@ -522,7 +592,7 @@ export function AboutScrollStory() {
         )
       ),
 
-      // Main Container: Sticky Tracking Rail + Full-Screen Scenes Stream
+      // Main Container: Sticky Tracking Rail + Scenes / Story Slider
       h("div", { className: "ae-story-container" },
         // Floating/Sticky Chapter Navigation Rail
         h("nav", { className: "ae-sticky-nav ae-nav", "aria-label": "About chapters navigation" },
@@ -560,42 +630,116 @@ export function AboutScrollStory() {
           )
         ),
 
-        // Stream of 4 Full-Screen Scenes
-        h("div", { className: "ae-scenes-stream" },
-          ABOUT_CHAPTERS.map((ch, idx) =>
-            h("article", {
-              key: ch.id,
-              id: ch.id,
-              ref: el => { chapterRefs.current[idx] = el; },
-              "data-index": idx,
-              className: `ae-chapter ae-scene ${active === idx ? "is-active-scene" : ""}`,
-              tabIndex: -1,
-              "aria-label": `${ch.number} ${ch.title} — ${ch.tag}`
-            },
-              // High-Resolution Master Artwork Card
-              h("div", { className: "ae-scene-card" },
-                h("picture", { className: "ae-scene-picture" },
-                  // Mobile portrait viewports <= 768px
-                  h("source", {
-                    media: "(max-width: 768px)",
-                    srcSet: isLight ? ch.mobileLight : ch.mobileDark,
-                    width: 1086,
-                    height: 1448
-                  }),
-                  // Desktop widescreen viewports > 768px
-                  h("img", {
-                    src: isLight ? ch.desktopLight : ch.desktopDark,
-                    alt: `${ch.number} / ${ch.title} — ${ch.tag}`,
-                    width: 1672,
-                    height: 941,
-                    loading: idx === 0 ? "eager" : "lazy",
-                    decoding: "async",
-                    className: "ae-scene-img"
-                  })
-                ),
-                // Subtle bottom fade blending into background scenery
-                h("div", { className: "ae-scene-bottom-fade", "aria-hidden": "true" }),
-                h("div", { className: "ae-scene-glow", "aria-hidden": "true" })
+        // Mobile Facebook Story-Style Controls (Progress bars + Story header)
+        isMobile && h("div", { className: "ae-mobile-story-controls" },
+          // 4 Segment Progress Bars (Like Facebook/Instagram Stories)
+          h("div", { className: "ae-story-bars", "aria-label": "Story progress indicators" },
+            ABOUT_CHAPTERS.map((ch, idx) =>
+              h("button", {
+                key: ch.id,
+                type: "button",
+                className: `ae-story-bar-track${idx === active ? " is-active" : idx < active ? " is-completed" : ""}`,
+                onClick: () => goToStory(idx),
+                "aria-label": `Go to story ${ch.number} ${ch.title}`
+              },
+                h("span", { className: "ae-story-bar-fill" })
+              )
+            )
+          ),
+          // Story Header with Bot Avatar, Title, and Navigation Chevrons
+          h("div", { className: "ae-story-header" },
+            h("div", { className: "ae-story-author" },
+              h("div", { className: "ae-story-avatar", "aria-hidden": "true" },
+                h(FlyingTrackerRobot, { isFlying: false, direction: 1, isMobile: true })
+              ),
+              h("div", { className: "ae-story-meta" },
+                h("span", { className: "ae-story-name" }, "Fardin's Journey"),
+                h("span", { className: "ae-story-counter" }, `${ABOUT_CHAPTERS[active]?.number} / 04 · ${ABOUT_CHAPTERS[active]?.title}`)
+              )
+            ),
+            h("div", { className: "ae-story-nav-btns" },
+              h("button", {
+                type: "button",
+                className: "ae-story-btn ae-story-prev",
+                onClick: () => goToStory(Math.max(0, active - 1)),
+                disabled: active === 0,
+                "aria-label": "Previous story"
+              }, "‹"),
+              h("button", {
+                type: "button",
+                className: "ae-story-btn ae-story-next",
+                onClick: () => goToStory(Math.min(ABOUT_CHAPTERS.length - 1, active + 1)),
+                disabled: active === ABOUT_CHAPTERS.length - 1,
+                "aria-label": "Next story"
+              }, "›")
+            )
+          )
+        ),
+
+        // Slider Viewport (horizontal track on mobile, vertical stream on desktop)
+        h("div", {
+          className: "ae-story-slider-viewport",
+          onTouchStart: isMobile ? handleTouchStart : undefined,
+          onTouchMove: isMobile ? handleTouchMove : undefined,
+          onTouchEnd: isMobile ? handleTouchEnd : undefined
+        },
+          // 2-Second Floating Popup Instruction with Bot F-01
+          isMobile && showPopupHint && h("aside", { className: "ae-story-popup-hint", role: "status", "aria-live": "polite" },
+            h("div", { className: "ae-popup-robot", "aria-hidden": "true" },
+              h(FlyingTrackerRobot, { isFlying: true, direction: 1, isMobile: true })
+            ),
+            h("div", { className: "ae-popup-text" },
+              h("strong", null, "Stories"),
+              h("span", null, "Slide right to explore ➔")
+            ),
+            h("button", {
+              type: "button",
+              className: "ae-popup-close",
+              onClick: () => setShowPopupHint(false),
+              "aria-label": "Dismiss hint"
+            }, "×")
+          ),
+
+          // Story Track / Stream
+          h("div", {
+            className: `ae-scenes-stream${isMobile ? " ae-story-track" : ""}`,
+            style: isMobile ? { transform: `translate3d(-${active * 100}%, 0, 0)` } : undefined
+          },
+            ABOUT_CHAPTERS.map((ch, idx) =>
+              h("article", {
+                key: ch.id,
+                id: ch.id,
+                ref: el => { chapterRefs.current[idx] = el; },
+                "data-index": idx,
+                className: `ae-chapter ae-scene ${active === idx ? "is-active-scene" : ""}`,
+                tabIndex: -1,
+                "aria-label": `${ch.number} ${ch.title} — ${ch.tag}`
+              },
+                // High-Resolution Master Artwork Card
+                h("div", { className: "ae-scene-card" },
+                  h("picture", { className: "ae-scene-picture" },
+                    // Mobile portrait viewports <= 768px
+                    h("source", {
+                      media: "(max-width: 768px)",
+                      srcSet: isLight ? ch.mobileLight : ch.mobileDark,
+                      width: 1086,
+                      height: 1448
+                    }),
+                    // Desktop widescreen viewports > 768px
+                    h("img", {
+                      src: isLight ? ch.desktopLight : ch.desktopDark,
+                      alt: `${ch.number} / ${ch.title} — ${ch.tag}`,
+                      width: 1672,
+                      height: 941,
+                      loading: idx === 0 ? "eager" : "lazy",
+                      decoding: "async",
+                      className: "ae-scene-img"
+                    })
+                  ),
+                  // Subtle bottom fade blending into background scenery
+                  h("div", { className: "ae-scene-bottom-fade", "aria-hidden": "true" }),
+                  h("div", { className: "ae-scene-glow", "aria-hidden": "true" })
+                )
               )
             )
           )

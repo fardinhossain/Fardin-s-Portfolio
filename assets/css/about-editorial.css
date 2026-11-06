@@ -1229,8 +1229,11 @@
 @media (max-width: 860px) {
   .ae-story-container {
     grid-template-columns: 1fr;
-    gap: 12px;
-    margin-top: 12px;
+    gap: 10px;
+    margin-top: 10px;
+    position: relative;
+    width: 100%;
+    min-width: 0;
   }
 
   .ae-sticky-nav {
@@ -1272,11 +1275,262 @@
     font-weight: 700;
   }
 
-  .ae-chapter.ae-scene {
-    min-height: clamp(480px, 72vh, 580px);
-    min-height: clamp(480px, 72svh, 580px);
+  /* Facebook Story-Style Progress Segment Bars */
+  .ae-mobile-story-controls {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+    width: 100%;
+    position: relative;
+    z-index: 20;
+    margin-top: 4px;
+  }
+
+  .ae-story-bars {
+    display: flex;
+    gap: 6px;
+    width: 100%;
+    padding: 0 2px;
+  }
+
+  .ae-story-bar-track {
+    flex: 1;
+    height: 4px;
+    background: rgba(255, 255, 255, 0.18);
+    border-radius: 999px;
+    border: none;
+    padding: 0;
+    overflow: hidden;
+    position: relative;
+    cursor: pointer;
+    transition: background 0.25s ease;
+  }
+
+  [data-theme="light"] .ae-story-bar-track {
+    background: rgba(0, 0, 0, 0.12);
+  }
+
+  .ae-story-bar-fill {
+    display: block;
+    width: 0%;
+    height: 100%;
+    background: var(--ae-accent, #ff7048);
+    border-radius: 999px;
+    transition: width 0.35s cubic-bezier(0.16, 1, 0.3, 1);
+  }
+
+  .ae-story-bar-track.is-completed .ae-story-bar-fill {
+    width: 100%;
+    opacity: 0.8;
+  }
+
+  .ae-story-bar-track.is-active .ae-story-bar-fill {
+    width: 100%;
+    box-shadow: 0 0 10px var(--ae-accent, #ff7048);
+  }
+
+  /* Story Header with Bot Avatar, Title, and Chevrons */
+  .ae-story-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 6px 10px;
+    background: rgba(13, 17, 30, 0.65);
+    border: 1px solid var(--ae-line);
+    border-radius: 12px;
+    backdrop-filter: blur(14px);
+    -webkit-backdrop-filter: blur(14px);
+  }
+
+  [data-theme="light"] .ae-story-header {
+    background: rgba(255, 255, 255, 0.85);
+  }
+
+  .ae-story-author {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+  }
+
+  .ae-story-avatar {
+    width: 28px;
+    height: 28px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border-radius: 50%;
+    background: rgba(255, 112, 72, 0.15);
+    border: 1.5px solid var(--ae-accent, #ff7048);
+    flex-shrink: 0;
+  }
+
+  .ae-story-meta {
+    display: flex;
+    flex-direction: column;
+    line-height: 1.25;
+  }
+
+  .ae-story-name {
+    font-size: 12px;
+    font-weight: 700;
+    color: var(--ae-ink);
+    letter-spacing: -0.01em;
+  }
+
+  .ae-story-counter {
+    font-size: 10.5px;
+    font-family: var(--font-mono, monospace);
+    color: var(--ae-muted);
+  }
+
+  .ae-story-nav-btns {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+  }
+
+  .ae-story-btn {
+    width: 28px;
+    height: 28px;
+    border-radius: 50%;
+    border: 1px solid var(--ae-line);
+    background: rgba(255, 255, 255, 0.08);
+    color: var(--ae-ink);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 17px;
+    line-height: 1;
+    cursor: pointer;
+    transition: all 0.2s ease;
+  }
+
+  [data-theme="light"] .ae-story-btn {
+    background: rgba(0, 0, 0, 0.05);
+  }
+
+  .ae-story-btn:disabled {
+    opacity: 0.3;
+    cursor: not-allowed;
+  }
+
+  /* Slider Viewport with Unobstructed Vertical Scrolling */
+  .ae-story-slider-viewport {
+    width: 100%;
+    overflow: hidden;
+    position: relative;
+    border-radius: 18px;
+    touch-action: pan-y; /* Crucial: native smooth vertical scrolling */
+  }
+
+  /* Horizontal Slider Track */
+  .ae-scenes-stream.ae-story-track {
+    display: flex;
+    flex-direction: row;
+    width: 100%;
+    transition: transform 0.38s cubic-bezier(0.16, 1, 0.3, 1);
+    will-change: transform;
+  }
+
+  .ae-scenes-stream.ae-story-track .ae-chapter.ae-scene {
+    width: 100%;
+    min-width: 100%;
+    flex-shrink: 0;
+    min-height: auto;
+    padding: 0;
     scroll-margin-top: 115px;
-    padding: 0.4rem 0;
+  }
+
+  .ae-scenes-stream.ae-story-track .ae-scene-card {
+    max-width: 100%;
+    border-radius: 16px;
+  }
+
+  .ae-scenes-stream.ae-story-track .ae-scene-img {
+    aspect-ratio: 1086 / 1448;
+    border-radius: 14px;
+  }
+
+  /* 2-Second Floating Popup Instruction Pill */
+  .ae-story-popup-hint {
+    position: absolute;
+    bottom: 20px;
+    right: 12px;
+    z-index: 35;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    padding: 7px 12px 7px 9px;
+    background: rgba(13, 17, 30, 0.94);
+    border: 1px solid rgba(255, 112, 72, 0.55);
+    border-radius: 999px;
+    backdrop-filter: blur(16px);
+    -webkit-backdrop-filter: blur(16px);
+    box-shadow: 0 12px 28px rgba(0, 0, 0, 0.5), 0 0 16px rgba(255, 112, 72, 0.3);
+    animation: aePopupEntrance 0.35s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+    pointer-events: auto;
+  }
+
+  [data-theme="light"] .ae-story-popup-hint {
+    background: rgba(255, 255, 255, 0.96);
+    border: 1px solid rgba(193, 77, 48, 0.5);
+    box-shadow: 0 10px 24px rgba(0, 0, 0, 0.12), 0 0 14px rgba(193, 77, 48, 0.2);
+  }
+
+  .ae-popup-robot {
+    width: 22px;
+    height: 22px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-shrink: 0;
+  }
+
+  .ae-popup-text {
+    display: flex;
+    flex-direction: column;
+    font-size: 11px;
+    line-height: 1.2;
+    color: var(--ae-ink);
+  }
+
+  .ae-popup-text strong {
+    font-size: 9.5px;
+    text-transform: uppercase;
+    letter-spacing: 0.08em;
+    color: var(--ae-accent, #ff7048);
+  }
+
+  .ae-popup-text span {
+    font-weight: 600;
+  }
+
+  .ae-popup-close {
+    border: none;
+    background: transparent;
+    color: var(--ae-muted);
+    font-size: 16px;
+    line-height: 1;
+    padding: 0 0 0 4px;
+    cursor: pointer;
+  }
+
+  @keyframes aePopupEntrance {
+    0% {
+      opacity: 0;
+      transform: translateY(12px) scale(0.92);
+    }
+    100% {
+      opacity: 1;
+      transform: translateY(0) scale(1);
+    }
+  }
+
+  .ae-chapter.ae-scene {
+    min-height: clamp(460px, 70vh, 560px);
+    min-height: clamp(460px, 70svh, 560px);
+    scroll-margin-top: 115px;
+    padding: 0.3rem 0;
   }
 
   .ae-scene-card {
@@ -1292,9 +1546,9 @@
 
 @media (max-width: 480px) {
   .ae-chapter.ae-scene {
-    min-height: clamp(440px, 68vh, 540px);
-    min-height: clamp(440px, 68svh, 540px);
-    padding: 0.25rem 0;
+    min-height: clamp(420px, 66vh, 520px);
+    min-height: clamp(420px, 66svh, 520px);
+    padding: 0.2rem 0;
   }
 
   .ae-scene-card {
