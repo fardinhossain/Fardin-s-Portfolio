@@ -721,7 +721,7 @@ export function FeaturedProjects({
       // Full-Width Section Summit Header with Title, Description, Stats, and Category Filters
       h(
         "header",
-        { className: "section-summit-header projects-summit-header" },
+        { className: "section-summit-header projects-summit-header reveal-on-scroll" },
               h(
                 "div",
                 { className: "section-summit-bg", "aria-hidden": "true" },
@@ -841,7 +841,7 @@ export function FeaturedProjects({
             activeFeatured &&
               h(
                 "div",
-                { className: "projects-featured-card" },
+                { className: "projects-featured-card reveal-on-scroll" },
 
                 // Left: High Fidelity Laptop & Phone Dual Mockup Presentation
                 h(

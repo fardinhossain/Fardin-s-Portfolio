@@ -42,6 +42,7 @@ import {
 import { CinematicHeroSection } from "./cinematic-hero-section.js";
 import { AboutScrollStory, AboutGhostRobot } from "./about-scroll-story.js";
 import { installSmoothScrolling, scrollToTarget } from "./smooth-scroll.js";
+import { initScrollReveals } from "./scroll-reveals.js";
 
 const h = React.createElement;
 
@@ -458,6 +459,11 @@ function PortfolioApp() {
   const [journeyTargetSection, setJourneyTargetSection] = useState(null);
   const [activeNav, setActiveNav] = useState("home");
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
+
+  useEffect(() => {
+    const cleanup = initScrollReveals();
+    return () => cleanup?.();
+  }, [view]);
 
   // Robotic Entrance Animation State (The full-screen cinematic hero is the primary entrance)
   const [showIntro, setShowIntro] = useState(false);
@@ -1023,7 +1029,7 @@ function PortfolioApp() {
               { id: "contact", className: "section-block" },
               h(
                 "div",
-                { className: "section-header-bar" },
+                { className: "section-header-bar reveal-on-scroll" },
                 h(
                   "div",
                   { className: "section-title-group" },
@@ -1045,7 +1051,7 @@ function PortfolioApp() {
 
               h(
                 "div",
-                { className: "bezel-outer" },
+                { className: "bezel-outer reveal-on-scroll" },
                 h(
                   "div",
                   { className: "bezel-inner contact-two-col-stage" },

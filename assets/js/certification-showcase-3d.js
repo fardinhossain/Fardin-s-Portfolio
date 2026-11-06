@@ -1524,7 +1524,7 @@ export function CertificationShowcase({
     // Section Summit Header Banner
     h(
       "header",
-      { className: "section-summit-header" },
+      { className: "section-summit-header reveal-on-scroll" },
       h(
         "div",
         { className: "section-summit-bg", "aria-hidden": "true" },
