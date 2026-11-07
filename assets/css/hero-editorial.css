@@ -206,7 +206,7 @@ body { background: var(--folio-ground); }
   width: min(920px, 100%);
   margin: 0 auto;
   padding: 16px 0 20px;
-  min-height: 76px;
+  min-height: 86px;
   box-sizing: border-box;
   border-top: 1px solid var(--folio-line);
   list-style: none;
@@ -236,10 +236,10 @@ body { background: var(--folio-ground); }
   display: flex;
   align-items: center;
   justify-content: center;
-  width: clamp(40px, 4.4vw, 48px);
-  height: clamp(40px, 4.4vw, 48px);
-  flex: 0 0 clamp(40px, 4.4vw, 48px);
-  border-radius: 12px;
+  width: clamp(44px, 4.2vw, 50px);
+  height: clamp(44px, 4.2vw, 50px);
+  flex: 0 0 clamp(44px, 4.2vw, 50px);
+  border-radius: 13px;
   background: rgba(255, 98, 56, 0.08);
   border: 1px solid rgba(255, 98, 56, 0.22);
   color: var(--folio-coral, #ff6238);
@@ -257,21 +257,21 @@ body { background: var(--folio-ground); }
   transition: opacity 0.2s ease, transform 0.2s ease;
 }
 .fh-strength-icon svg {
-  width: clamp(20px, 2.2vw, 24px);
-  height: clamp(20px, 2.2vw, 24px);
+  width: clamp(22px, 2.2vw, 26px);
+  height: clamp(22px, 2.2vw, 26px);
   stroke: var(--folio-coral, #ff6238);
 }
 .fh-typewriter-text {
   display: inline-flex;
   align-items: center;
   justify-content: flex-start;
-  min-width: clamp(180px, 24vw, 300px);
+  min-width: clamp(240px, 32vw, 420px);
   min-height: 1.35em;
-  font-family: 'Plus Jakarta Sans', 'Inter', var(--font-sans), sans-serif;
-  font-size: clamp(1.15rem, 1.5vw, 1.4rem);
-  font-weight: 700;
+  font-family: 'Manrope', 'Plus Jakarta Sans', 'Inter', var(--font-sans), sans-serif;
+  font-size: clamp(30px, 2.25vw, 34px);
+  font-weight: 750;
   line-height: 1.2;
-  letter-spacing: -0.015em;
+  letter-spacing: -0.8px;
   text-align: left;
   white-space: nowrap;
   user-select: none;
@@ -284,15 +284,15 @@ body { background: var(--folio-ground); }
 }
 .fh-typewriter-space {
   display: inline-block;
-  width: 0.32em;
+  width: 0.3em;
 }
 .fh-typewriter-cursor {
   display: inline-block;
-  width: 2.5px;
+  width: 3px;
   height: 1.15em;
   background: var(--folio-coral, #ff6238);
   margin-left: 3px;
-  border-radius: 1px;
+  border-radius: 1.5px;
   vertical-align: -0.15em;
   animation: fhCursorBlink 0.75s ease-in-out infinite;
 }
@@ -393,18 +393,27 @@ body { background: var(--folio-ground); }
   .fh-actions { gap: 10px 18px; }
   .fh-contact { min-height: 28px !important; padding: 3px 14px !important; font-size: 9px !important; }
   .fh-resume { min-height: 28px; font-size: 9px; }
-  .fh-strengths { padding: 14px 0 18px; min-height: 64px; }
+  .fh-strengths { padding: 14px 0 18px; min-height: 72px; }
   .fh-strengths li { padding: 0; border: 0; }
   .fh-strengths li.fh-typewriter-card { flex-direction: row; align-items: center; justify-content: center; gap: 10px; padding: 0; }
-  .fh-typewriter-text { min-width: clamp(140px, 56vw, 220px); font-size: clamp(0.92rem, 3.6vw, 1.12rem); line-height: 1.2; }
-  .fh-strength-icon { width: 36px; height: 36px; flex: 0 0 36px; border-radius: 10px; }
-  .fh-strength-icon svg { width: 18px; height: 18px; }
+  .fh-typewriter-text {
+    min-width: clamp(190px, 68vw, 320px);
+    font-size: clamp(23px, 5.8vw, 27px);
+    line-height: 1.2;
+    letter-spacing: -0.8px;
+  }
+  .fh-strength-icon { width: 38px; height: 38px; flex: 0 0 38px; border-radius: 10px; }
+  .fh-strength-icon svg { width: 20px; height: 20px; }
 }
 @media (max-width:380px) {
   .fh-strengths li.fh-typewriter-card { gap: 8px; }
-  .fh-typewriter-text { font-size: 0.88rem; min-width: 136px; }
-  .fh-strength-icon { width: 32px; height: 32px; flex: 0 0 32px; }
-  .fh-strength-icon svg { width: 16px; height: 16px; }
+  .fh-typewriter-text {
+    font-size: clamp(20px, 5.5vw, 23px);
+    letter-spacing: -0.6px;
+    min-width: 170px;
+  }
+  .fh-strength-icon { width: 34px; height: 34px; flex: 0 0 34px; }
+  .fh-strength-icon svg { width: 18px; height: 18px; }
 }
 @media (prefers-reduced-motion:reduce) {
   .fh-hero *, .fh-hero *::before, .fh-hero *::after { animation:none !important; transition:none !important; }
