@@ -7,7 +7,12 @@ import { getCurrentTheme, subscribeTheme } from "./theme-manager.js";
 import { PortfolioAssistant } from "./assistant-chat.js";
 
 const h = React.createElement;
-const STRENGTHS = [["code", "Full-Stack", "Developer"], ["chip", "AI & ML", "Enthusiast"], ["target", "Problem", "Solver"], ["book", "Continuous", "Learner"]];
+const FEATURE_ITEMS = [
+  { type: "code", line1: "Full-Stack", line2: "Developer" },
+  { type: "chip", line1: "AI & ML", line2: "Enthusiast" },
+  { type: "target", line1: "Problem", line2: "Solver" },
+  { type: "book", line1: "Continuous", line2: "Learner" }
+];
 const NAME_WORDS = [
   { text: "MD.", accent: false },
   { text: "FARDIN", accent: true },
@@ -23,7 +28,135 @@ function StrengthIcon({ type }) {
     target: ["M12 2v4m0 12v4M2 12h4m12 0h4", "M19 12a7 7 0 1 1-14 0 7 7 0 0 1 14 0M14 12a2 2 0 1 1-4 0 2 2 0 0 1 4 0"],
     book: ["M12 6c-3-2-6-2-9-1v14c3-1 6-1 9 1 3-2 6-2 9-1V5c-3-1-6-1-9 1Zm0 0v14"]
   };
-  return h("svg", { viewBox: "0 0 24 24", fill: "none", stroke: "currentColor", strokeWidth: 1.4, strokeLinecap: "round", strokeLinejoin: "round", "aria-hidden": true }, paths[type].map((d, i) => h("path", { d, key: i })));
+  return h("svg", { viewBox: "0 0 24 24", fill: "none", stroke: "currentColor", strokeWidth: 1.8, strokeLinecap: "round", strokeLinejoin: "round", "aria-hidden": true }, (paths[type] || paths.code).map((d, i) => h("path", { d, key: i })));
+}
+
+function CenteredTypewriterFeatureBar() {
+  const [featureIndex, setFeatureIndex] = useState(0);
+  const [iconVisible, setIconVisible] = useState(false);
+  const [line1, setLine1] = useState("");
+  const [line2, setLine2] = useState("");
+  const [cursorLine, setCursorLine] = useState(1);
+
+  useEffect(() => {
+    const prefersReducedMotion = typeof window !== "undefined" &&
+      window.matchMedia &&
+      window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+
+    if (prefersReducedMotion) {
+      const current = FEATURE_ITEMS[featureIndex];
+      setIconVisible(true);
+      setLine1(current.line1);
+      setLine2(current.line2);
+      setCursorLine(null);
+      const timer = setTimeout(() => {
+        setFeatureIndex((prev) => (prev + 1) % FEATURE_ITEMS.length);
+      }, 3500);
+      return () => clearTimeout(timer);
+    }
+
+    let isCancelled = false;
+    let timerId = null;
+
+    const sleep = (ms) => new Promise((resolve) => {
+      timerId = setTimeout(resolve, ms);
+    });
+
+    const runSequence = async () => {
+      const item = FEATURE_ITEMS[featureIndex];
+
+      // Step 1: Smoothly reveal orange accent icon
+      setLine1("");
+      setLine2("");
+      setCursorLine(1);
+      setIconVisible(true);
+      await sleep(280);
+      if (isCancelled) return;
+
+      // Step 2: Type first word or phrase on first line
+      for (let i = 1; i <= item.line1.length; i++) {
+        setLine1(item.line1.slice(0, i));
+        await sleep(45);
+        if (isCancelled) return;
+      }
+      await sleep(80);
+      if (isCancelled) return;
+
+      // Step 3: Type second word on second line
+      setCursorLine(2);
+      for (let i = 1; i <= item.line2.length; i++) {
+        setLine2(item.line2.slice(0, i));
+        await sleep(45);
+        if (isCancelled) return;
+      }
+
+      // Step 4: Keep complete feature visible briefly (~1.5s)
+      await sleep(1500);
+      if (isCancelled) return;
+
+      // Step 5: Smoothly erase text and transition out icon
+      // Erase line 2 backwards
+      for (let i = item.line2.length - 1; i >= 0; i--) {
+        setLine2(item.line2.slice(0, i));
+        await sleep(18);
+        if (isCancelled) return;
+      }
+      // Move cursor to line 1 and erase line 1 backwards
+      setCursorLine(1);
+      for (let i = item.line1.length - 1; i >= 0; i--) {
+        setLine1(item.line1.slice(0, i));
+        if (i === Math.floor(item.line1.length / 2)) {
+          setIconVisible(false);
+        }
+        await sleep(18);
+        if (isCancelled) return;
+      }
+      setIconVisible(false);
+      setCursorLine(null);
+      await sleep(180);
+      if (isCancelled) return;
+
+      // Step 6: Advance to next feature and loop indefinitely
+      setFeatureIndex((prev) => (prev + 1) % FEATURE_ITEMS.length);
+    };
+
+    runSequence();
+
+    return () => {
+      isCancelled = true;
+      if (timerId) clearTimeout(timerId);
+    };
+  }, [featureIndex]);
+
+  const currentItem = FEATURE_ITEMS[featureIndex];
+
+  return h("ul", {
+    className: "fh-strengths fh-strengths-typewriter",
+    "aria-label": "Core focus areas",
+    "aria-live": "polite"
+  },
+    h("li", {
+      className: "fh-typewriter-card",
+      key: featureIndex
+    },
+      h("span", {
+        className: `fh-strength-icon ${iconVisible ? "fh-icon-visible" : "fh-icon-hidden"}`
+      },
+        h(StrengthIcon, { type: currentItem.type })
+      ),
+      h("div", { className: "fh-typewriter-text" },
+        h("div", { className: "fh-typewriter-line fh-line-1" },
+          line1,
+          cursorLine === 1 && h("span", { className: "fh-typewriter-cursor", "aria-hidden": true })
+        ),
+        h("div", { className: "fh-typewriter-line fh-line-2" },
+          line2,
+          cursorLine === 2 && h("span", { className: "fh-typewriter-cursor", "aria-hidden": true })
+        )
+      ),
+      h("span", { className: "fh-sr-only" }, `${currentItem.line1} ${currentItem.line2}`)
+    )
+  );
 }
 function ChatGlyph() {
   return h("svg", { viewBox: "0 0 24 24", fill: "none", stroke: "currentColor", strokeWidth: 1.6, "aria-hidden": true }, h("rect", { x: 3, y: 5, width: 18, height: 14, rx: 5 }), h("path", { d: "M12 2v3M8 10v3m8-3v3m-7 3h6" }));
@@ -439,8 +572,7 @@ export function CinematicHeroSection({ resumeUrl = PROFILE_DATA.resumeUrl, onNav
           onPhase: phase,
           onStage: stage
         })),
-      h("ul", { className: "fh-strengths", "aria-label": "Areas of focus" }, STRENGTHS.map(([type, first, second]) =>
-        h("li", { key: type }, h("span", { className: "fh-strength-icon" }, h(StrengthIcon, { type })), h("span", null, first, h("br"), second))))),
+      h(CenteredTypewriterFeatureBar, null)),
     h(PortfolioAssistant, { open: chatOpen, onClose: () => setChatOpen(false), returnFocusRef: lastLauncher })
   );
 }

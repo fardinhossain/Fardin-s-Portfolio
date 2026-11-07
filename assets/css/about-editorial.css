@@ -1185,19 +1185,176 @@
   opacity: 0;
   pointer-events: none;
   background: transparent;
-  transition: opacity 0.65s cubic-bezier(0.16, 1, 0.3, 1), transform 0.7s cubic-bezier(0.16, 1, 0.3, 1);
+  transition: opacity 0.25s cubic-bezier(0.22, 1, 0.36, 1), transform 0.7s cubic-bezier(0.16, 1, 0.3, 1);
 }
 
 .ae-scene-video.is-playing {
   opacity: 1;
 }
 
+.ae-scene-video.is-transitioning,
 .ae-scene-video.is-finished {
   opacity: 0;
+  transition: opacity 0.25s cubic-bezier(0.22, 1, 0.36, 1);
 }
 
 .ae-scene-card:hover .ae-scene-video {
   transform: scale(1.018);
+}
+
+/* ==========================================================================
+   ABOUT BOT B DRAWING & FAST TRANSITION OVERLAY
+   ========================================================================== */
+.ae-bot-drawing-overlay {
+  position: absolute;
+  inset: 0;
+  z-index: 4;
+  pointer-events: none;
+  overflow: hidden;
+  border-radius: inherit;
+}
+
+/* Flying Bot Mascot sweeping across to draw the transition */
+.ae-bot-flyer {
+  position: absolute;
+  top: 20%;
+  left: 0;
+  width: clamp(75px, 8.5vw, 110px);
+  aspect-ratio: 100 / 120;
+  pointer-events: none;
+  z-index: 5;
+  will-change: transform, opacity;
+  animation: aeBotSweepFlight 0.58s cubic-bezier(0.22, 1, 0.36, 1) forwards;
+}
+
+.ae-bot-drawing-overlay.is-mobile .ae-bot-flyer {
+  width: 78px;
+  top: 32%;
+}
+
+@keyframes aeBotSweepFlight {
+  0% {
+    transform: translate3d(-18%, -10%, 0) scale(0.85) rotate(-14deg);
+    opacity: 0;
+  }
+  16% {
+    opacity: 1;
+    transform: translate3d(10%, 10%, 0) scale(1.06) rotate(6deg);
+  }
+  50% {
+    transform: translate3d(48%, -4%, 0) scale(1.02) rotate(-3deg);
+  }
+  84% {
+    opacity: 1;
+    transform: translate3d(88%, 10%, 0) scale(0.96) rotate(8deg);
+  }
+  100% {
+    transform: translate3d(118%, -15%, 0) scale(0.78) rotate(-12deg);
+    opacity: 0;
+  }
+}
+
+.ae-bot-flyer-svg {
+  width: 100%;
+  height: 100%;
+  filter: drop-shadow(0 10px 18px rgba(0, 0, 0, 0.45));
+}
+
+/* Thruster flame pulse */
+.ae-bot-thruster-flame {
+  animation: aeBotFlamePulse 0.12s ease-in-out infinite alternate;
+  transform-origin: 50% 88%;
+}
+
+@keyframes aeBotFlamePulse {
+  0% {
+    transform: scaleY(0.9) scaleX(0.95);
+    opacity: 0.85;
+  }
+  100% {
+    transform: scaleY(1.18) scaleX(1.05);
+    opacity: 1;
+  }
+}
+
+/* Full card laser drawing paths */
+.ae-bot-draw-svg {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  pointer-events: none;
+  z-index: 2;
+}
+
+.ae-drawn-laser-path {
+  fill: none;
+  stroke: url(#laserStrokeGrad);
+  stroke-width: 4.5;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+  stroke-dasharray: 1200;
+  stroke-dashoffset: 1200;
+  animation: aeLaserStrokeDraw 0.52s cubic-bezier(0.22, 1, 0.36, 1) forwards;
+}
+
+.ae-drawn-accent-path {
+  fill: none;
+  stroke: rgba(255, 160, 17, 0.45);
+  stroke-width: 1.8;
+  stroke-dasharray: 6 12;
+  stroke-dashoffset: 800;
+  animation: aeLaserStrokeDraw 0.56s cubic-bezier(0.22, 1, 0.36, 1) forwards;
+}
+
+@keyframes aeLaserStrokeDraw {
+  0% {
+    stroke-dashoffset: 1200;
+    opacity: 1;
+  }
+  75% {
+    stroke-dashoffset: 0;
+    opacity: 1;
+  }
+  100% {
+    stroke-dashoffset: 0;
+    opacity: 0;
+  }
+}
+
+/* Laser sweep curtain that reveals the static image */
+.ae-bot-laser-wipe {
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  z-index: 3;
+  background: linear-gradient(
+    90deg,
+    transparent 0%,
+    rgba(255, 160, 17, 0.15) 30%,
+    rgba(255, 255, 255, 0.7) 48%,
+    rgba(255, 98, 56, 0.5) 52%,
+    transparent 65%
+  );
+  opacity: 0;
+  animation: aeLaserWipeSweep 0.52s cubic-bezier(0.22, 1, 0.36, 1) forwards;
+}
+
+@keyframes aeLaserWipeSweep {
+  0% {
+    transform: translateX(-100%);
+    opacity: 0;
+  }
+  20% {
+    opacity: 0.9;
+  }
+  75% {
+    opacity: 0.8;
+  }
+  100% {
+    transform: translateX(100%);
+    opacity: 0;
+  }
 }
 
 .ae-scene-picture {
@@ -1254,6 +1411,9 @@
     opacity: 0 !important;
     animation: none !important;
     transition: none !important;
+  }
+  .ae-bot-drawing-overlay {
+    display: none !important;
   }
 }
 

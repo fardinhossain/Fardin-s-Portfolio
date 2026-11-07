@@ -87,7 +87,7 @@ try {
     const artifactDir = 'C:/Users/hp/.gemini/antigravity/brain/d6713df1-cee0-49b1-be0b-47ff58963fc1';
     await page.locator('#who-i-am .ae-scene-card').screenshot({ path: `${artifactDir}/about-motion-dark-desktop.png` });
 
-    // Simulate video end event to test smooth transition to static image
+    // Test transition trigger with Bot drawing animation
     await page.evaluate(() => {
       const v = document.querySelector('#who-i-am .ae-scene-video');
       if (v) {
@@ -95,13 +95,22 @@ try {
       }
     });
 
+    // Check that Bot drawing overlay appears
+    await page.waitForSelector('#who-i-am .ae-bot-drawing-overlay', { state: 'attached', timeout: 3000 });
+    console.log('PASS: Bot B drawing animation overlay attached and executing transition.');
+
+    // Capture screenshot of the Bot drawing in action
+    await page.waitForTimeout(160);
+    await page.locator('#who-i-am .ae-scene-card').screenshot({ path: `${artifactDir}/about-bot-drawing-transition.png` });
+
+    // Wait for the fast transition and bot run to complete
     await page.waitForFunction(() => {
       const v = document.querySelector('#who-i-am .ae-scene-video');
       return v && v.classList.contains('is-finished');
     }, { timeout: 3000 });
 
-    // Wait for the 0.65s cross-fade transition to complete
-    await page.waitForTimeout(750);
+    // Wait for the fast 0.25s transition to settle
+    await page.waitForTimeout(400);
     await page.locator('#who-i-am .ae-scene-card').screenshot({ path: `${artifactDir}/about-transition-finished.png` });
 
     const checkResult = await page.evaluate(() => {

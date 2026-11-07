@@ -196,13 +196,160 @@ export function AboutGhostRobot() {
   return h("div", { ref: host, className: "ae-ghost-robot", "aria-hidden": "true", inert: "" });
 }
 
-// Media Card Component: Plays the motion animation on chapter arrival and smoothly cross-fades into the static master artwork
+// Bot B Mascot Drawing Animation Overlay (appears between video and image to execute the fast transition)
+function AboutDrawingBot({ isMobile }) {
+  return h(
+    "div",
+    { className: `ae-bot-drawing-overlay${isMobile ? " is-mobile" : ""}`, "aria-hidden": "true" },
+    h(
+      "svg",
+      {
+        className: "ae-bot-draw-svg",
+        viewBox: "0 0 1000 600",
+        preserveAspectRatio: "none"
+      },
+      h("defs", null,
+        h("linearGradient", { id: "laserStrokeGrad", x1: "0%", y1: "0%", x2: "100%", y2: "0%" },
+          h("stop", { offset: "0%", stopColor: "#FF6238", stopOpacity: "0.2" }),
+          h("stop", { offset: "70%", stopColor: "#FFA011", stopOpacity: "0.9" }),
+          h("stop", { offset: "100%", stopColor: "#FFFFFF", stopOpacity: "1" })
+        ),
+        h("filter", { id: "laserGlow", x: "-20%", y: "-20%", width: "140%", height: "140%" },
+          h("feGaussianBlur", { stdDeviation: "4", result: "blur" }),
+          h("feMerge", null,
+            h("feMergeNode", { in: "blur" }),
+            h("feMergeNode", { in: "SourceGraphic" })
+          )
+        )
+      ),
+      h("path", {
+        d: "M -20,240 Q 220,120 450,280 T 880,210 Q 960,340 1020,310",
+        className: "ae-drawn-laser-path",
+        filter: "url(#laserGlow)"
+      }),
+      h("path", {
+        d: "M 0,260 L 300,200 L 650,310 L 1020,270",
+        className: "ae-drawn-accent-path"
+      })
+    ),
+    h("div", { className: "ae-bot-laser-wipe" }),
+    h(
+      "div",
+      { className: "ae-bot-flyer" },
+      h(
+        "svg",
+        {
+          className: "ae-bot-flyer-svg",
+          viewBox: "0 0 100 120",
+          fill: "none",
+          xmlns: "http://www.w3.org/2000/svg"
+        },
+        h("defs", null,
+          h("radialGradient", { id: "botBHeadGrad", cx: "38%", cy: "32%", r: "65%" },
+            h("stop", { offset: "0%", stopColor: "#FFFFFF" }),
+            h("stop", { offset: "65%", stopColor: "#E2E8F0" }),
+            h("stop", { offset: "100%", stopColor: "#94A3B8" })
+          ),
+          h("radialGradient", { id: "botBBodyGrad", cx: "36%", cy: "30%", r: "70%" },
+            h("stop", { offset: "0%", stopColor: "#FFFFFF" }),
+            h("stop", { offset: "60%", stopColor: "#CBD5E1" }),
+            h("stop", { offset: "100%", stopColor: "#64748B" })
+          ),
+          h("linearGradient", { id: "botBFlameGrad", x1: "0%", y1: "0%", x2: "0%", y2: "100%" },
+            h("stop", { offset: "0%", stopColor: "#FFF37A" }),
+            h("stop", { offset: "35%", stopColor: "#FFA011" }),
+            h("stop", { offset: "75%", stopColor: "#FF4500" }),
+            h("stop", { offset: "100%", stopColor: "#FF1E56", stopOpacity: "0" })
+          ),
+          h("linearGradient", { id: "botBLaserBeam", x1: "0%", y1: "0%", x2: "60%", y2: "100%" },
+            h("stop", { offset: "0%", stopColor: "#FFFFFF", stopOpacity: "0.95" }),
+            h("stop", { offset: "30%", stopColor: "#FFA011", stopOpacity: "0.8" }),
+            h("stop", { offset: "80%", stopColor: "#FF4500", stopOpacity: "0.4" }),
+            h("stop", { offset: "100%", stopColor: "#FF1E56", stopOpacity: "0" })
+          ),
+          h("filter", { id: "botAmberGlow", x: "-30%", y: "-30%", width: "160%", height: "160%" },
+            h("feGaussianBlur", { stdDeviation: "2.5", result: "blur" }),
+            h("feMerge", null,
+              h("feMergeNode", { in: "blur" }),
+              h("feMergeNode", { in: "SourceGraphic" })
+            )
+          )
+        ),
+        // Conical Drawing Laser Beam from Stylus
+        h("polygon", {
+          points: "64,68 88,108 52,112",
+          fill: "url(#botBLaserBeam)",
+          className: "ae-bot-laser-beam"
+        }),
+        h("circle", {
+          cx: "70",
+          cy: "110",
+          r: "4.5",
+          fill: "#FFA011",
+          filter: "url(#botAmberGlow)",
+          className: "ae-bot-beam-spark"
+        }),
+        h("circle", { cx: "70", cy: "110", r: "2", fill: "#FFFFFF" }),
+        // Thruster Flame
+        h("path", {
+          d: "M 42,88 Q 50,118 58,88 Q 50,96 42,88 Z",
+          fill: "url(#botBFlameGrad)",
+          className: "ae-bot-thruster-flame"
+        }),
+        h("ellipse", { cx: "42", cy: "86", rx: "4", ry: "6", fill: "#334155" }),
+        h("ellipse", { cx: "58", cy: "86", rx: "4", ry: "6", fill: "#334155" }),
+        h("rect", { x: "46", y: "84", width: "8", height: "5", rx: "2.5", fill: "#FFA011" }),
+        // Torso
+        h("ellipse", { cx: "50", cy: "72", rx: "18", ry: "17", fill: "url(#botBBodyGrad)" }),
+        h("circle", { cx: "50", cy: "72", r: "5.5", fill: "none", stroke: "#FFA011", strokeWidth: "2", filter: "url(#botAmberGlow)" }),
+        h("circle", { cx: "50", cy: "72", r: "3", fill: "#EF4444" }),
+        // Left Arm
+        h("path", { d: "M 32,68 Q 22,72 24,80", stroke: "#94A3B8", strokeWidth: "4.5", strokeLinecap: "round" }),
+        h("circle", { cx: "24", cy: "80", r: "3", fill: "#1E293B" }),
+        // Right Arm & Drawing Stylus
+        h("path", { d: "M 66,66 Q 74,68 64,68", stroke: "#94A3B8", strokeWidth: "5", strokeLinecap: "round" }),
+        h("circle", { cx: "64", cy: "68", r: "3.5", fill: "#FFA011", filter: "url(#botAmberGlow)" }),
+        // Head with Ear Pods & Tilted Antenna
+        h("rect", { x: "23", y: "30", width: "5", height: "14", rx: "2.5", fill: "#94A3B8" }),
+        h("ellipse", { cx: "24", cy: "37", rx: "2.5", ry: "4.5", fill: "#FFA011", filter: "url(#botAmberGlow)" }),
+        h("rect", { x: "72", y: "30", width: "5", height: "14", rx: "2.5", fill: "#94A3B8" }),
+        h("ellipse", { cx: "76", cy: "37", rx: "2.5", ry: "4.5", fill: "#FFA011", filter: "url(#botAmberGlow)" }),
+        h("ellipse", { cx: "50", cy: "37", rx: "24", ry: "21", fill: "url(#botBHeadGrad)" }),
+        h("line", { x1: "50", y1: "16", x2: "45", y2: "6", stroke: "#64748B", strokeWidth: "2.8", strokeLinecap: "round" }),
+        h("circle", { cx: "44", cy: "5", r: "4.5", fill: "#FFA011", filter: "url(#botAmberGlow)" }),
+        h("circle", { cx: "43", cy: "4", r: "1.5", fill: "#FFFFFF" }),
+        // Obsidian Visor & Specular Glint
+        h("path", {
+          d: "M 30,34 Q 50,30 70,34 Q 72,46 50,47 Q 28,46 30,34 Z",
+          fill: "#080C16"
+        }),
+        h("path", {
+          d: "M 33,35 Q 50,32 67,35 Q 60,37 50,36 Q 40,37 33,35 Z",
+          fill: "rgba(255, 255, 255, 0.45)"
+        }),
+        // Glowing Amber Eyes with Specular Dots
+        h("circle", { cx: "41", cy: "39", r: "4.2", fill: "#FFA011", filter: "url(#botAmberGlow)" }),
+        h("circle", { cx: "59", cy: "39", r: "4.2", fill: "#FFA011", filter: "url(#botAmberGlow)" }),
+        h("circle", { cx: "39.5", cy: "37.5", r: "1.3", fill: "#FFFFFF" }),
+        h("circle", { cx: "57.5", cy: "37.5", r: "1.3", fill: "#FFFFFF" }),
+        // Trailing Particle Sparks
+        h("circle", { cx: "26", cy: "102", r: "2.2", fill: "#FFA011", opacity: "0.85", filter: "url(#botAmberGlow)" }),
+        h("circle", { cx: "18", cy: "114", r: "1.6", fill: "#FF6238", opacity: "0.7" }),
+        h("circle", { cx: "34", cy: "116", r: "1.8", fill: "#FFF37A", opacity: "0.9" })
+      )
+    )
+  );
+}
+
+// Media Card Component: Plays motion animation, triggers fast transition with Bot drawing animation
 function AboutSceneMedia({ chapter, idx, active, sectionInView, isLight, isMobile, reduced }) {
   const cardRef = useRef(null);
   const videoRef = useRef(null);
-  const [videoState, setVideoState] = useState("idle"); // "idle" | "playing" | "finished"
+  const [videoState, setVideoState] = useState("idle"); // "idle" | "playing" | "transitioning" | "finished"
   const [isPlaying, setIsPlaying] = useState(false);
+  const [showBotDrawing, setShowBotDrawing] = useState(false);
   const hasPlayedRef = useRef(false);
+  const transitionStartedRef = useRef(false);
   const [cardInView, setCardInView] = useState(false);
 
   const isActive = active === idx;
@@ -217,8 +364,10 @@ function AboutSceneMedia({ chapter, idx, active, sectionInView, isLight, isMobil
     if (prevSrcRef.current !== videoSrc) {
       prevSrcRef.current = videoSrc;
       hasPlayedRef.current = false;
+      transitionStartedRef.current = false;
       setVideoState("idle");
       setIsPlaying(false);
+      setShowBotDrawing(false);
     }
   }, [videoSrc]);
 
@@ -241,11 +390,34 @@ function AboutSceneMedia({ chapter, idx, active, sectionInView, isLight, isMobil
     return () => observer.disconnect();
   }, [isMobile]);
 
+  // Execute fast transition and bot drawing animation
+  const startTransition = useCallback(() => {
+    if (transitionStartedRef.current) return;
+    transitionStartedRef.current = true;
+    setVideoState("transitioning");
+    setIsPlaying(false);
+
+    if (reduced) {
+      setVideoState("finished");
+      setShowBotDrawing(false);
+      return;
+    }
+
+    setShowBotDrawing(true);
+    const finishTimer = setTimeout(() => {
+      setVideoState("finished");
+      setShowBotDrawing(false);
+    }, 580);
+
+    return () => clearTimeout(finishTimer);
+  }, [reduced]);
+
   // Handle motion video autoplay when section + card are visible and chapter is active
   useEffect(() => {
     if (reduced) {
       setVideoState("finished");
       setIsPlaying(false);
+      setShowBotDrawing(false);
       return;
     }
     const video = videoRef.current;
@@ -258,18 +430,18 @@ function AboutSceneMedia({ chapter, idx, active, sectionInView, isLight, isMobil
 
     if (shouldPlay) {
       hasPlayedRef.current = true;
+      transitionStartedRef.current = false;
       setVideoState("playing");
       video.currentTime = 0;
       const playPromise = video.play();
       if (playPromise !== undefined) {
         playPromise.catch(() => {
-          // Autoplay blocked by browser policy -> smoothly show static image
-          setVideoState("finished");
-          setIsPlaying(false);
+          // Autoplay blocked by browser policy -> show static image
+          startTransition();
         });
       }
     }
-  }, [sectionInView, cardInView, isActive, isMobile, reduced, videoSrc]);
+  }, [sectionInView, cardInView, isActive, isMobile, reduced, videoSrc, startTransition]);
 
   // Pause if user scrolls away or navigates to another chapter while playing
   useEffect(() => {
@@ -288,32 +460,64 @@ function AboutSceneMedia({ chapter, idx, active, sectionInView, isLight, isMobil
     setIsPlaying(true);
   }, []);
 
+  // Per-chapter motion playback duration:
+  // "Who I Am" (idx 0) kept for 6.0s; all other chapters kept for 7.5s
+  const motionDuration = idx === 0 ? 6.0 : 7.5;
+
+  // Timed trigger to guarantee exact motion duration
+  useEffect(() => {
+    if (videoState !== "playing" || transitionStartedRef.current) return;
+    const timer = setTimeout(() => {
+      startTransition();
+    }, motionDuration * 1000);
+    return () => clearTimeout(timer);
+  }, [videoState, motionDuration, startTransition]);
+
+  // Video time update trigger (at 6.0s for Who I Am, 7.5s for others, or when nearing video end)
+  const handleTimeUpdate = useCallback(() => {
+    const video = videoRef.current;
+    if (!video || transitionStartedRef.current) return;
+    if (
+      video.currentTime >= motionDuration ||
+      (video.duration > 0 && video.duration - video.currentTime <= 0.32)
+    ) {
+      startTransition();
+    }
+  }, [motionDuration, startTransition]);
+
   const handleEnded = useCallback(() => {
-    setVideoState("finished");
-    setIsPlaying(false);
-  }, []);
+    startTransition();
+  }, [startTransition]);
 
   const handleError = useCallback(() => {
     setVideoState("finished");
     setIsPlaying(false);
+    setShowBotDrawing(false);
   }, []);
 
+  const isTransitioningOrFinished = videoState === "transitioning" || videoState === "finished";
+
   return h("div", { ref: cardRef, className: "ae-scene-card" },
-    // Motion Video Layer (overlays static image, smoothly cross-fades to static image on end)
+    // Motion Video Layer (overlays static image, fast 0.25s fade to static image)
     !reduced && h("video", {
       ref: videoRef,
       key: videoSrc,
       src: videoSrc,
-      className: `ae-scene-video${isPlaying ? " is-playing" : ""}${videoState === "finished" ? " is-finished" : ""}`,
+      className: `ae-scene-video${isPlaying && !isTransitioningOrFinished ? " is-playing" : ""}${videoState === "transitioning" ? " is-transitioning" : ""}${videoState === "finished" ? " is-finished" : ""}`,
       muted: true,
       playsInline: true,
       preload: idx === 0 ? "auto" : "metadata",
       disablePictureInPicture: true,
       onPlaying: handlePlaying,
+      onTimeUpdate: handleTimeUpdate,
       onEnded: handleEnded,
       onError: handleError,
       "aria-hidden": "true"
     }),
+
+    // Bot Drawing Animation Overlay (active during fast transition)
+    showBotDrawing && h(AboutDrawingBot, { isMobile }),
+
     // High-Resolution Master Artwork Card (always rendered underneath with zero layout shift)
     h("picture", { className: "ae-scene-picture" },
       // Mobile portrait viewports <= 768px
