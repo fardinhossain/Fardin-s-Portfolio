@@ -77,10 +77,10 @@ export const ABOUT_CHAPTERS = [
     desktopLight: "/assets/images/about%20me/Desktop/Who%20I%20Am_%20Developer%20Identity.png",
     mobileDark: "/assets/images/about%20me/Mobile/Who%20I%20Am_%20CSE%20Developer%20Identity.png",
     mobileLight: "/assets/images/about%20me/Mobile/Who%20I%20Am_%20CSE%20Student%20and%20Developer.png",
-    videoDesktopLight: "/assets/images/about%20me/About_Motion_Videos_Premium_16/01_Desktop_Who-I-Am_Light.mp4",
-    videoDesktopDark: "/assets/images/about%20me/About_Motion_Videos_Premium_16/02_Desktop_Who-I-Am_Dark.mp4",
-    videoMobileLight: "/assets/images/about%20me/About_Motion_Videos_Premium_16/09_Mobile_Who-I-Am_Light.mp4",
-    videoMobileDark: "/assets/images/about%20me/About_Motion_Videos_Premium_16/10_Mobile_Who-I-Am_Dark.mp4"
+    videoDesktopLight: "/assets/videos/about-me/Desktop/01_Desktop_Who-I-Am_Light.mp4",
+    videoDesktopDark: "/assets/videos/about-me/Desktop/02_Desktop_Who-I-Am_Dark.mp4",
+    videoMobileLight: "/assets/videos/about-me/Mobile/09_Mobile_Who-I-Am_Light.mp4",
+    videoMobileDark: "/assets/videos/about-me/Mobile/10_Mobile_Who-I-Am_Dark.mp4"
   },
   {
     id: "what-i-build",
@@ -91,10 +91,10 @@ export const ABOUT_CHAPTERS = [
     desktopLight: "/assets/images/about%20me/Desktop/Building%20AI-Powered%20Web%20Solutions.png",
     mobileDark: "/assets/images/about%20me/Mobile/What%20I%20Build_%20AI-Powered%20Products.png",
     mobileLight: "/assets/images/about%20me/Mobile/Capabilities_%20From%20Idea%20to%20AI%20Product.png",
-    videoDesktopLight: "/assets/images/about%20me/About_Motion_Videos_Premium_16/03_Desktop_What-I-Build_Light.mp4",
-    videoDesktopDark: "/assets/images/about%20me/About_Motion_Videos_Premium_16/04_Desktop_What-I-Build_Dark.mp4",
-    videoMobileLight: "/assets/images/about%20me/About_Motion_Videos_Premium_16/11_Mobile_What-I-Build_Light.mp4",
-    videoMobileDark: "/assets/images/about%20me/About_Motion_Videos_Premium_16/12_Mobile_What-I-Build_Dark.mp4"
+    videoDesktopLight: "/assets/videos/about-me/Desktop/03_Desktop_What-I-Build_Light.mp4",
+    videoDesktopDark: "/assets/videos/about-me/Desktop/04_Desktop_What-I-Build_Dark.mp4",
+    videoMobileLight: "/assets/videos/about-me/Mobile/11_Mobile_What-I-Build_Light.mp4",
+    videoMobileDark: "/assets/videos/about-me/Mobile/12_Mobile_What-I-Build_Dark.mp4"
   },
   {
     id: "why-me",
@@ -105,10 +105,10 @@ export const ABOUT_CHAPTERS = [
     desktopLight: "/assets/images/about%20me/Desktop/Chapter%2003_%20Why%20Me%20Strengths%20Infographic.png",
     mobileDark: "/assets/images/about%20me/Mobile/Why%20Me_%20Strengths%20in%20Code.png",
     mobileLight: "/assets/images/about%20me/Mobile/whymelight.png",
-    videoDesktopLight: "/assets/images/about%20me/About_Motion_Videos_Premium_16/05_Desktop_Why-Me_Light.mp4",
-    videoDesktopDark: "/assets/images/about%20me/About_Motion_Videos_Premium_16/06_Desktop_Why-Me_Dark.mp4",
-    videoMobileLight: "/assets/images/about%20me/About_Motion_Videos_Premium_16/13_Mobile_Why-Me_Light.mp4",
-    videoMobileDark: "/assets/images/about%20me/About_Motion_Videos_Premium_16/14_Mobile_Why-Me_Dark.mp4"
+    videoDesktopLight: "/assets/videos/about-me/Desktop/05_Desktop_Why-Me_Light.mp4",
+    videoDesktopDark: "/assets/videos/about-me/Desktop/06_Desktop_Why-Me_Dark.mp4",
+    videoMobileLight: "/assets/videos/about-me/Mobile/13_Mobile_Why-Me_Light.mp4",
+    videoMobileDark: "/assets/videos/about-me/Mobile/14_Mobile_Why-Me_Dark.mp4"
   },
   {
     id: "how-i-work",
@@ -119,12 +119,19 @@ export const ABOUT_CHAPTERS = [
     desktopLight: "/assets/images/about%20me/Desktop/How%20I%20Work_%20A%20Five-Step%20Process.png",
     mobileDark: "/assets/images/about%20me/Mobile/How%20I%20Work_%20A%20Neon%20Process%20Path.png",
     mobileLight: "/assets/images/about%20me/Mobile/How%20I%20Work_%20A%20Thoughtful%20Process.png",
-    videoDesktopLight: "/assets/images/about%20me/About_Motion_Videos_Premium_16/07_Desktop_How-I-Work_Light.mp4",
-    videoDesktopDark: "/assets/images/about%20me/About_Motion_Videos_Premium_16/08_Desktop_How-I-Work_Dark.mp4",
-    videoMobileLight: "/assets/images/about%20me/About_Motion_Videos_Premium_16/15_Mobile_How-I-Work_Light.mp4",
-    videoMobileDark: "/assets/images/about%20me/About_Motion_Videos_Premium_16/16_Mobile_How-I-Work_Dark.mp4"
+    videoDesktopLight: "/assets/videos/about-me/Desktop/07_Desktop_How-I-Work_Light.mp4",
+    videoDesktopDark: "/assets/videos/about-me/Desktop/08_Desktop_How-I-Work_Dark.mp4",
+    videoMobileLight: "/assets/videos/about-me/Mobile/15_Mobile_How-I-Work_Light.mp4",
+    videoMobileDark: "/assets/videos/about-me/Mobile/16_Mobile_How-I-Work_Dark.mp4"
   }
 ];
+
+export const BOT_TRANSITION_VIDEOS = {
+  desktopLight: "/assets/videos/about-me/Desktop/Bot_Transition_Desktop_Light.mp4",
+  desktopDark: "/assets/videos/about-me/Desktop/Bot_Transition_Desktop_Dark.mp4",
+  mobileLight: "/assets/videos/about-me/Mobile/Bot_Transition_Mobile_Light.mp4",
+  mobileDark: "/assets/videos/about-me/Mobile/Bot_Transition_Mobile_Dark.mp4"
+};
 
 export const STAGES = [
   { num: "01", title: "Understand", desc: "Clarify the problem, users, and requirements." },
@@ -196,185 +203,37 @@ export function AboutGhostRobot() {
   return h("div", { ref: host, className: "ae-ghost-robot", "aria-hidden": "true", inert: "" });
 }
 
-// Bot B Mascot Drawing Animation Overlay (appears between video and image to execute the fast transition)
-function AboutDrawingBot({ isMobile }) {
-  return h(
-    "div",
-    { className: `ae-bot-drawing-overlay${isMobile ? " is-mobile" : ""}`, "aria-hidden": "true" },
-    h(
-      "svg",
-      {
-        className: "ae-bot-draw-svg",
-        viewBox: "0 0 1000 600",
-        preserveAspectRatio: "none"
-      },
-      h("defs", null,
-        h("linearGradient", { id: "laserStrokeGrad", x1: "0%", y1: "0%", x2: "100%", y2: "0%" },
-          h("stop", { offset: "0%", stopColor: "#FF6238", stopOpacity: "0.2" }),
-          h("stop", { offset: "70%", stopColor: "#FFA011", stopOpacity: "0.9" }),
-          h("stop", { offset: "100%", stopColor: "#FFFFFF", stopOpacity: "1" })
-        ),
-        h("filter", { id: "laserGlow", x: "-20%", y: "-20%", width: "140%", height: "140%" },
-          h("feGaussianBlur", { stdDeviation: "4", result: "blur" }),
-          h("feMerge", null,
-            h("feMergeNode", { in: "blur" }),
-            h("feMergeNode", { in: "SourceGraphic" })
-          )
-        )
-      ),
-      h("path", {
-        d: "M -20,240 Q 220,120 450,280 T 880,210 Q 960,340 1020,310",
-        className: "ae-drawn-laser-path",
-        filter: "url(#laserGlow)"
-      }),
-      h("path", {
-        d: "M 0,260 L 300,200 L 650,310 L 1020,270",
-        className: "ae-drawn-accent-path"
-      })
-    ),
-    h("div", { className: "ae-bot-laser-wipe" }),
-    h(
-      "div",
-      { className: "ae-bot-flyer" },
-      h(
-        "svg",
-        {
-          className: "ae-bot-flyer-svg",
-          viewBox: "0 0 100 120",
-          fill: "none",
-          xmlns: "http://www.w3.org/2000/svg"
-        },
-        h("defs", null,
-          h("radialGradient", { id: "botBHeadGrad", cx: "38%", cy: "32%", r: "65%" },
-            h("stop", { offset: "0%", stopColor: "#FFFFFF" }),
-            h("stop", { offset: "65%", stopColor: "#E2E8F0" }),
-            h("stop", { offset: "100%", stopColor: "#94A3B8" })
-          ),
-          h("radialGradient", { id: "botBBodyGrad", cx: "36%", cy: "30%", r: "70%" },
-            h("stop", { offset: "0%", stopColor: "#FFFFFF" }),
-            h("stop", { offset: "60%", stopColor: "#CBD5E1" }),
-            h("stop", { offset: "100%", stopColor: "#64748B" })
-          ),
-          h("linearGradient", { id: "botBFlameGrad", x1: "0%", y1: "0%", x2: "0%", y2: "100%" },
-            h("stop", { offset: "0%", stopColor: "#FFF37A" }),
-            h("stop", { offset: "35%", stopColor: "#FFA011" }),
-            h("stop", { offset: "75%", stopColor: "#FF4500" }),
-            h("stop", { offset: "100%", stopColor: "#FF1E56", stopOpacity: "0" })
-          ),
-          h("linearGradient", { id: "botBLaserBeam", x1: "0%", y1: "0%", x2: "60%", y2: "100%" },
-            h("stop", { offset: "0%", stopColor: "#FFFFFF", stopOpacity: "0.95" }),
-            h("stop", { offset: "30%", stopColor: "#FFA011", stopOpacity: "0.8" }),
-            h("stop", { offset: "80%", stopColor: "#FF4500", stopOpacity: "0.4" }),
-            h("stop", { offset: "100%", stopColor: "#FF1E56", stopOpacity: "0" })
-          ),
-          h("filter", { id: "botAmberGlow", x: "-30%", y: "-30%", width: "160%", height: "160%" },
-            h("feGaussianBlur", { stdDeviation: "2.5", result: "blur" }),
-            h("feMerge", null,
-              h("feMergeNode", { in: "blur" }),
-              h("feMergeNode", { in: "SourceGraphic" })
-            )
-          )
-        ),
-        // Conical Drawing Laser Beam from Stylus
-        h("polygon", {
-          points: "64,68 88,108 52,112",
-          fill: "url(#botBLaserBeam)",
-          className: "ae-bot-laser-beam"
-        }),
-        h("circle", {
-          cx: "70",
-          cy: "110",
-          r: "4.5",
-          fill: "#FFA011",
-          filter: "url(#botAmberGlow)",
-          className: "ae-bot-beam-spark"
-        }),
-        h("circle", { cx: "70", cy: "110", r: "2", fill: "#FFFFFF" }),
-        // Thruster Flame
-        h("path", {
-          d: "M 42,88 Q 50,118 58,88 Q 50,96 42,88 Z",
-          fill: "url(#botBFlameGrad)",
-          className: "ae-bot-thruster-flame"
-        }),
-        h("ellipse", { cx: "42", cy: "86", rx: "4", ry: "6", fill: "#334155" }),
-        h("ellipse", { cx: "58", cy: "86", rx: "4", ry: "6", fill: "#334155" }),
-        h("rect", { x: "46", y: "84", width: "8", height: "5", rx: "2.5", fill: "#FFA011" }),
-        // Torso
-        h("ellipse", { cx: "50", cy: "72", rx: "18", ry: "17", fill: "url(#botBBodyGrad)" }),
-        h("circle", { cx: "50", cy: "72", r: "5.5", fill: "none", stroke: "#FFA011", strokeWidth: "2", filter: "url(#botAmberGlow)" }),
-        h("circle", { cx: "50", cy: "72", r: "3", fill: "#EF4444" }),
-        // Left Arm
-        h("path", { d: "M 32,68 Q 22,72 24,80", stroke: "#94A3B8", strokeWidth: "4.5", strokeLinecap: "round" }),
-        h("circle", { cx: "24", cy: "80", r: "3", fill: "#1E293B" }),
-        // Right Arm & Drawing Stylus
-        h("path", { d: "M 66,66 Q 74,68 64,68", stroke: "#94A3B8", strokeWidth: "5", strokeLinecap: "round" }),
-        h("circle", { cx: "64", cy: "68", r: "3.5", fill: "#FFA011", filter: "url(#botAmberGlow)" }),
-        // Head with Ear Pods & Tilted Antenna
-        h("rect", { x: "23", y: "30", width: "5", height: "14", rx: "2.5", fill: "#94A3B8" }),
-        h("ellipse", { cx: "24", cy: "37", rx: "2.5", ry: "4.5", fill: "#FFA011", filter: "url(#botAmberGlow)" }),
-        h("rect", { x: "72", y: "30", width: "5", height: "14", rx: "2.5", fill: "#94A3B8" }),
-        h("ellipse", { cx: "76", cy: "37", rx: "2.5", ry: "4.5", fill: "#FFA011", filter: "url(#botAmberGlow)" }),
-        h("ellipse", { cx: "50", cy: "37", rx: "24", ry: "21", fill: "url(#botBHeadGrad)" }),
-        h("line", { x1: "50", y1: "16", x2: "45", y2: "6", stroke: "#64748B", strokeWidth: "2.8", strokeLinecap: "round" }),
-        h("circle", { cx: "44", cy: "5", r: "4.5", fill: "#FFA011", filter: "url(#botAmberGlow)" }),
-        h("circle", { cx: "43", cy: "4", r: "1.5", fill: "#FFFFFF" }),
-        // Obsidian Visor & Specular Glint
-        h("path", {
-          d: "M 30,34 Q 50,30 70,34 Q 72,46 50,47 Q 28,46 30,34 Z",
-          fill: "#080C16"
-        }),
-        h("path", {
-          d: "M 33,35 Q 50,32 67,35 Q 60,37 50,36 Q 40,37 33,35 Z",
-          fill: "rgba(255, 255, 255, 0.45)"
-        }),
-        // Glowing Amber Eyes with Specular Dots
-        h("circle", { cx: "41", cy: "39", r: "4.2", fill: "#FFA011", filter: "url(#botAmberGlow)" }),
-        h("circle", { cx: "59", cy: "39", r: "4.2", fill: "#FFA011", filter: "url(#botAmberGlow)" }),
-        h("circle", { cx: "39.5", cy: "37.5", r: "1.3", fill: "#FFFFFF" }),
-        h("circle", { cx: "57.5", cy: "37.5", r: "1.3", fill: "#FFFFFF" }),
-        // Trailing Particle Sparks
-        h("circle", { cx: "26", cy: "102", r: "2.2", fill: "#FFA011", opacity: "0.85", filter: "url(#botAmberGlow)" }),
-        h("circle", { cx: "18", cy: "114", r: "1.6", fill: "#FF6238", opacity: "0.7" }),
-        h("circle", { cx: "34", cy: "116", r: "1.8", fill: "#FFF37A", opacity: "0.9" })
-      )
-    )
-  );
-}
-
-// Media Card Component: Plays motion animation, triggers fast transition with Bot drawing animation
-function AboutSceneMedia({ chapter, idx, active, sectionInView, isLight, isMobile, reduced }) {
+// Reusable Chapter Media Component: Executes 3-step sequence
+// 1. Chapter Motion Video (6s for Who I Am, 7.5s for others)
+// 2. Bot F-01 Transition Video (3s)
+// 3. Static High-Resolution PNG Artwork (fading in over ~600ms and permanently staying visible)
+export function AboutChapterMedia({ chapter, idx, active, sectionInView, isLight, isMobile, reduced }) {
   const cardRef = useRef(null);
-  const videoRef = useRef(null);
-  const [videoState, setVideoState] = useState("idle"); // "idle" | "playing" | "transitioning" | "finished"
-  const [isPlaying, setIsPlaying] = useState(false);
-  const [showBotDrawing, setShowBotDrawing] = useState(false);
-  const hasPlayedRef = useRef(false);
-  const transitionStartedRef = useRef(false);
+  const chapterVideoRef = useRef(null);
+  const botVideoRef = useRef(null);
+
+  const [stage, setStage] = useState(() => (reduced ? "static-image" : "idle")); // "idle" | "chapter-video" | "bot-video" | "static-image"
   const [cardInView, setCardInView] = useState(false);
+  const [cardNearView, setCardNearView] = useState(false);
 
-  const isActive = active === idx;
-  const videoSrc = isMobile
-    ? (isLight ? chapter.videoMobileLight : chapter.videoMobileDark)
-    : (isLight ? chapter.videoDesktopLight : chapter.videoDesktopDark);
+  const hasPlayedRef = useRef(false);
+  const hasCompletedRef = useRef(reduced);
+  const lockedThemeRef = useRef(null);
+  const advanceTimerRef = useRef(null);
 
-  const prevSrcRef = useRef(videoSrc);
-
-  // Reset played state when theme or viewport mode changes so user can see animation in new mode
+  // If prefers-reduced-motion activates, immediately jump to static image
   useEffect(() => {
-    if (prevSrcRef.current !== videoSrc) {
-      prevSrcRef.current = videoSrc;
-      hasPlayedRef.current = false;
-      transitionStartedRef.current = false;
-      setVideoState("idle");
-      setIsPlaying(false);
-      setShowBotDrawing(false);
+    if (reduced) {
+      hasCompletedRef.current = true;
+      setStage("static-image");
     }
-  }, [videoSrc]);
+  }, [reduced]);
 
-  // Track card element visibility within the viewport
+  // Viewport intersection observer (threshold 0.4 for ~40% visible) & proximity preload observer
   useEffect(() => {
     if (typeof IntersectionObserver === "undefined") {
       setCardInView(true);
+      setCardNearView(true);
       return;
     }
     const card = cardRef.current;
@@ -384,150 +243,213 @@ function AboutSceneMedia({ chapter, idx, active, sectionInView, isLight, isMobil
       entries.forEach((entry) => {
         setCardInView(entry.isIntersecting);
       });
-    }, { threshold: isMobile ? 0.2 : 0.35 });
+    }, { threshold: isMobile ? 0.25 : 0.4 });
+
+    const proximityObserver = new IntersectionObserver((entries) => {
+      entries.forEach((entry) => {
+        if (entry.isIntersecting) {
+          setCardNearView(true);
+        }
+      });
+    }, { rootMargin: "600px 0px" });
 
     observer.observe(card);
-    return () => observer.disconnect();
+    proximityObserver.observe(card);
+
+    return () => {
+      observer.disconnect();
+      proximityObserver.disconnect();
+    };
   }, [isMobile]);
 
-  // Execute fast transition and bot drawing animation
-  const startTransition = useCallback(() => {
-    if (transitionStartedRef.current) return;
-    transitionStartedRef.current = true;
-    setVideoState("transitioning");
-    setIsPlaying(false);
+  // Determine current active theme & viewport variant
+  // Lock theme during active video stages so mid-sequence toggles do not abruptly disrupt playback
+  const activeVariant = (stage === "chapter-video" || stage === "bot-video") && lockedThemeRef.current
+    ? lockedThemeRef.current
+    : { isLight, isMobile };
 
-    if (reduced) {
-      setVideoState("finished");
-      setShowBotDrawing(false);
-      return;
-    }
+  const chapterVideoSrc = activeVariant.isMobile
+    ? (activeVariant.isLight ? chapter.videoMobileLight : chapter.videoMobileDark)
+    : (activeVariant.isLight ? chapter.videoDesktopLight : chapter.videoDesktopDark);
 
-    setShowBotDrawing(true);
-    const finishTimer = setTimeout(() => {
-      setVideoState("finished");
-      setShowBotDrawing(false);
-    }, 580);
+  const botVideoSrc = activeVariant.isMobile
+    ? (activeVariant.isLight ? BOT_TRANSITION_VIDEOS.mobileLight : BOT_TRANSITION_VIDEOS.mobileDark)
+    : (activeVariant.isLight ? BOT_TRANSITION_VIDEOS.desktopLight : BOT_TRANSITION_VIDEOS.desktopDark);
 
-    return () => clearTimeout(finishTimer);
-  }, [reduced]);
+  const posterSrc = activeVariant.isMobile
+    ? (activeVariant.isLight ? chapter.mobileLight : chapter.mobileDark)
+    : (activeVariant.isLight ? chapter.desktopLight : chapter.desktopDark);
 
-  // Handle motion video autoplay when section + card are visible and chapter is active
-  useEffect(() => {
-    if (reduced) {
-      setVideoState("finished");
-      setIsPlaying(false);
-      setShowBotDrawing(false);
-      return;
-    }
-    const video = videoRef.current;
-    if (!video) return;
+  const isVisibleNow = sectionInView && (isMobile ? active === idx : cardInView);
 
-    video.muted = true;
-    video.defaultMuted = true;
+  // Transitions between stages
+  const advanceToStatic = useCallback(() => {
+    if (advanceTimerRef.current) clearTimeout(advanceTimerRef.current);
+    hasCompletedRef.current = true;
+    setStage("static-image");
+  }, []);
 
-    const shouldPlay = sectionInView && (isMobile ? isActive : (isActive && cardInView)) && !hasPlayedRef.current;
+  const advanceToBotVideo = useCallback(() => {
+    if (hasCompletedRef.current) return;
+    if (advanceTimerRef.current) clearTimeout(advanceTimerRef.current);
 
-    if (shouldPlay) {
-      hasPlayedRef.current = true;
-      transitionStartedRef.current = false;
-      setVideoState("playing");
-      video.currentTime = 0;
-      const playPromise = video.play();
+    setStage("bot-video");
+
+    const botVideo = botVideoRef.current;
+    if (botVideo) {
+      botVideo.muted = true;
+      botVideo.defaultMuted = true;
+      botVideo.currentTime = 0;
+      const playPromise = botVideo.play();
       if (playPromise !== undefined) {
         playPromise.catch(() => {
-          // Autoplay blocked by browser policy -> show static image
-          startTransition();
+          advanceToStatic();
         });
       }
     }
-  }, [sectionInView, cardInView, isActive, isMobile, reduced, videoSrc, startTransition]);
+  }, [advanceToStatic]);
 
-  // Pause if user scrolls away or navigates to another chapter while playing
+  // Autoplay trigger when chapter scrolls into view (~40% visible)
   useEffect(() => {
-    const video = videoRef.current;
+    if (reduced || hasCompletedRef.current || hasPlayedRef.current) return;
+
+    if (isVisibleNow && stage === "idle") {
+      hasPlayedRef.current = true;
+      lockedThemeRef.current = { isLight, isMobile };
+      setStage("chapter-video");
+
+      const chapterVideo = chapterVideoRef.current;
+      if (chapterVideo) {
+        chapterVideo.muted = true;
+        chapterVideo.defaultMuted = true;
+        chapterVideo.currentTime = 0;
+        const playPromise = chapterVideo.play();
+        if (playPromise !== undefined) {
+          playPromise.catch(() => {
+            advanceToBotVideo();
+          });
+        }
+      }
+    }
+  }, [isVisibleNow, stage, reduced, isLight, isMobile, advanceToBotVideo]);
+
+  // Scroll pause/resume handling mid-sequence
+  useEffect(() => {
+    if (hasCompletedRef.current) return;
+
+    const currentVid = stage === "chapter-video"
+      ? chapterVideoRef.current
+      : (stage === "bot-video" ? botVideoRef.current : null);
+
+    if (!currentVid) return;
+
+    if (!isVisibleNow && !currentVid.paused) {
+      currentVid.pause();
+    } else if (isVisibleNow && currentVid.paused) {
+      currentVid.play().catch(() => {});
+    }
+  }, [isVisibleNow, stage]);
+
+  // Duration enforcement (6.0s for Who I Am, 7.5s for others, 3.0s for bot video)
+  const chapterDuration = idx === 0 ? 6.0 : 7.5;
+  const botDuration = 3.0;
+
+  useEffect(() => {
+    if (stage === "chapter-video") {
+      advanceTimerRef.current = setTimeout(() => {
+        advanceToBotVideo();
+      }, (chapterDuration + 0.3) * 1000);
+      return () => clearTimeout(advanceTimerRef.current);
+    }
+    if (stage === "bot-video") {
+      advanceTimerRef.current = setTimeout(() => {
+        advanceToStatic();
+      }, (botDuration + 0.3) * 1000);
+      return () => clearTimeout(advanceTimerRef.current);
+    }
+  }, [stage, chapterDuration, botDuration, advanceToBotVideo, advanceToStatic]);
+
+  const handleChapterTimeUpdate = useCallback(() => {
+    const video = chapterVideoRef.current;
     if (!video) return;
-
-    const isVisibleNow = sectionInView && (isMobile ? isActive : cardInView);
-    if (!isVisibleNow && videoState === "playing") {
-      video.pause();
-    } else if (isVisibleNow && videoState === "playing" && video.paused) {
-      video.play().catch(() => {});
-    }
-  }, [sectionInView, cardInView, isActive, isMobile, videoState]);
-
-  const handlePlaying = useCallback(() => {
-    setIsPlaying(true);
-  }, []);
-
-  // Per-chapter motion playback duration:
-  // "Who I Am" (idx 0) kept for 6.0s; all other chapters kept for 7.5s
-  const motionDuration = idx === 0 ? 6.0 : 7.5;
-
-  // Timed trigger to guarantee exact motion duration
-  useEffect(() => {
-    if (videoState !== "playing" || transitionStartedRef.current) return;
-    const timer = setTimeout(() => {
-      startTransition();
-    }, motionDuration * 1000);
-    return () => clearTimeout(timer);
-  }, [videoState, motionDuration, startTransition]);
-
-  // Video time update trigger (at 6.0s for Who I Am, 7.5s for others, or when nearing video end)
-  const handleTimeUpdate = useCallback(() => {
-    const video = videoRef.current;
-    if (!video || transitionStartedRef.current) return;
     if (
-      video.currentTime >= motionDuration ||
-      (video.duration > 0 && video.duration - video.currentTime <= 0.32)
+      video.currentTime >= chapterDuration ||
+      (video.duration > 0 && video.duration - video.currentTime <= 0.25)
     ) {
-      startTransition();
+      advanceToBotVideo();
     }
-  }, [motionDuration, startTransition]);
+  }, [chapterDuration, advanceToBotVideo]);
 
-  const handleEnded = useCallback(() => {
-    startTransition();
-  }, [startTransition]);
+  const handleBotTimeUpdate = useCallback(() => {
+    const video = botVideoRef.current;
+    if (!video) return;
+    if (
+      video.currentTime >= botDuration ||
+      (video.duration > 0 && video.duration - video.currentTime <= 0.25)
+    ) {
+      advanceToStatic();
+    }
+  }, [botDuration, advanceToStatic]);
 
-  const handleError = useCallback(() => {
-    setVideoState("finished");
-    setIsPlaying(false);
-    setShowBotDrawing(false);
-  }, []);
+  // Preloading controls:
+  // - Chapter video: auto if idx===0 or near view or previous chapter active
+  // - Bot video: auto during chapter video playback so transition is instant
+  const shouldPreloadChapter = idx === 0 || cardNearView || active >= idx - 1;
+  const chapterPreload = shouldPreloadChapter ? "auto" : "none";
+  const botPreload = (stage === "chapter-video" || stage === "bot-video") ? "auto" : "none";
 
-  const isTransitioningOrFinished = videoState === "transitioning" || videoState === "finished";
+  const isVideoActive = stage === "chapter-video" || stage === "bot-video";
 
-  return h("div", { ref: cardRef, className: "ae-scene-card" },
-    // Motion Video Layer (overlays static image, fast 0.25s fade to static image)
+  return h(
+    "div",
+    {
+      ref: cardRef,
+      className: `ae-scene-card${isVideoActive ? " has-active-video" : ""}${stage === "static-image" ? " is-static" : ""}`
+    },
+    // Layer 1: Chapter Video
     !reduced && h("video", {
-      ref: videoRef,
-      key: videoSrc,
-      src: videoSrc,
-      className: `ae-scene-video${isPlaying && !isTransitioningOrFinished ? " is-playing" : ""}${videoState === "transitioning" ? " is-transitioning" : ""}${videoState === "finished" ? " is-finished" : ""}`,
+      ref: chapterVideoRef,
+      key: `chapter-${chapterVideoSrc}`,
+      src: chapterVideoSrc,
+      poster: posterSrc,
+      className: `ae-scene-video ae-layer-chapter-video${stage === "chapter-video" ? " is-active" : ""}`,
       muted: true,
       playsInline: true,
-      preload: idx === 0 ? "auto" : "metadata",
+      preload: chapterPreload,
       disablePictureInPicture: true,
-      onPlaying: handlePlaying,
-      onTimeUpdate: handleTimeUpdate,
-      onEnded: handleEnded,
-      onError: handleError,
+      onEnded: advanceToBotVideo,
+      onTimeUpdate: handleChapterTimeUpdate,
+      onError: advanceToBotVideo,
       "aria-hidden": "true"
     }),
 
-    // Bot Drawing Animation Overlay (active during fast transition)
-    showBotDrawing && h(AboutDrawingBot, { isMobile }),
+    // Layer 2: Bot Transition Video
+    !reduced && h("video", {
+      ref: botVideoRef,
+      key: `bot-${botVideoSrc}`,
+      src: botVideoSrc,
+      poster: posterSrc,
+      className: `ae-scene-video ae-layer-bot-video${stage === "bot-video" ? " is-active" : ""}`,
+      muted: true,
+      playsInline: true,
+      preload: botPreload,
+      disablePictureInPicture: true,
+      onEnded: advanceToStatic,
+      onTimeUpdate: handleBotTimeUpdate,
+      onError: advanceToStatic,
+      "aria-hidden": "true"
+    }),
 
-    // High-Resolution Master Artwork Card (always rendered underneath with zero layout shift)
-    h("picture", { className: "ae-scene-picture" },
-      // Mobile portrait viewports <= 768px
+    // Layer 3: High-Resolution Master Artwork Card
+    h(
+      "picture",
+      { className: `ae-scene-picture${stage === "static-image" || stage === "idle" ? " is-visible" : ""}` },
       h("source", {
         media: "(max-width: 768px)",
         srcSet: isLight ? chapter.mobileLight : chapter.mobileDark,
         width: 1086,
         height: 1448
       }),
-      // Desktop widescreen viewports > 768px
       h("img", {
         src: isLight ? chapter.desktopLight : chapter.desktopDark,
         alt: `${chapter.number} / ${chapter.title} — ${chapter.tag}`,
@@ -542,6 +464,9 @@ function AboutSceneMedia({ chapter, idx, active, sectionInView, isLight, isMobil
     h("div", { className: "ae-scene-glow", "aria-hidden": "true" })
   );
 }
+
+// Backwards-compatible export alias
+export const AboutSceneMedia = AboutChapterMedia;
 
 export function AboutScrollStory() {
   const [active, setActive] = useState(0);
@@ -1074,8 +999,8 @@ export function AboutScrollStory() {
                 tabIndex: -1,
                 "aria-label": `${ch.number} ${ch.title} — ${ch.tag}`
               },
-                // Motion Animation to Static Artwork Scene Media
-                h(AboutSceneMedia, {
+                // Motion Animation to Static Artwork Chapter Media
+                h(AboutChapterMedia, {
                   chapter: ch,
                   idx,
                   active,
