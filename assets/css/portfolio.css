@@ -7708,152 +7708,93 @@ body,
 }
 
 /* ==========================================================================
-   ROBOTIC PORTFOLIO ENTRANCE (Bot F-01 Door Opening Portal)
+   CINEMATIC WELCOME ENTRANCE OVERLAY (Bot F-01 Door Access 6s Video)
    ========================================================================== */
-.portfolio-intro-overlay {
+.welcome-intro-overlay {
   position: fixed;
   inset: 0;
   width: 100vw;
+  width: 100dvw;
   height: 100vh;
-  z-index: 9990;
-  background: #0A0D14;
-  overflow: hidden;
+  height: 100dvh;
+  background-color: #080a0f;
+  z-index: 99999;
   display: flex;
-  flex-direction: column;
-  justify-content: space-between;
-  transition: opacity 0.3s cubic-bezier(0.16, 1, 0.3, 1), visibility 0.3s;
+  align-items: center;
+  justify-content: center;
+  overflow: hidden;
+  opacity: 1;
+  transition: opacity 500ms cubic-bezier(0.16, 1, 0.3, 1);
+  pointer-events: auto;
   user-select: none;
+  -webkit-user-select: none;
 }
 
-[data-theme="light"] .portfolio-intro-overlay {
-  background: radial-gradient(circle at 50% 45%, #FFFFFF 0%, #EEF2F6 70%, #E2E8F0 100%);
-}
-
-[data-theme="dark"] .portfolio-intro-overlay {
-  background: radial-gradient(circle at 50% 45%, #141824 0%, #0B0D12 70%, #05070A 100%);
-}
-
-.portfolio-intro-overlay.intro-fading {
+.welcome-intro-overlay.is-fading-out {
   opacity: 0;
   pointer-events: none;
 }
 
-.intro-canvas-container {
+.welcome-intro-video {
   position: absolute;
   inset: 0;
   width: 100%;
   height: 100%;
-  z-index: 1;
-}
-
-.intro-top-bar {
-  position: relative;
-  z-index: 10;
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  padding: 1.5rem 2rem;
-  width: 100%;
-  max-width: 1400px;
-  margin: 0 auto;
-}
-
-.intro-system-tag {
-  display: inline-flex;
-  align-items: center;
-  gap: 0.6rem;
-  padding: 0.45rem 0.95rem;
-  border-radius: var(--radius-pill);
-  background: var(--bg-surface);
-  border: 1px solid var(--border-light);
-  box-shadow: var(--shadow-ambient);
-  font-family: var(--font-mono);
-  font-size: 0.72rem;
-  font-weight: 700;
-  letter-spacing: 0.05em;
-  color: var(--text-primary);
-}
-
-.intro-system-beacon {
-  width: 8px;
-  height: 8px;
-  border-radius: 50%;
-  background: var(--accent-red);
-  box-shadow: 0 0 10px var(--accent-red);
-  animation: themeLedPulse 1.2s infinite;
-}
-
-.intro-system-beacon.beacon-granted {
-  background: #10B981;
-  box-shadow: 0 0 12px #10B981;
-}
-
-.intro-skip-btn {
-  display: inline-flex;
-  align-items: center;
-  gap: 0.45rem;
-  padding: 0.5rem 1.1rem;
-  border-radius: var(--radius-pill);
-  background: var(--bg-surface);
-  border: 1px solid var(--border-light);
-  color: var(--text-primary);
-  font-family: var(--font-sans);
-  font-size: 0.82rem;
-  font-weight: 700;
-  cursor: pointer;
-  box-shadow: var(--shadow-ambient);
-  transition: transform 0.2s ease, background-color 0.2s ease, border-color 0.2s ease;
-}
-
-.intro-skip-btn:hover {
-  transform: translateY(-2px);
-  border-color: var(--accent-red);
-  color: var(--accent-red);
-}
-
-.intro-kbd-hint {
-  font-family: var(--font-mono);
-  font-size: 0.65rem;
-  padding: 0.15rem 0.4rem;
-  border-radius: 4px;
-  background: var(--bg-subtle);
-  border: 1px solid var(--border-light);
-  color: var(--text-muted);
-}
-
-.intro-bottom-bar {
-  position: relative;
-  z-index: 10;
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  gap: 0.4rem;
-  padding: 1.5rem 2rem 2.5rem;
-  text-align: center;
+  object-fit: cover;
+  display: block;
   pointer-events: none;
 }
 
-.intro-status-badge {
+.welcome-intro-skip-btn {
+  position: absolute;
+  bottom: 2.2rem;
+  left: 50%;
+  transform: translateX(-50%);
+  z-index: 10;
+  appearance: none;
+  border: 1px solid rgba(255, 255, 255, 0.18);
+  background: rgba(8, 10, 15, 0.72);
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+  color: rgba(255, 255, 255, 0.92);
+  font-family: var(--font-sans, system-ui, -apple-system, sans-serif);
+  font-size: 0.82rem;
+  font-weight: 600;
+  letter-spacing: 0.04em;
+  padding: 0.55rem 1.3rem;
+  border-radius: 9999px;
+  cursor: pointer;
+  transition: transform 0.2s ease, background 0.2s ease, border-color 0.2s ease, color 0.2s ease;
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.55);
   display: inline-flex;
   align-items: center;
-  gap: 0.5rem;
-  font-family: var(--font-mono);
-  font-size: 0.78rem;
-  font-weight: 700;
-  letter-spacing: 0.08em;
-  color: var(--accent-red);
-  text-transform: uppercase;
+  justify-content: center;
 }
 
-.intro-status-badge.status-granted {
-  color: #10B981;
+.welcome-intro-skip-btn:hover {
+  background: rgba(255, 255, 255, 0.15);
+  border-color: rgba(255, 98, 56, 0.65);
+  color: #ffffff;
+  transform: translateX(-50%) translateY(-1px);
 }
 
-.intro-status-sub {
-  font-family: var(--font-sans);
-  font-size: 0.85rem;
-  font-weight: 500;
-  color: var(--text-muted);
+.welcome-intro-skip-btn:focus-visible {
+  outline: 2px solid var(--ae-accent, #FF6238);
+  outline-offset: 2px;
+}
+
+@media (max-width: 768px) {
+  .welcome-intro-skip-btn {
+    bottom: calc(1.5rem + env(safe-area-inset-bottom, 0px));
+    font-size: 0.8rem;
+    padding: 0.5rem 1.15rem;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .welcome-intro-overlay {
+    display: none !important;
+  }
 }
 
 /* Replay entrance button in footer */

@@ -34,9 +34,9 @@ import {
   launchRobotThemeTransition
 } from "./theme-manager.js";
 import {
-  PortfolioIntro,
-  hasSeenIntro,
-  resetIntroSeen,
+  WelcomeIntro,
+  shouldPlayWelcomeIntro,
+  markWelcomeIntroSeen,
   prefersReducedMotion
 } from "./portfolio-intro.js";
 import { CinematicHeroSection } from "./cinematic-hero-section.js";
@@ -465,23 +465,51 @@ function PortfolioApp() {
     return () => cleanup?.();
   }, [view]);
 
-  // Robotic Entrance Animation State (The full-screen cinematic hero is the primary entrance)
-  const [showIntro, setShowIntro] = useState(false);
+  // 6-Second Cinematic Welcome Entrance State
+  const [showIntro, setShowIntro] = useState(() => shouldPlayWelcomeIntro());
   const [introKey, setIntroKey] = useState(0);
+
+  useEffect(() => {
+    if (showIntro) {
+      markWelcomeIntroSeen();
+    }
+  }, [showIntro]);
+
+  useEffect(() => {
+    const media = window.matchMedia?.("(prefers-reduced-motion: reduce)");
+    if (!media) return;
+    const onChange = () => {
+      if (media.matches) {
+        setShowIntro(false);
+      }
+    };
+    if (media.addEventListener) media.addEventListener("change", onChange);
+    else media.addListener?.(onChange);
+    return () => {
+      if (media.removeEventListener) media.removeEventListener("change", onChange);
+      else media.removeListener?.(onChange);
+    };
+  }, []);
 
   const handleLogoClick = (e) => {
     if (e) e.preventDefault();
-    resetIntroSeen();
-    if (window.location.hash) {
+    if (view !== "home") {
+      setView("home");
+      try {
+        window.history.pushState({ view: "home" }, "", "/");
+      } catch (_) {
+        window.location.hash = "";
+      }
+    } else if (window.location.hash) {
       history.pushState(null, "", window.location.pathname + window.location.search);
     }
     window.scrollTo({ top: 0, left: 0, behavior: "instant" });
-    if (view !== "home") {
-      setView("home");
-    }
     setActiveNav("home");
-    setIntroKey((k) => k + 1);
-    setShowIntro(true);
+
+    if (!prefersReducedMotion()) {
+      setIntroKey((k) => k + 1);
+      setShowIntro(true);
+    }
   };
 
   // Theme State synced with Theme Manager
@@ -514,7 +542,7 @@ function PortfolioApp() {
   const [contactForm, setContactForm] = useState({ name: "", email: "", message: "" });
   const [contactStatus, setContactStatus] = useState({ state: "idle", message: "" });
 
-  // Lock body scroll and enable Escape key to dismiss modals
+  // Lock body scroll and enable Escape key to dismiss modals & manage scroll lock during intro
   useEffect(() => {
     const handleKeyDown = (e) => {
       if (e.key === "Escape") {
@@ -522,17 +550,21 @@ function PortfolioApp() {
         setSelectedCertModal(null);
       }
     };
-    if (selectedProject || selectedCertModal) {
-      window.addEventListener("keydown", handleKeyDown);
+    if (showIntro || selectedProject || selectedCertModal) {
+      if (selectedProject || selectedCertModal) {
+        window.addEventListener("keydown", handleKeyDown);
+      }
       document.body.style.overflow = "hidden";
     } else {
       document.body.style.overflow = "";
     }
     return () => {
       window.removeEventListener("keydown", handleKeyDown);
-      document.body.style.overflow = "";
+      if (!showIntro) {
+        document.body.style.overflow = "";
+      }
     };
-  }, [selectedProject, selectedCertModal]);
+  }, [showIntro, selectedProject, selectedCertModal]);
 
   // Sync browser back/forward button
   useEffect(() => {
@@ -700,9 +732,8 @@ function PortfolioApp() {
     React.Fragment,
     null,
     showIntro &&
-      h(PortfolioIntro, {
-        key: `intro-${introKey}`,
-        forceShow: true,
+      h(WelcomeIntro, {
+        key: `welcome-${introKey}`,
         onComplete: () => setShowIntro(false)
       }),
     h("a", { href: "#main-content", className: "skip-link" }, "Skip to content"),
