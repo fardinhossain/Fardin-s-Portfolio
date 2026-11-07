@@ -886,7 +886,8 @@ function PortfolioApp() {
             // ================================================================
             h(CinematicHeroSection, {
               onNavigateContact: () => navigateToSection("contact"),
-              resumeUrl: PROFILE_DATA.resumeUrl
+              resumeUrl: PROFILE_DATA.resumeUrl,
+              introActive: showIntro
             }),
 
             h(

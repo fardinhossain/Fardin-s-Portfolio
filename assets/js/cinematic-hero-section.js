@@ -31,7 +31,7 @@ function StrengthIcon({ type }) {
   return h("svg", { viewBox: "0 0 24 24", fill: "none", stroke: "currentColor", strokeWidth: 1.8, strokeLinecap: "round", strokeLinejoin: "round", "aria-hidden": true }, (paths[type] || paths.code).map((d, i) => h("path", { d, key: i })));
 }
 
-function CenteredTypewriterFeatureBar() {
+function CenteredTypewriterFeatureBar({ active = true }) {
   const [featureIndex, setFeatureIndex] = useState(0);
   const [iconVisible, setIconVisible] = useState(false);
   const [part1, setPart1] = useState("");
@@ -40,6 +40,15 @@ function CenteredTypewriterFeatureBar() {
   const [cursorVisible, setCursorVisible] = useState(true);
 
   useEffect(() => {
+    if (!active) {
+      setIconVisible(false);
+      setPart1("");
+      setPart2("");
+      setHasSpace(false);
+      setCursorVisible(false);
+      return;
+    }
+
     const prefersReducedMotion = typeof window !== "undefined" &&
       window.matchMedia &&
       window.matchMedia("(prefers-reduced-motion: reduce)").matches;
@@ -134,7 +143,7 @@ function CenteredTypewriterFeatureBar() {
       isCancelled = true;
       if (timerId) clearTimeout(timerId);
     };
-  }, [featureIndex]);
+  }, [featureIndex, active]);
 
   const currentItem = FEATURE_ITEMS[featureIndex];
 
@@ -168,7 +177,7 @@ function ChatGlyph() {
 
 // The canvas is decorative; a tracked native button provides real interaction.
 // Callback values update refs/styles rather than scheduling React every frame.
-export function HeroAuraFlyingRobot({ onActivate, open = false, onRevealProgress, onAssistantProgress, onPhase, onStage }) {
+export function HeroAuraFlyingRobot({ onActivate, open = false, onRevealProgress, onAssistantProgress, onPhase, onStage, active = true }) {
   const host = useRef(null);
   const hitbox = useRef(null);
   const labelRef = useRef(null);
@@ -224,6 +233,13 @@ export function HeroAuraFlyingRobot({ onActivate, open = false, onRevealProgress
 
   useEffect(() => { syncPause(); }, [open]);
   useEffect(() => {
+    if (!active) {
+      if (controller.current) {
+        controller.current.dispose();
+        controller.current = null;
+      }
+      return;
+    }
     const el = host.current;
     if (!el) return;
     let cancelled = false;
@@ -295,7 +311,7 @@ export function HeroAuraFlyingRobot({ onActivate, open = false, onRevealProgress
       controller.current?.dispose();
       controller.current = null;
     };
-  }, [applyAssistantLabel]);
+  }, [applyAssistantLabel, active]);
 
   return h(React.Fragment, null,
     h("div", { ref: host, className: "fh-orbit-host", "aria-hidden": true }),
@@ -435,14 +451,33 @@ function ResumeModal({ open, onClose, resumeUrl, previewImage }) {
   );
 }
 
-export function CinematicHeroSection({ resumeUrl = PROFILE_DATA.resumeUrl, onNavigateContact }) {
+export function CinematicHeroSection({ resumeUrl = PROFILE_DATA.resumeUrl, onNavigateContact, introActive = false }) {
   const root = useRef(null);
   const [theme, setTheme] = useState(getCurrentTheme);
   const [mobileName, setMobileName] = useState(() => window.matchMedia("(max-width: 700px)").matches);
   const [chatOpen, setChatOpen] = useState(false);
+  const [heroAnimationActive, setHeroAnimationActive] = useState(() => !introActive);
+  const timelineRef = useRef(null);
   const lastLauncher = useRef(null);
   const progress = useRef(0);
   const revealed = useRef(false);
+
+  useEffect(() => {
+    if (introActive) {
+      setHeroAnimationActive(false);
+      return;
+    }
+    const motion = typeof window !== "undefined" && window.matchMedia?.("(prefers-reduced-motion: reduce)")?.matches;
+    if (motion) {
+      setHeroAnimationActive(true);
+      return;
+    }
+    const timer = setTimeout(() => {
+      setHeroAnimationActive(true);
+    }, 500); // 0.5 sec delay after welcome intro completes
+    return () => clearTimeout(timer);
+  }, [introActive]);
+
   const revealName = useCallback(value => {
     if (revealed.current && value < 1) return;
     progress.current = value;
@@ -493,13 +528,19 @@ export function CinematicHeroSection({ resumeUrl = PROFILE_DATA.resumeUrl, onNav
   }, []);
   useLayoutEffect(() => {
     const motion = window.matchMedia("(prefers-reduced-motion: reduce)");
+    if (!heroAnimationActive) {
+      revealed.current = false;
+      progress.current = 0;
+      revealName(motion.matches ? 1 : 0);
+      return;
+    }
     revealName(motion.matches ? 1 : 0);
     // Progressive-enhancement backstop: import/GPU/observer failure cannot hide identity.
     const timer = window.setTimeout(() => revealName(1), 3600);
     const changed = () => { if (motion.matches) revealName(1); };
     motion.addEventListener("change", changed);
     return () => { window.clearTimeout(timer); motion.removeEventListener("change", changed); };
-  }, [revealName]);
+  }, [heroAnimationActive, revealName]);
   useLayoutEffect(() => { revealName(progress.current); }, [mobileName, revealName]);
   useEffect(() => {
     const media = window.matchMedia("(max-width: 700px)");
@@ -510,15 +551,39 @@ export function CinematicHeroSection({ resumeUrl = PROFILE_DATA.resumeUrl, onNav
   useEffect(() => subscribeTheme(setTheme), []);
   useEffect(() => {
     const el = root.current;
+    if (!el) return;
     const motion = window.matchMedia("(prefers-reduced-motion: reduce)");
-    const timeline = createHeroIntroTimeline({ elements: {
-      headlineLines: [...el.querySelectorAll(".fh-headline-line")], nameWords: [],
-      labelBadge: el.querySelector(".fh-kicker"), portraitContainer: el.querySelector(".fh-portrait"), actions: el.querySelector(".fh-actions")
-    }, isReducedMotion: motion.matches });
+    const timeline = createHeroIntroTimeline({
+      elements: {
+        headlineLines: [...el.querySelectorAll(".fh-headline-line")],
+        nameWords: [],
+        labelBadge: el.querySelector(".fh-kicker"),
+        portraitContainer: el.querySelector(".fh-portrait"),
+        actions: el.querySelector(".fh-actions")
+      },
+      isReducedMotion: motion.matches
+    });
+    timelineRef.current = timeline;
     const change = () => { if (motion.matches) timeline.skip(); };
-    motion.addEventListener("change", change); timeline.play();
-    return () => { motion.removeEventListener("change", change); timeline.kill(); };
+    motion.addEventListener("change", change);
+    if (heroAnimationActive) {
+      timeline.play();
+    }
+    return () => {
+      motion.removeEventListener("change", change);
+      timeline.kill();
+      timelineRef.current = null;
+    };
   }, []);
+
+  useEffect(() => {
+    if (heroAnimationActive) {
+      timelineRef.current?.play?.();
+    } else {
+      timelineRef.current?.pause?.(0);
+    }
+  }, [heroAnimationActive]);
+
   const contact = event => { if (onNavigateContact) { event.preventDefault(); onNavigateContact(); } };
   const activate = element => { lastLauncher.current = element; setChatOpen(true); };
   const identity = h("p", { className: `fh-name${mobileName ? " fh-name-mobile" : ""}` },
@@ -574,9 +639,10 @@ export function CinematicHeroSection({ resumeUrl = PROFILE_DATA.resumeUrl, onNav
           onRevealProgress: revealName,
           onAssistantProgress: assistantProgress,
           onPhase: phase,
-          onStage: stage
+          onStage: stage,
+          active: heroAnimationActive
         })),
-      h(CenteredTypewriterFeatureBar, null)),
+      h(CenteredTypewriterFeatureBar, { active: heroAnimationActive })),
     h(PortfolioAssistant, { open: chatOpen, onClose: () => setChatOpen(false), returnFocusRef: lastLauncher })
   );
 }
