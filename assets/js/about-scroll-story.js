@@ -223,37 +223,58 @@ export function AboutGhostRobot() {
   return h("div", { ref: host, className: "ae-ghost-robot", "aria-hidden": "true", inert: "" });
 }
 
-// Reusable Chapter Media Component: Executes 3-step sequence
-// 1. Chapter Motion Video (6s for Who I Am, 7.5s for others)
-// 2. Bot F-01 Transition Video (3s)
-// 3. Static High-Resolution PNG Artwork (fading in over ~600ms and permanently staying visible)
+// Reusable Chapter Media Component:
+// First-visit sequence (4 steps):
+//   1. Intro Bot F-01 Transition Video (3s)
+//   2. Chapter Motion Video (6s for Who I Am, 7.5s for others)
+//   3. Outro Bot F-01 Transition Video (3s, same file reset to 0s)
+//   4. Static High-Resolution PNG Artwork (crossfades in and stays visible)
+// Revisit sequence (2 steps on every return to a finished chapter):
+//   1. Revisit Bot F-01 Transition Video (3s, current theme & viewport)
+//   2. Static High-Resolution PNG Artwork
 export function AboutChapterMedia({ chapter, idx, active, sectionInView, isLight, isMobile, reduced }) {
   const cardRef = useRef(null);
   const chapterVideoRef = useRef(null);
   const botVideoRef = useRef(null);
 
-  const [stage, setStage] = useState(() => (reduced ? "static-image" : "idle")); // "idle" | "chapter-video" | "bot-video" | "static-image"
+  // Stages: "idle" | "intro-bot" | "chapter-video" | "outro-bot" | "revisit-bot" | "static-image"
+  const [stage, setStage] = useState(() => (reduced ? "static-image" : "idle"));
+  const [revisitCount, setRevisitCount] = useState(0);
+  const [lockedVariant, setLockedVariant] = useState(null);
   const [cardInView, setCardInView] = useState(false);
   const [cardNearView, setCardNearView] = useState(false);
 
-  const hasPlayedRef = useRef(false);
-  const hasCompletedRef = useRef(reduced);
-  const botTransitionTriggeredRef = useRef(false);
-  const staticTransitionTriggeredRef = useRef(false);
-  const lockedThemeRef = useRef(null);
+  const stageRef = useRef(reduced ? "static-image" : "idle");
+  const hasStartedFirstVisitRef = useRef(false);
+  const hasCompletedFirstVisitRef = useRef(reduced);
+  const revisitArmedRef = useRef(false);
+  const revisitCountRef = useRef(0);
+  const stageStartedKeyRef = useRef(null);
+  const lockedVariantRef = useRef(null);
+  const isVisibleNowRef = useRef(false);
+  const botErrorSrcRef = useRef(null);
+  const chapterErrorSrcRef = useRef(null);
   const advanceTimerRef = useRef(null);
 
-  // If prefers-reduced-motion activates, immediately jump to static image
+  const isVisibleNow = Boolean(sectionInView && cardInView && (isMobile ? active === idx : true));
+  isVisibleNowRef.current = isVisibleNow;
+  stageRef.current = stage;
+
+  // If prefers-reduced-motion activates, immediately jump to static image and skip all videos
   useEffect(() => {
     if (reduced) {
-      hasCompletedRef.current = true;
-      botTransitionTriggeredRef.current = true;
-      staticTransitionTriggeredRef.current = true;
+      if (advanceTimerRef.current) clearTimeout(advanceTimerRef.current);
+      hasStartedFirstVisitRef.current = true;
+      hasCompletedFirstVisitRef.current = true;
+      revisitArmedRef.current = false;
+      lockedVariantRef.current = null;
+      setLockedVariant(null);
+      stageRef.current = "static-image";
       setStage("static-image");
     }
   }, [reduced]);
 
-  // Viewport intersection observer (threshold 0.4 for ~40% visible) & proximity preload observer
+  // Viewport intersection observer (threshold ~0.4 for 40% visible) & proximity preload observer
   useEffect(() => {
     if (typeof IntersectionObserver === "undefined") {
       setCardInView(true);
@@ -286,10 +307,16 @@ export function AboutChapterMedia({ chapter, idx, active, sectionInView, isLight
     };
   }, [isMobile]);
 
-  // Determine current active theme & viewport variant
-  // Lock theme during active video stages so mid-sequence toggles do not abruptly disrupt playback
-  const activeVariant = (stage === "chapter-video" || stage === "bot-video") && lockedThemeRef.current
-    ? lockedThemeRef.current
+  // Determine current active theme & viewport variant:
+  // Lock theme & viewport during an active first-visit sequence or revisit bot run
+  const isVideoStage =
+    stage === "intro-bot" ||
+    stage === "chapter-video" ||
+    stage === "outro-bot" ||
+    stage === "revisit-bot";
+
+  const activeVariant = isVideoStage && (lockedVariant || lockedVariantRef.current)
+    ? (lockedVariant || lockedVariantRef.current)
     : { isLight, isMobile };
 
   const chapterVideoSrc = activeVariant.isMobile
@@ -305,13 +332,12 @@ export function AboutChapterMedia({ chapter, idx, active, sectionInView, isLight
     ? (activeVariant.isLight ? chapter.mobileLight : chapter.mobileDark)
     : (activeVariant.isLight ? chapter.desktopLight : chapter.desktopDark);
 
-  const isVisibleNow = sectionInView && (isMobile ? active === idx : cardInView);
-
-  // Transitions between stages
+  // Stage transition callbacks
   const advanceToStatic = useCallback(() => {
-    if (staticTransitionTriggeredRef.current || hasCompletedRef.current) return;
-    staticTransitionTriggeredRef.current = true;
-    hasCompletedRef.current = true;
+    const currentStage = stageRef.current;
+    if (currentStage !== "outro-bot" && currentStage !== "revisit-bot" && currentStage !== "chapter-video" && currentStage !== "intro-bot") {
+      return;
+    }
     if (advanceTimerRef.current) clearTimeout(advanceTimerRef.current);
 
     const chapterVideo = chapterVideoRef.current;
@@ -323,170 +349,280 @@ export function AboutChapterMedia({ chapter, idx, active, sectionInView, isLight
       botVideo.pause();
     }
 
+    hasCompletedFirstVisitRef.current = true;
+    revisitArmedRef.current = !isVisibleNowRef.current;
+    lockedVariantRef.current = null;
+    setLockedVariant(null);
+    stageRef.current = "static-image";
     setStage("static-image");
   }, []);
 
-  const advanceToBotVideo = useCallback(() => {
-    if (botTransitionTriggeredRef.current || hasCompletedRef.current) return;
-    botTransitionTriggeredRef.current = true;
+  const advanceToOutroBot = useCallback(() => {
+    if (stageRef.current !== "chapter-video") return;
     if (advanceTimerRef.current) clearTimeout(advanceTimerRef.current);
 
-    // CRITICAL: Immediately pause chapter video so it stops firing timeupdate and resetting botVideo
     const chapterVideo = chapterVideoRef.current;
     if (chapterVideo && !chapterVideo.paused) {
       chapterVideo.pause();
     }
 
-    setStage("bot-video");
+    stageRef.current = "outro-bot";
+    setStage("outro-bot");
+  }, []);
+
+  const advanceToChapterVideo = useCallback(() => {
+    if (stageRef.current !== "intro-bot") return;
+    if (advanceTimerRef.current) clearTimeout(advanceTimerRef.current);
 
     const botVideo = botVideoRef.current;
-    if (botVideo) {
-      botVideo.muted = true;
-      botVideo.defaultMuted = true;
-      botVideo.currentTime = 0;
-      const playPromise = botVideo.play();
-      if (playPromise !== undefined) {
-        playPromise.catch(() => {
-          advanceToStatic();
-        });
+    if (botVideo && !botVideo.paused) {
+      botVideo.pause();
+    }
+
+    stageRef.current = "chapter-video";
+    setStage("chapter-video");
+  }, []);
+
+  // First-visit trigger & Revisit trigger when scrolling away and returning to a finished chapter
+  useEffect(() => {
+    if (reduced) return;
+
+    // 1. First visit: when chapter enters view for the first time, start with intro-bot
+    if (!hasCompletedFirstVisitRef.current && !hasStartedFirstVisitRef.current) {
+      if (isVisibleNow && stage === "idle") {
+        hasStartedFirstVisitRef.current = true;
+        const initialVariant = { isLight, isMobile };
+        lockedVariantRef.current = initialVariant;
+        setLockedVariant(initialVariant);
+        stageRef.current = "intro-bot";
+        setStage("intro-bot");
+      }
+      return;
+    }
+
+    // 2. Finished chapter revisit handling
+    if (hasCompletedFirstVisitRef.current && stage === "static-image") {
+      if (!isVisibleNow) {
+        revisitArmedRef.current = true;
+      } else if (isVisibleNow && revisitArmedRef.current) {
+        revisitArmedRef.current = false;
+        revisitCountRef.current += 1;
+        setRevisitCount(revisitCountRef.current);
+        const currentVariant = { isLight, isMobile };
+        lockedVariantRef.current = currentVariant;
+        setLockedVariant(currentVariant);
+        stageRef.current = "revisit-bot";
+        setStage("revisit-bot");
       }
     }
-  }, [advanceToStatic]);
+  }, [isVisibleNow, stage, reduced, isLight, isMobile]);
 
-  // Autoplay trigger when chapter scrolls into view (~40% visible)
+  // Initialize playback when entering a new video stage (resets currentTime = 0 once per stage entry)
   useEffect(() => {
-    if (reduced || hasCompletedRef.current || hasPlayedRef.current) return;
+    if (reduced) return;
 
-    if (isVisibleNow && stage === "idle") {
-      hasPlayedRef.current = true;
-      lockedThemeRef.current = { isLight, isMobile };
-      setStage("chapter-video");
+    const instanceKey = stage === "revisit-bot"
+      ? `revisit-bot-${revisitCount}`
+      : stage;
+
+    if (stageStartedKeyRef.current === instanceKey) return;
+    stageStartedKeyRef.current = instanceKey;
+
+    if (stage === "intro-bot" || stage === "outro-bot" || stage === "revisit-bot") {
+      const chapterVideo = chapterVideoRef.current;
+      if (chapterVideo && !chapterVideo.paused) {
+        chapterVideo.pause();
+      }
+
+      const botVideo = botVideoRef.current;
+      if (!botVideo || botErrorSrcRef.current === botVideoSrc || botVideo.error) {
+        if (stage === "intro-bot") advanceToChapterVideo();
+        else advanceToStatic();
+        return;
+      }
+
+      botVideo.muted = true;
+      botVideo.defaultMuted = true;
+      try {
+        botVideo.currentTime = 0;
+      } catch (_) {}
+
+      if (isVisibleNowRef.current) {
+        const playPromise = botVideo.play();
+        if (playPromise !== undefined) {
+          playPromise.catch(() => {
+            if (stageRef.current === "intro-bot") advanceToChapterVideo();
+            else if (stageRef.current === "outro-bot" || stageRef.current === "revisit-bot") advanceToStatic();
+          });
+        }
+      }
+    } else if (stage === "chapter-video") {
+      const botVideo = botVideoRef.current;
+      if (botVideo && !botVideo.paused) {
+        botVideo.pause();
+      }
 
       const chapterVideo = chapterVideoRef.current;
-      if (chapterVideo) {
-        chapterVideo.muted = true;
-        chapterVideo.defaultMuted = true;
+      if (!chapterVideo || chapterErrorSrcRef.current === chapterVideoSrc || chapterVideo.error) {
+        advanceToOutroBot();
+        return;
+      }
+
+      chapterVideo.muted = true;
+      chapterVideo.defaultMuted = true;
+      try {
         chapterVideo.currentTime = 0;
+      } catch (_) {}
+
+      if (isVisibleNowRef.current) {
         const playPromise = chapterVideo.play();
         if (playPromise !== undefined) {
           playPromise.catch(() => {
-            advanceToBotVideo();
+            if (stageRef.current === "chapter-video") advanceToOutroBot();
           });
         }
       }
     }
-  }, [isVisibleNow, stage, reduced, isLight, isMobile, advanceToBotVideo]);
+  }, [stage, revisitCount, reduced, botVideoSrc, chapterVideoSrc, advanceToChapterVideo, advanceToOutroBot, advanceToStatic]);
 
-  // Scroll pause/resume handling mid-sequence
+  // Scroll pause/resume handling mid-sequence & mid-revisit (preserves currentTime)
   useEffect(() => {
-    if (hasCompletedRef.current) return;
+    if (reduced || !isVideoStage) return;
 
     const currentVid = stage === "chapter-video"
       ? chapterVideoRef.current
-      : (stage === "bot-video" ? botVideoRef.current : null);
+      : botVideoRef.current;
 
     if (!currentVid) return;
 
-    if (!isVisibleNow && !currentVid.paused) {
-      currentVid.pause();
+    if (!isVisibleNow) {
+      if (!currentVid.paused) {
+        currentVid.pause();
+      }
     } else if (isVisibleNow && currentVid.paused) {
-      currentVid.play().catch(() => {});
+      currentVid.muted = true;
+      currentVid.defaultMuted = true;
+      const playPromise = currentVid.play();
+      if (playPromise !== undefined) {
+        playPromise.catch(() => {
+          if (stageRef.current === "intro-bot") advanceToChapterVideo();
+          else if (stageRef.current === "chapter-video") advanceToOutroBot();
+          else if (stageRef.current === "outro-bot" || stageRef.current === "revisit-bot") advanceToStatic();
+        });
+      }
     }
-  }, [isVisibleNow, stage]);
+  }, [isVisibleNow, stage, isVideoStage, reduced, advanceToChapterVideo, advanceToOutroBot, advanceToStatic]);
 
-  // Duration enforcement (6.0s for Who I Am, 7.5s for others, 3.0s for bot video)
+  // Pause-aware duration failsafe timer (6.0s for Who I Am, 7.5s for others, 3.0s for bot video)
   const chapterDuration = idx === 0 ? 6.0 : 7.5;
   const botDuration = 3.0;
 
   useEffect(() => {
-    if (!isVisibleNow) {
+    if (!isVisibleNow || !isVideoStage || reduced) {
       if (advanceTimerRef.current) clearTimeout(advanceTimerRef.current);
       return;
     }
-    if (stage === "chapter-video") {
-      advanceTimerRef.current = setTimeout(() => {
-        advanceToBotVideo();
-      }, (chapterDuration + 0.3) * 1000);
-      return () => clearTimeout(advanceTimerRef.current);
-    }
-    if (stage === "bot-video") {
-      advanceTimerRef.current = setTimeout(() => {
-        advanceToStatic();
-      }, (botDuration + 0.3) * 1000);
-      return () => clearTimeout(advanceTimerRef.current);
-    }
-  }, [stage, isVisibleNow, chapterDuration, botDuration, advanceToBotVideo, advanceToStatic]);
 
-  const handleChapterTimeUpdate = useCallback(() => {
-    if (stage !== "chapter-video" || botTransitionTriggeredRef.current) return;
-    const video = chapterVideoRef.current;
-    if (!video) return;
-    if (
-      video.currentTime >= chapterDuration ||
-      (video.duration > 0 && video.duration - video.currentTime <= 0.25)
-    ) {
-      advanceToBotVideo();
-    }
-  }, [stage, chapterDuration, advanceToBotVideo]);
+    const currentVid = stage === "chapter-video"
+      ? chapterVideoRef.current
+      : botVideoRef.current;
+    const targetDuration = stage === "chapter-video" ? chapterDuration : botDuration;
+    const elapsed = currentVid ? (Number(currentVid.currentTime) || 0) : 0;
+    const remainingSec = Math.max(0.4, targetDuration - elapsed + 0.45);
 
-  const handleBotTimeUpdate = useCallback(() => {
-    if (stage !== "bot-video" || staticTransitionTriggeredRef.current) return;
-    const video = botVideoRef.current;
-    if (!video) return;
-    if (
-      video.currentTime >= botDuration ||
-      (video.duration > 0 && video.duration - video.currentTime <= 0.25)
-    ) {
+    advanceTimerRef.current = setTimeout(() => {
+      if (stageRef.current === "intro-bot") advanceToChapterVideo();
+      else if (stageRef.current === "chapter-video") advanceToOutroBot();
+      else if (stageRef.current === "outro-bot" || stageRef.current === "revisit-bot") advanceToStatic();
+    }, remainingSec * 1000);
+
+    return () => {
+      if (advanceTimerRef.current) clearTimeout(advanceTimerRef.current);
+    };
+  }, [stage, isVisibleNow, isVideoStage, reduced, chapterDuration, botDuration, advanceToChapterVideo, advanceToOutroBot, advanceToStatic]);
+
+  const handleBotEnded = useCallback(() => {
+    if (stageRef.current === "intro-bot") {
+      advanceToChapterVideo();
+    } else if (stageRef.current === "outro-bot" || stageRef.current === "revisit-bot") {
       advanceToStatic();
     }
-  }, [stage, botDuration, advanceToStatic]);
+  }, [advanceToChapterVideo, advanceToStatic]);
+
+  const handleBotError = useCallback(() => {
+    botErrorSrcRef.current = botVideoSrc;
+    if (stageRef.current === "intro-bot") {
+      advanceToChapterVideo();
+    } else if (stageRef.current === "outro-bot" || stageRef.current === "revisit-bot") {
+      advanceToStatic();
+    }
+  }, [botVideoSrc, advanceToChapterVideo, advanceToStatic]);
+
+  const handleChapterEnded = useCallback(() => {
+    if (stageRef.current === "chapter-video") {
+      advanceToOutroBot();
+    }
+  }, [advanceToOutroBot]);
+
+  const handleChapterError = useCallback(() => {
+    chapterErrorSrcRef.current = chapterVideoSrc;
+    if (stageRef.current === "chapter-video") {
+      advanceToOutroBot();
+    }
+  }, [chapterVideoSrc, advanceToOutroBot]);
 
   // Preloading controls:
-  // - Chapter video: auto if idx===0 or near view or previous chapter active
-  // - Bot video: auto during chapter video playback so transition is instant
-  const shouldPreloadChapter = idx === 0 || cardNearView || active >= idx - 1;
-  const chapterPreload = shouldPreloadChapter ? "auto" : "none";
-  const botPreload = (stage === "chapter-video" || stage === "bot-video") ? "auto" : "none";
+  // - Preload bot video as soon as the chapter is NEAR the viewport so intro-bot starts instantly
+  // - Preload chapter video while intro-bot is playing (or when card is in view)
+  // - Never preload all 32 videos on initial page load
+  const isNearViewport = cardNearView || cardInView || (sectionInView && active >= idx - 1);
+  const botPreload = (isNearViewport || hasStartedFirstVisitRef.current) ? "auto" : "none";
+  const chapterPreload = (
+    stage === "intro-bot" ||
+    stage === "chapter-video" ||
+    stage === "outro-bot" ||
+    cardInView ||
+    hasStartedFirstVisitRef.current
+  ) ? "auto" : "none";
 
-  const isVideoActive = stage === "chapter-video" || stage === "bot-video";
+  const isBotLayerActive = stage === "intro-bot" || stage === "outro-bot" || stage === "revisit-bot";
+  const isChapterLayerActive = stage === "chapter-video";
 
   return h(
     "div",
     {
       ref: cardRef,
-      className: `ae-scene-card${isVideoActive ? " has-active-video" : ""}${stage === "static-image" ? " is-static" : ""}`
+      "data-stage": stage,
+      "data-revisit-count": revisitCount,
+      className: `ae-scene-card${isVideoStage ? " has-active-video" : ""}${stage === "static-image" ? " is-static" : ""}`
     },
-    // Layer 1: Chapter Video
+    // Layer 1: Chapter Animation Video
     !reduced && h("video", {
       ref: chapterVideoRef,
-      key: `chapter-${chapterVideoSrc}`,
       src: chapterVideoSrc,
       poster: posterSrc,
-      className: `ae-scene-video ae-layer-chapter-video${stage === "chapter-video" ? " is-active" : ""}`,
+      className: `ae-scene-video ae-layer-chapter-video${isChapterLayerActive ? " is-active" : ""}`,
       muted: true,
       playsInline: true,
       preload: chapterPreload,
       disablePictureInPicture: true,
-      onEnded: advanceToBotVideo,
-      onTimeUpdate: handleChapterTimeUpdate,
-      onError: advanceToBotVideo,
+      onEnded: handleChapterEnded,
+      onError: handleChapterError,
       "aria-hidden": "true"
     }),
 
-    // Layer 2: Bot Transition Video
+    // Layer 2: Bot F-01 Transition Video (Intro, Outro, and Revisit)
     !reduced && h("video", {
       ref: botVideoRef,
-      key: `bot-${botVideoSrc}`,
       src: botVideoSrc,
       poster: posterSrc,
-      className: `ae-scene-video ae-layer-bot-video${stage === "bot-video" ? " is-active" : ""}`,
+      className: `ae-scene-video ae-layer-bot-video${isBotLayerActive ? " is-active" : ""}`,
       muted: true,
       playsInline: true,
       preload: botPreload,
       disablePictureInPicture: true,
-      onEnded: advanceToStatic,
-      onTimeUpdate: handleBotTimeUpdate,
-      onError: advanceToStatic,
+      onEnded: handleBotEnded,
+      onError: handleBotError,
       "aria-hidden": "true"
     }),
 

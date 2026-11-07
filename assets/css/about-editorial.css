@@ -1215,7 +1215,7 @@
   height: 100%;
   z-index: 1;
   opacity: 1;
-  transition: opacity 0.6s ease;
+  transition: opacity 0.3s ease;
 }
 
 .ae-scene-card.has-active-video .ae-scene-picture {
