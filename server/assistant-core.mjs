@@ -252,6 +252,16 @@ async function callSingleProvider(endpoint, key, model, messages, fetchImpl, tim
           body: JSON.stringify({ model, messages: [{ role: 'system', content: SYSTEM_INSTRUCTIONS }, ...messages], max_tokens: LIMITS.outputTokens, stream: false })
         });
       }
+      // If a Gemini model returns 404 (e.g. model deprecated for new users) or 503 (high demand), seamlessly try gemini-3.5-flash / gemini-3.8-flash
+      if (!response.ok && endpoint.includes('generativelanguage.googleapis.com') && [404, 503].includes(response.status)) {
+        await response.body?.cancel().catch(() => {});
+        const altModel = model === 'gemini-3.5-flash' ? 'gemini-3.8-flash' : 'gemini-3.5-flash';
+        response = await fetchImpl(endpoint, {
+          method: 'POST', redirect: 'error', signal: controller.signal,
+          headers,
+          body: JSON.stringify({ model: altModel, messages: [{ role: 'system', content: SYSTEM_INSTRUCTIONS }, ...messages], max_tokens: LIMITS.outputTokens, stream: false })
+        });
+      }
       if (!response.ok) { await response.body?.cancel(); fail(502, 'AI_UNAVAILABLE'); }
       if (Number(response.headers.get('content-length')) > LIMITS.responseBytes) { await response.body?.cancel(); fail(502, 'AI_UNAVAILABLE'); }
       if (!response.body) fail(502, 'AI_UNAVAILABLE');
@@ -289,7 +299,7 @@ async function providerReply(config, messages, fetchImpl, timeoutMs) {
     : (config.fallback ? [config.fallback] : []);
 
   const candidates = [];
-  if (fetchImpl === globalThis.fetch && config.freeAiPrimary && config.endpoint !== FREE_AI_ENDPOINT) {
+  if (fetchImpl === globalThis.fetch && config.freeAiPrimary && config.endpoint !== FREE_AI_ENDPOINT && (config.model === 'qwen7b' || config.model === 'qwen3-8b')) {
     candidates.push({ endpoint: FREE_AI_ENDPOINT, key: config.key, model: FREE_AI_DEFAULT_MODEL });
   }
   candidates.push({ endpoint: config.endpoint, key: config.key, model: config.model });
