@@ -34,9 +34,10 @@ function StrengthIcon({ type }) {
 function CenteredTypewriterFeatureBar() {
   const [featureIndex, setFeatureIndex] = useState(0);
   const [iconVisible, setIconVisible] = useState(false);
-  const [line1, setLine1] = useState("");
-  const [line2, setLine2] = useState("");
-  const [cursorLine, setCursorLine] = useState(1);
+  const [part1, setPart1] = useState("");
+  const [part2, setPart2] = useState("");
+  const [hasSpace, setHasSpace] = useState(false);
+  const [cursorVisible, setCursorVisible] = useState(true);
 
   useEffect(() => {
     const prefersReducedMotion = typeof window !== "undefined" &&
@@ -46,9 +47,10 @@ function CenteredTypewriterFeatureBar() {
     if (prefersReducedMotion) {
       const current = FEATURE_ITEMS[featureIndex];
       setIconVisible(true);
-      setLine1(current.line1);
-      setLine2(current.line2);
-      setCursorLine(null);
+      setPart1(current.line1);
+      setHasSpace(true);
+      setPart2(current.line2);
+      setCursorVisible(false);
       const timer = setTimeout(() => {
         setFeatureIndex((prev) => (prev + 1) % FEATURE_ITEMS.length);
       }, 3500);
@@ -66,45 +68,51 @@ function CenteredTypewriterFeatureBar() {
       const item = FEATURE_ITEMS[featureIndex];
 
       // Step 1: Smoothly reveal orange accent icon
-      setLine1("");
-      setLine2("");
-      setCursorLine(1);
+      setPart1("");
+      setPart2("");
+      setHasSpace(false);
+      setCursorVisible(true);
       setIconVisible(true);
       await sleep(280);
       if (isCancelled) return;
 
-      // Step 2: Type first word or phrase on first line
+      // Step 2: Type first word/phrase on single line
       for (let i = 1; i <= item.line1.length; i++) {
-        setLine1(item.line1.slice(0, i));
+        setPart1(item.line1.slice(0, i));
         await sleep(45);
         if (isCancelled) return;
       }
-      await sleep(80);
+
+      // Add single space between part 1 and part 2
+      setHasSpace(true);
+      await sleep(65);
       if (isCancelled) return;
 
-      // Step 3: Type second word on second line
-      setCursorLine(2);
+      // Step 3: Type second word in accent color on the same line
       for (let i = 1; i <= item.line2.length; i++) {
-        setLine2(item.line2.slice(0, i));
+        setPart2(item.line2.slice(0, i));
         await sleep(45);
         if (isCancelled) return;
       }
 
-      // Step 4: Keep complete feature visible briefly (~1.5s)
+      // Step 4: Keep complete single-line feature visible briefly (~1.5s)
       await sleep(1500);
       if (isCancelled) return;
 
-      // Step 5: Smoothly erase text and transition out icon
-      // Erase line 2 backwards
+      // Step 5: Smoothly erase text in one line
+      // Erase part 2 backwards
       for (let i = item.line2.length - 1; i >= 0; i--) {
-        setLine2(item.line2.slice(0, i));
+        setPart2(item.line2.slice(0, i));
         await sleep(18);
         if (isCancelled) return;
       }
-      // Move cursor to line 1 and erase line 1 backwards
-      setCursorLine(1);
+      setHasSpace(false);
+      await sleep(18);
+      if (isCancelled) return;
+
+      // Erase part 1 backwards
       for (let i = item.line1.length - 1; i >= 0; i--) {
-        setLine1(item.line1.slice(0, i));
+        setPart1(item.line1.slice(0, i));
         if (i === Math.floor(item.line1.length / 2)) {
           setIconVisible(false);
         }
@@ -112,7 +120,7 @@ function CenteredTypewriterFeatureBar() {
         if (isCancelled) return;
       }
       setIconVisible(false);
-      setCursorLine(null);
+      setCursorVisible(false);
       await sleep(180);
       if (isCancelled) return;
 
@@ -145,14 +153,10 @@ function CenteredTypewriterFeatureBar() {
         h(StrengthIcon, { type: currentItem.type })
       ),
       h("div", { className: "fh-typewriter-text" },
-        h("div", { className: "fh-typewriter-line fh-line-1" },
-          line1,
-          cursorLine === 1 && h("span", { className: "fh-typewriter-cursor", "aria-hidden": true })
-        ),
-        h("div", { className: "fh-typewriter-line fh-line-2" },
-          line2,
-          cursorLine === 2 && h("span", { className: "fh-typewriter-cursor", "aria-hidden": true })
-        )
+        h("span", { className: "fh-typewriter-part fh-part-1" }, part1),
+        hasSpace && h("span", { className: "fh-typewriter-space" }, "\u00A0"),
+        h("span", { className: "fh-typewriter-part fh-part-2" }, part2),
+        cursorVisible && h("span", { className: "fh-typewriter-cursor", "aria-hidden": true })
       ),
       h("span", { className: "fh-sr-only" }, `${currentItem.line1} ${currentItem.line2}`)
     )
