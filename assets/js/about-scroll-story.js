@@ -73,6 +73,7 @@ export const ABOUT_CHAPTERS = [
     number: "01",
     tag: "IDENTITY",
     title: "Who I Am",
+    videoSlug: "Who-I-Am",
     desktopDark: "/assets/images/about%20me/Desktop/Who%20I%20Am_%20Identity%20in%20Code.png",
     desktopLight: "/assets/images/about%20me/Desktop/Who%20I%20Am_%20Developer%20Identity.png",
     mobileDark: "/assets/images/about%20me/Mobile/Who%20I%20Am_%20CSE%20Developer%20Identity.png",
@@ -80,13 +81,18 @@ export const ABOUT_CHAPTERS = [
     videoDesktopLight: "/assets/videos/about-me/Desktop/01_Desktop_Who-I-Am_Light.mp4",
     videoDesktopDark: "/assets/videos/about-me/Desktop/02_Desktop_Who-I-Am_Dark.mp4",
     videoMobileLight: "/assets/videos/about-me/Mobile/09_Mobile_Who-I-Am_Light.mp4",
-    videoMobileDark: "/assets/videos/about-me/Mobile/10_Mobile_Who-I-Am_Dark.mp4"
+    videoMobileDark: "/assets/videos/about-me/Mobile/10_Mobile_Who-I-Am_Dark.mp4",
+    botDesktopLight: "/assets/videos/about-me/bot-transition/Desktop/01_Desktop_Who-I-Am_Light.mp4",
+    botDesktopDark: "/assets/videos/about-me/bot-transition/Desktop/02_Desktop_Who-I-Am_Dark.mp4",
+    botMobileLight: "/assets/videos/about-me/bot-transition/Mobile/09_Mobile_Who-I-Am_Light.mp4",
+    botMobileDark: "/assets/videos/about-me/bot-transition/Mobile/10_Mobile_Who-I-Am_Dark.mp4"
   },
   {
     id: "what-i-build",
     number: "02",
     tag: "CAPABILITIES",
     title: "What I Build",
+    videoSlug: "What-I-Build",
     desktopDark: "/assets/images/about%20me/Desktop/What%20I%20Build_%20Neon%20Capabilities.png",
     desktopLight: "/assets/images/about%20me/Desktop/Building%20AI-Powered%20Web%20Solutions.png",
     mobileDark: "/assets/images/about%20me/Mobile/What%20I%20Build_%20AI-Powered%20Products.png",
@@ -94,13 +100,18 @@ export const ABOUT_CHAPTERS = [
     videoDesktopLight: "/assets/videos/about-me/Desktop/03_Desktop_What-I-Build_Light.mp4",
     videoDesktopDark: "/assets/videos/about-me/Desktop/04_Desktop_What-I-Build_Dark.mp4",
     videoMobileLight: "/assets/videos/about-me/Mobile/11_Mobile_What-I-Build_Light.mp4",
-    videoMobileDark: "/assets/videos/about-me/Mobile/12_Mobile_What-I-Build_Dark.mp4"
+    videoMobileDark: "/assets/videos/about-me/Mobile/12_Mobile_What-I-Build_Dark.mp4",
+    botDesktopLight: "/assets/videos/about-me/bot-transition/Desktop/03_Desktop_What-I-Build_Light.mp4",
+    botDesktopDark: "/assets/videos/about-me/bot-transition/Desktop/04_Desktop_What-I-Build_Dark.mp4",
+    botMobileLight: "/assets/videos/about-me/bot-transition/Mobile/11_Mobile_What-I-Build_Light.mp4",
+    botMobileDark: "/assets/videos/about-me/bot-transition/Mobile/12_Mobile_What-I-Build_Dark.mp4"
   },
   {
     id: "why-me",
     number: "03",
     tag: "STRENGTHS",
     title: "Why Me",
+    videoSlug: "Why-Me",
     desktopDark: "/assets/images/about%20me/Desktop/Why%20Me_%20Strengths%20in%20Software%20Development.png",
     desktopLight: "/assets/images/about%20me/Desktop/Chapter%2003_%20Why%20Me%20Strengths%20Infographic.png",
     mobileDark: "/assets/images/about%20me/Mobile/Why%20Me_%20Strengths%20in%20Code.png",
@@ -108,13 +119,18 @@ export const ABOUT_CHAPTERS = [
     videoDesktopLight: "/assets/videos/about-me/Desktop/05_Desktop_Why-Me_Light.mp4",
     videoDesktopDark: "/assets/videos/about-me/Desktop/06_Desktop_Why-Me_Dark.mp4",
     videoMobileLight: "/assets/videos/about-me/Mobile/13_Mobile_Why-Me_Light.mp4",
-    videoMobileDark: "/assets/videos/about-me/Mobile/14_Mobile_Why-Me_Dark.mp4"
+    videoMobileDark: "/assets/videos/about-me/Mobile/14_Mobile_Why-Me_Dark.mp4",
+    botDesktopLight: "/assets/videos/about-me/bot-transition/Desktop/05_Desktop_Why-Me_Light.mp4",
+    botDesktopDark: "/assets/videos/about-me/bot-transition/Desktop/06_Desktop_Why-Me_Dark.mp4",
+    botMobileLight: "/assets/videos/about-me/bot-transition/Mobile/13_Mobile_Why-Me_Light.mp4",
+    botMobileDark: "/assets/videos/about-me/bot-transition/Mobile/14_Mobile_Why-Me_Dark.mp4"
   },
   {
     id: "how-i-work",
     number: "04",
     tag: "PROCESS",
     title: "How I Work",
+    videoSlug: "How-I-Work",
     desktopDark: "/assets/images/about%20me/Desktop/Neon%20Staircase_%20How%20I%20Work.png",
     desktopLight: "/assets/images/about%20me/Desktop/How%20I%20Work_%20A%20Five-Step%20Process.png",
     mobileDark: "/assets/images/about%20me/Mobile/How%20I%20Work_%20A%20Neon%20Process%20Path.png",
@@ -122,7 +138,11 @@ export const ABOUT_CHAPTERS = [
     videoDesktopLight: "/assets/videos/about-me/Desktop/07_Desktop_How-I-Work_Light.mp4",
     videoDesktopDark: "/assets/videos/about-me/Desktop/08_Desktop_How-I-Work_Dark.mp4",
     videoMobileLight: "/assets/videos/about-me/Mobile/15_Mobile_How-I-Work_Light.mp4",
-    videoMobileDark: "/assets/videos/about-me/Mobile/16_Mobile_How-I-Work_Dark.mp4"
+    videoMobileDark: "/assets/videos/about-me/Mobile/16_Mobile_How-I-Work_Dark.mp4",
+    botDesktopLight: "/assets/videos/about-me/bot-transition/Desktop/07_Desktop_How-I-Work_Light.mp4",
+    botDesktopDark: "/assets/videos/about-me/bot-transition/Desktop/08_Desktop_How-I-Work_Dark.mp4",
+    botMobileLight: "/assets/videos/about-me/bot-transition/Mobile/15_Mobile_How-I-Work_Light.mp4",
+    botMobileDark: "/assets/videos/about-me/bot-transition/Mobile/16_Mobile_How-I-Work_Dark.mp4"
   }
 ];
 
@@ -276,9 +296,10 @@ export function AboutChapterMedia({ chapter, idx, active, sectionInView, isLight
     ? (activeVariant.isLight ? chapter.videoMobileLight : chapter.videoMobileDark)
     : (activeVariant.isLight ? chapter.videoDesktopLight : chapter.videoDesktopDark);
 
-  const botVideoSrc = activeVariant.isMobile
-    ? (activeVariant.isLight ? BOT_TRANSITION_VIDEOS.mobileLight : BOT_TRANSITION_VIDEOS.mobileDark)
-    : (activeVariant.isLight ? BOT_TRANSITION_VIDEOS.desktopLight : BOT_TRANSITION_VIDEOS.desktopDark);
+  const botVideoSrc = (activeVariant.isMobile
+    ? (activeVariant.isLight ? chapter.botMobileLight : chapter.botMobileDark)
+    : (activeVariant.isLight ? chapter.botDesktopLight : chapter.botDesktopDark))
+    || chapterVideoSrc.replace("/assets/videos/about-me/", "/assets/videos/about-me/bot-transition/");
 
   const posterSrc = activeVariant.isMobile
     ? (activeVariant.isLight ? chapter.mobileLight : chapter.mobileDark)
@@ -378,6 +399,10 @@ export function AboutChapterMedia({ chapter, idx, active, sectionInView, isLight
   const botDuration = 3.0;
 
   useEffect(() => {
+    if (!isVisibleNow) {
+      if (advanceTimerRef.current) clearTimeout(advanceTimerRef.current);
+      return;
+    }
     if (stage === "chapter-video") {
       advanceTimerRef.current = setTimeout(() => {
         advanceToBotVideo();
@@ -390,7 +415,7 @@ export function AboutChapterMedia({ chapter, idx, active, sectionInView, isLight
       }, (botDuration + 0.3) * 1000);
       return () => clearTimeout(advanceTimerRef.current);
     }
-  }, [stage, chapterDuration, botDuration, advanceToBotVideo, advanceToStatic]);
+  }, [stage, isVisibleNow, chapterDuration, botDuration, advanceToBotVideo, advanceToStatic]);
 
   const handleChapterTimeUpdate = useCallback(() => {
     if (stage !== "chapter-video" || botTransitionTriggeredRef.current) return;
