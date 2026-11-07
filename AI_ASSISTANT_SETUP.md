@@ -13,10 +13,12 @@ Mock provider responses exist only in automated tests. Passing those tests prove
 3. Enter the provider credentials/model in that private file:
 
 ```dotenv
-AI_API_KEY=your-own-provider-key
-AI_MODEL=gemini-3.5-flash-lite
-AI_FALLBACK_MODEL=gemini-3.6-flash
-AI_BASE_URL=https://generativelanguage.googleapis.com/v1beta/openai
+AI_API_KEY=your-free-ai-key
+AI_MODEL=qwen7b
+AI_BASE_URL=https://api.free.ai/v1
+AI_FALLBACK_API_KEY=your-gemini-api-key
+AI_FALLBACK_MODEL=gemini-2.5-flash,gemini-2.5-pro
+AI_FALLBACK_BASE_URL=https://generativelanguage.googleapis.com/v1beta/openai
 ```
 
 `AI_API_KEY` and `AI_MODEL` are required. `AI_FALLBACK_MODEL` (or `AI_SECONDARY_MODEL`) is optional: if configured and the primary model fails or is unavailable, the server automatically attempts the fallback model before reporting an error. The adapter uses an **OpenAI-compatible Chat Completions API** (such as Google Gemini's endpoint `https://generativelanguage.googleapis.com/v1beta/openai` or standard OpenAI/compatible endpoints). The base URL should precede `/chat/completions`.

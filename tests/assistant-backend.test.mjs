@@ -170,14 +170,26 @@ test('native dev server route aliases, JSON APIs, MIME, HEAD, dotfiles/traversal
   const oversized = await localRequest(port, '/api/chat', { method: 'POST', headers: { 'content-type': 'application/json' }, body: 'x'.repeat(17000) }); assert.equal(oversized.status, 413);
 });
 
-test('model normalization and fallback configuration handles gemini 3.5 flash lite and 3.6 flash', () => {
+test('model normalization and fallback configuration handles qwen7b primary with gemini 2.5 flash and pro fallbacks', () => {
+  const qwenCfg = getConfiguration({
+    AI_API_KEY: 'test-free-key',
+    AI_MODEL: 'Qwen 3.6 35B',
+    AI_FALLBACK_API_KEY: 'test-gemini-key',
+    AI_FALLBACK_MODEL: 'gemini 2.5 flash, 2.5 pro'
+  });
+  assert.equal(qwenCfg.model, 'qwen7b');
+  assert.equal(qwenCfg.endpoint, 'https://api.free.ai/v1/chat/completions');
+  assert.equal(qwenCfg.fallbackModel, 'gemini-2.5-flash');
+  assert.equal(qwenCfg.fallback.endpoint, 'https://generativelanguage.googleapis.com/v1beta/openai/chat/completions');
+  assert.deepEqual(qwenCfg.fallbacks.map(f => f.model), ['gemini-2.5-flash', 'gemini-2.5-pro']);
+
   const cfg = getConfiguration({
     AI_API_KEY: 'test-key',
-    AI_MODEL: 'gemini 3.5 flash light',
-    AI_FALLBACK_MODEL: '3.6 FLASH'
+    AI_MODEL: 'gemini 2.5 flash',
+    AI_FALLBACK_MODEL: '2.5 PRO'
   });
-  assert.equal(cfg.model, 'gemini-3.5-flash-lite');
-  assert.equal(cfg.fallbackModel, 'gemini-3.6-flash');
+  assert.equal(cfg.model, 'gemini-2.5-flash');
+  assert.equal(cfg.fallbackModel, 'gemini-2.5-pro');
   assert.equal(cfg.endpoint, 'https://generativelanguage.googleapis.com/v1beta/openai/chat/completions');
   assert.equal(cfg.fallback.endpoint, 'https://generativelanguage.googleapis.com/v1beta/openai/chat/completions');
 
@@ -185,26 +197,27 @@ test('model normalization and fallback configuration handles gemini 3.5 flash li
     AI_API_KEY: 'test-key',
     AI_MODEL: 'gemini-3.5-flash-lite, gemini-3.6-flash'
   });
-  assert.equal(commaCfg.model, 'gemini-3.5-flash-lite');
-  assert.equal(commaCfg.fallbackModel, 'gemini-3.6-flash');
+  assert.equal(commaCfg.model, 'gemini-2.5-flash');
+  assert.equal(commaCfg.fallbackModel, 'gemini-2.5-pro');
 });
 
-test('fallback to secondary model when primary model fails, and skip fallback when primary succeeds', async () => {
+test('fallback from qwen7b primary to gemini-2.5-flash and gemini-2.5-pro when primary fails, and skip fallback when primary succeeds', async () => {
   const modelsCalled = [];
   const fallbackEnv = {
-    AI_API_KEY: 'fixture-key',
-    AI_MODEL: 'gemini-3.5-flash-lite',
-    AI_FALLBACK_MODEL: 'gemini-3.6-flash'
+    AI_API_KEY: 'fixture-free-key',
+    AI_MODEL: 'qwen7b',
+    AI_FALLBACK_API_KEY: 'fixture-gemini-key',
+    AI_FALLBACK_MODEL: 'gemini-2.5-flash,gemini-2.5-pro'
   };
 
-  // Case 1: Primary fails -> secondary succeeds
+  // Case 1: Primary (qwen7b) fails -> secondary (gemini-2.5-flash) succeeds
   const fallbackFn = createChatHandler({
     env: fallbackEnv,
     limiter: createRateLimiter({ maxRequests: 100 }),
     fetchImpl: async (url, options) => {
       const payload = JSON.parse(options.body);
       modelsCalled.push(payload.model);
-      if (payload.model === 'gemini-3.5-flash-lite') {
+      if (payload.model === 'qwen7b') {
         return new Response('primary error', { status: 500 });
       }
       return provider('Fallback model reply: success');
@@ -214,9 +227,9 @@ test('fallback to secondary model when primary model fails, and skip fallback wh
   const res = await invoke(fallbackFn);
   assert.equal(res.statusCode, 200);
   assert.equal(res.body.reply, 'Fallback model reply: success');
-  assert.deepEqual(modelsCalled, ['gemini-3.5-flash-lite', 'gemini-3.6-flash']);
+  assert.deepEqual(modelsCalled, ['qwen7b', 'gemini-2.5-flash']);
 
-  // Case 2: Primary succeeds -> secondary never called
+  // Case 2: Primary (qwen7b) succeeds -> secondary never called
   const primaryModels = [];
   const primaryOnlyFn = createChatHandler({
     env: fallbackEnv,
@@ -231,17 +244,18 @@ test('fallback to secondary model when primary model fails, and skip fallback wh
   const resPrimary = await invoke(primaryOnlyFn);
   assert.equal(resPrimary.statusCode, 200);
   assert.equal(resPrimary.body.reply, 'Primary model reply');
-  assert.deepEqual(primaryModels, ['gemini-3.5-flash-lite']);
+  assert.deepEqual(primaryModels, ['qwen7b']);
 
-  // Case 3: Both fail -> 502 with no credentials leaked
-  const failBothFn = createChatHandler({
+  // Case 3: All fail -> 502 with no credentials leaked
+  const failAllFn = createChatHandler({
     env: fallbackEnv,
     limiter: createRateLimiter({ maxRequests: 100 }),
     fetchImpl: async () => new Response('down', { status: 503 })
   });
-  const resBoth = await invoke(failBothFn);
+  const resBoth = await invoke(failAllFn);
   code(resBoth, 502, 'AI_UNAVAILABLE');
   assert.ok(!resBoth.text.includes(fallbackEnv.AI_API_KEY));
+  assert.ok(!resBoth.text.includes(fallbackEnv.AI_FALLBACK_API_KEY));
 });
 
 test('multi-key support: comma-separated keys and secondary API keys trigger fallback on failure', async () => {

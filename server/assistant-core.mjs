@@ -23,25 +23,48 @@ function sendError(res, error) {
   const safe = error instanceof HttpError ? error : new HttpError(502, 'AI_UNAVAILABLE');
   sendJson(res, safe.status, { error: { code: safe.code, message: safe.message } }, safe.status === 429 ? { 'Retry-After': '60' } : {});
 }
+const FREE_AI_BASE = 'https://api.free.ai/v1';
+const FREE_AI_ENDPOINT = 'https://api.free.ai/v1/chat/completions';
+const FREE_AI_DEFAULT_MODEL = 'qwen7b';
+const GEMINI_BASE = 'https://generativelanguage.googleapis.com/v1beta/openai';
+
 function normalizeModel(val) {
   if (!val || typeof val !== 'string') return '';
   let m = val.trim();
+  if (/^qwen\s*3\.6\s*35b$/i.test(m) || /^qwen-3\.6-35b$/i.test(m) || /^qwen\s*7b$/i.test(m)) {
+    return 'qwen7b';
+  }
+  if (/^qwen\s*3[\s-]*8b$/i.test(m)) {
+    return 'qwen3-8b';
+  }
   if (m.toLowerCase().includes('flash') && m.toLowerCase().includes('light')) {
     m = m.replace(/light/gi, 'lite');
   }
-  if (/^3\.\d/i.test(m) && /flash/i.test(m) && !m.toLowerCase().startsWith('gemini-')) {
+  if (/^[23]\.\d/i.test(m) && /(flash|pro)/i.test(m) && !m.toLowerCase().startsWith('gemini-')) {
     m = `gemini-${m}`;
   }
-  if (/gemini|flash/i.test(m)) m = m.toLowerCase();
-  return m.replace(/\s+/g, '-');
+  if (/gemini|flash|pro|qwen/i.test(m)) m = m.toLowerCase();
+  m = m.replace(/\s+/g, '-');
+  if (m === 'gemini-3.5-flash-lite' || m === 'gemini-3.5-flash') return 'gemini-2.5-flash';
+  if (m === 'gemini-3.6-flash' || m === 'gemini-3.6-pro') return 'gemini-2.5-pro';
+  return m;
 }
+
+function defaultBaseForModel(model) {
+  const lower = (model || '').toLowerCase();
+  if (lower === 'qwen7b' || lower === 'qwen3-8b') return FREE_AI_BASE;
+  if (lower.startsWith('gemini-')) return GEMINI_BASE;
+  return 'https://api.openai.com/v1';
+}
+
 export function getConfiguration(env = process.env) {
-  const rawKey = (env.AI_API_KEY || env.GEMINI_API_KEY)?.trim();
-  const rawModel = (env.AI_MODEL || env.GEMINI_MODEL)?.trim();
+  const rawKey = (env.AI_API_KEY || env.FREE_CODE_TOKEN || env.GEMINI_API_KEY)?.trim();
+  const rawModel = (env.AI_MODEL || env.FREE_CODE_MODEL || env.GEMINI_MODEL)?.trim();
   if (!rawKey || !rawModel) return null;
 
   let key = rawKey;
-  let fallbackKey = (env.AI_FALLBACK_API_KEY || env.AI_SECONDARY_KEY || env.AI_SECONDARY_API_KEY || env.AI_FALLBACK_KEY || env.GEMINI_API_KEY_2)?.trim();
+  let fallbackKey = (env.AI_FALLBACK_API_KEY || env.AI_SECONDARY_KEY || env.AI_SECONDARY_API_KEY || env.AI_FALLBACK_KEY || env.GEMINI_API_KEY || env.GEMINI_API_KEY_2)?.trim();
+  if (fallbackKey === key) fallbackKey = undefined;
 
   // Support multiple keys if provided comma-separated or newline-separated in AI_API_KEY
   if (rawKey.includes(',') || rawKey.includes('\n')) {
@@ -53,58 +76,80 @@ export function getConfiguration(env = process.env) {
   }
 
   let rawPrimary = rawModel;
-  let rawFallback = (env.AI_FALLBACK_MODEL || env.AI_SECONDARY_MODEL)?.trim();
+  let rawFallbackList = [];
+  const rawFallbackEnv = (env.AI_FALLBACK_MODEL || env.AI_SECONDARY_MODEL)?.trim();
 
   if (rawModel.includes(',')) {
     const parts = rawModel.split(',').map(s => s.trim()).filter(Boolean);
     rawPrimary = parts[0] || '';
-    if (!rawFallback && parts.length > 1) {
-      rawFallback = parts[1];
+    if (parts.length > 1) {
+      rawFallbackList.push(...parts.slice(1));
     }
+  }
+  if (rawFallbackEnv) {
+    rawFallbackList.push(...rawFallbackEnv.split(',').map(s => s.trim()).filter(Boolean));
   }
 
   const model = normalizeModel(rawPrimary);
-  const fallbackModel = normalizeModel(rawFallback);
+  let fallbackModels = rawFallbackList.map(normalizeModel).filter(Boolean);
+
+  if (fallbackModels.length === 0) {
+    if (model === 'qwen7b' || model === 'qwen3-8b') {
+      fallbackModels = ['gemini-2.5-flash', 'gemini-2.5-pro'];
+    } else if (model === 'gemini-2.5-flash') {
+      fallbackModels = ['gemini-2.5-pro'];
+    } else if (model === 'gemini-2.5-pro') {
+      fallbackModels = ['gemini-2.5-flash'];
+    }
+  }
 
   try {
-    const defaultBase = (model.toLowerCase().startsWith('gemini-') && !env.AI_BASE_URL)
-      ? 'https://generativelanguage.googleapis.com/v1beta/openai'
-      : 'https://api.openai.com/v1';
+    const defaultBase = !env.AI_BASE_URL ? defaultBaseForModel(model) : 'https://api.openai.com/v1';
     const baseInput = env.AI_BASE_URL?.trim() || defaultBase;
     const base = new URL(baseInput);
-    const allText = key + model + (fallbackModel || '') + (fallbackKey || '');
+    const allText = key + model + fallbackModels.join('') + (fallbackKey || '');
     if (!model || /[\r\n]/.test(allText) || base.protocol !== 'https:' || base.username || base.password || base.search || base.hash) return null;
 
     const cleanHref = base.href.replace(/\/+$/, '').replace(/\/chat\/completions$/, '');
     const endpoint = `${cleanHref}/chat/completions`;
 
     // The credential belongs only in the Authorization header, never in URLs.
-    if (endpoint.includes(key) || model.includes(key) || (fallbackModel && fallbackModel.includes(key))) return null;
+    if (endpoint.includes(key) || model.includes(key) || fallbackModels.some(fm => fm.includes(key))) return null;
 
-    let fallback = null;
-    const effectiveFbModel = fallbackModel || model;
+    const fallbacks = [];
     const effectiveFbKey = fallbackKey || key;
-    const hasDifferentKey = fallbackKey && fallbackKey !== key;
-    const hasDifferentModel = fallbackModel && fallbackModel !== model;
+    const hasDifferentKey = Boolean(fallbackKey && fallbackKey !== key);
 
-    if (hasDifferentKey || hasDifferentModel) {
-      const fbBaseUrl = env.AI_FALLBACK_BASE_URL?.trim() || baseInput;
+    const candidateFbModels = fallbackModels.length > 0 ? fallbackModels : (hasDifferentKey ? [model] : []);
+    for (const fbModel of candidateFbModels) {
+      if (fbModel === model && !hasDifferentKey) continue;
+      const sameFamily = defaultBaseForModel(fbModel) === defaultBaseForModel(model);
+      const fbBaseUrl = env.AI_FALLBACK_BASE_URL?.trim() || (sameFamily ? baseInput : defaultBaseForModel(fbModel));
       const fbBase = new URL(fbBaseUrl);
       if (fbBase.protocol === 'https:' && !fbBase.username && !fbBase.password && !fbBase.search && !fbBase.hash) {
         const cleanFbHref = fbBase.href.replace(/\/+$/, '').replace(/\/chat\/completions$/, '');
         const fbEndpoint = `${cleanFbHref}/chat/completions`;
-        if (!fbEndpoint.includes(effectiveFbKey) && !effectiveFbModel.includes(effectiveFbKey)) {
-          fallback = { key: effectiveFbKey, model: effectiveFbModel, endpoint: fbEndpoint };
+        if (!fbEndpoint.includes(effectiveFbKey) && !fbModel.includes(effectiveFbKey)) {
+          fallbacks.push({ key: effectiveFbKey, model: fbModel, endpoint: fbEndpoint });
         }
       }
     }
+
+    const fallback = fallbacks[0] || null;
+    const freeAiPrimary = env.AI_FREE_PRIMARY !== 'false' && (
+      model === 'qwen7b' ||
+      model === 'qwen3-8b' ||
+      endpoint.includes('generativelanguage.googleapis.com')
+    );
 
     return {
       key,
       model,
       endpoint,
       fallback,
-      fallbackModel: fallback ? fallback.model : null
+      fallbacks,
+      fallbackModel: fallback ? fallback.model : null,
+      freeAiPrimary
     };
   } catch { return null; }
 }
@@ -221,19 +266,35 @@ async function callSingleProvider(endpoint, key, model, messages, fetchImpl, tim
 }
 async function providerReply(config, messages, fetchImpl, timeoutMs) {
   const deadline = Date.now() + timeoutMs;
-  try {
-    return await callSingleProvider(config.endpoint, config.key, config.model, messages, fetchImpl, timeoutMs);
-  } catch (primaryError) {
-    const remainingTime = deadline - Date.now();
-    if (config.fallback && remainingTime > 200 && !(primaryError instanceof HttpError && primaryError.code === 'AI_TIMEOUT' && remainingTime <= 200)) {
-      try {
-        return await callSingleProvider(config.fallback.endpoint, config.fallback.key, config.fallback.model, messages, fetchImpl, remainingTime);
-      } catch (fallbackError) {
-        throw fallbackError;
-      }
-    }
-    throw primaryError;
+  const fallbackList = Array.isArray(config.fallbacks) && config.fallbacks.length > 0
+    ? config.fallbacks
+    : (config.fallback ? [config.fallback] : []);
+
+  const candidates = [];
+  if (fetchImpl === globalThis.fetch && config.freeAiPrimary && config.endpoint !== FREE_AI_ENDPOINT) {
+    candidates.push({ endpoint: FREE_AI_ENDPOINT, key: config.key, model: FREE_AI_DEFAULT_MODEL });
   }
+  candidates.push({ endpoint: config.endpoint, key: config.key, model: config.model });
+  for (const fb of fallbackList) {
+    if (!candidates.some(c => c.endpoint === fb.endpoint && c.model === fb.model && c.key === fb.key)) {
+      candidates.push(fb);
+    }
+  }
+
+  let lastError;
+  for (let i = 0; i < candidates.length; i++) {
+    const candidate = candidates[i];
+    const remainingTime = i === 0 ? timeoutMs : (deadline - Date.now());
+    if (i > 0 && remainingTime <= 200) break;
+    try {
+      const reply = await callSingleProvider(candidate.endpoint, candidate.key, candidate.model, messages, fetchImpl, remainingTime);
+      if (candidates.some(c => c.key && reply.includes(c.key))) fail(502, 'AI_UNAVAILABLE');
+      return reply;
+    } catch (err) {
+      lastError = err;
+    }
+  }
+  throw lastError || new HttpError(502, 'AI_UNAVAILABLE');
 }
 export function createChatHandler({ env = process.env, fetchImpl = globalThis.fetch, limiter = sharedLimiter, timeoutMs = LIMITS.timeoutMs } = {}) {
   return async function chat(req, res) {
