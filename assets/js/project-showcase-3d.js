@@ -480,10 +480,8 @@ export function createFlyingRobot3D() {
 function MacWindowMockup({
   imageSrc,
   alt = "Project Preview",
-  title = "",
   className = "",
   aspectRatio = "16 / 10",
-  showTitle = false,
   isFeatured = false
 }) {
   return h(
@@ -492,25 +490,6 @@ function MacWindowMockup({
       className: `mac-window-mockup ${isFeatured ? "featured-mockup" : ""} ${className}`.trim(),
       style: { aspectRatio }
     },
-    // macOS Header Bar with 3 traffic light dots & optional centered title/URL
-    h(
-      "div",
-      { className: "mac-window-topbar" },
-      h(
-        "div",
-        { className: "mac-window-dots", "aria-hidden": "true" },
-        h("span", { className: "mac-dot mac-dot-red" }),
-        h("span", { className: "mac-dot mac-dot-yellow" }),
-        h("span", { className: "mac-dot mac-dot-green" })
-      ),
-      showTitle && title
-        ? h(
-            "div",
-            { className: "mac-window-title-tab" },
-            h("span", { className: "mac-window-title-text" }, title)
-          )
-        : null
-    ),
     // Window Content Frame with Image
     h(
       "div",
@@ -1017,8 +996,6 @@ export function FeaturedProjects({
                 h(MacWindowMockup, {
                   imageSrc: activeFeatured.image || "assets/images/projects/locationkhuji-desktop.png",
                   alt: activeFeatured.title,
-                  title: `${activeFeatured.title} — ${activeFeatured.summary || activeFeatured.shortCategory || "Featured"}`,
-                  showTitle: true,
                   isFeatured: true,
                   aspectRatio: "16 / 10"
                 })

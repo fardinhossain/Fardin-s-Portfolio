@@ -266,21 +266,24 @@ export function AboutScrollStory() {
     }
   }, []);
 
-  // 2-Second Robotic Popup Instruction with Bot F-01 when entering About section on mobile
+  // Robotic Popup Instruction with Bot F-01 when entering About section on mobile (appears after 0.5s, stays for 2.5s)
   useEffect(() => {
     if (!isMobile || typeof IntersectionObserver === "undefined") return;
     const section = sectionRef.current;
     if (!section) return;
 
-    let timer;
+    let appearTimer;
+    let hideTimer;
     const observer = new IntersectionObserver((entries) => {
       entries.forEach((entry) => {
         if (entry.isIntersecting && !hasShownHintRef.current) {
           hasShownHintRef.current = true;
-          setShowPopupHint(true);
-          timer = setTimeout(() => {
-            setShowPopupHint(false);
-          }, 2000); // Exactly 2 seconds
+          appearTimer = setTimeout(() => {
+            setShowPopupHint(true);
+            hideTimer = setTimeout(() => {
+              setShowPopupHint(false);
+            }, 2500); // Stays for 2.5 seconds
+          }, 500); // Appears after 0.5 sec
         }
       });
     }, { threshold: 0.2 });
@@ -288,7 +291,8 @@ export function AboutScrollStory() {
     observer.observe(section);
     return () => {
       observer.disconnect();
-      clearTimeout(timer);
+      clearTimeout(appearTimer);
+      clearTimeout(hideTimer);
     };
   }, [isMobile]);
 
@@ -630,7 +634,7 @@ export function AboutScrollStory() {
           )
         ),
 
-        // Mobile Facebook Story-Style Controls (Progress bars + Story header)
+        // Mobile Facebook Story-Style Progress Bars
         isMobile && h("div", { className: "ae-mobile-story-controls" },
           // 4 Segment Progress Bars (Like Facebook/Instagram Stories)
           h("div", { className: "ae-story-bars", "aria-label": "Story progress indicators" },
@@ -644,34 +648,6 @@ export function AboutScrollStory() {
               },
                 h("span", { className: "ae-story-bar-fill" })
               )
-            )
-          ),
-          // Story Header with Bot Avatar, Title, and Navigation Chevrons
-          h("div", { className: "ae-story-header" },
-            h("div", { className: "ae-story-author" },
-              h("div", { className: "ae-story-avatar", "aria-hidden": "true" },
-                h(FlyingTrackerRobot, { isFlying: false, direction: 1, isMobile: true })
-              ),
-              h("div", { className: "ae-story-meta" },
-                h("span", { className: "ae-story-name" }, "Fardin's Journey"),
-                h("span", { className: "ae-story-counter" }, `${ABOUT_CHAPTERS[active]?.number} / 04 · ${ABOUT_CHAPTERS[active]?.title}`)
-              )
-            ),
-            h("div", { className: "ae-story-nav-btns" },
-              h("button", {
-                type: "button",
-                className: "ae-story-btn ae-story-prev",
-                onClick: () => goToStory(Math.max(0, active - 1)),
-                disabled: active === 0,
-                "aria-label": "Previous story"
-              }, "‹"),
-              h("button", {
-                type: "button",
-                className: "ae-story-btn ae-story-next",
-                onClick: () => goToStory(Math.min(ABOUT_CHAPTERS.length - 1, active + 1)),
-                disabled: active === ABOUT_CHAPTERS.length - 1,
-                "aria-label": "Next story"
-              }, "›")
             )
           )
         ),

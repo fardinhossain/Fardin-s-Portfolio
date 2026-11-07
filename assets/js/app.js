@@ -467,6 +467,22 @@ function PortfolioApp() {
 
   // Robotic Entrance Animation State (The full-screen cinematic hero is the primary entrance)
   const [showIntro, setShowIntro] = useState(false);
+  const [introKey, setIntroKey] = useState(0);
+
+  const handleLogoClick = (e) => {
+    if (e) e.preventDefault();
+    resetIntroSeen();
+    if (window.location.hash) {
+      history.pushState(null, "", window.location.pathname + window.location.search);
+    }
+    window.scrollTo({ top: 0, left: 0, behavior: "instant" });
+    if (view !== "home") {
+      setView("home");
+    }
+    setActiveNav("home");
+    setIntroKey((k) => k + 1);
+    setShowIntro(true);
+  };
 
   // Theme State synced with Theme Manager
   const [theme, setTheme] = useState(() => getCurrentTheme());
@@ -685,6 +701,8 @@ function PortfolioApp() {
     null,
     showIntro &&
       h(PortfolioIntro, {
+        key: `intro-${introKey}`,
+        forceShow: true,
         onComplete: () => setShowIntro(false)
       }),
     h("a", { href: "#main-content", className: "skip-link" }, "Skip to content"),
@@ -705,10 +723,7 @@ function PortfolioApp() {
             href: "#home",
             className: "brand-logo",
             "aria-label": "Fardin.AI — Home",
-            onClick: (e) => {
-              e.preventDefault();
-              navigateToSection("home");
-            }
+            onClick: handleLogoClick
           },
           h(
             "span",
@@ -814,120 +829,9 @@ function PortfolioApp() {
             },
             h("span", { className: "talk-arrow", "aria-hidden": "true" }, "→"),
             h("span", { className: "talk-text" }, "LET'S TALK")
-          ),
-          h(
-            "button",
-            {
-              type: "button",
-              className: "mobile-menu-trigger",
-              "aria-label": mobileMenuOpen ? "Close Menu" : "Open Menu",
-              "aria-expanded": mobileMenuOpen,
-              onClick: () => setMobileMenuOpen((v) => !v)
-            },
-            mobileMenuOpen ? "✕" : "☰"
           )
         )
-      ),
-
-      // Mobile Slide-Down Drawer
-      AnimatePresence &&
-        h(
-          AnimatePresence,
-          null,
-          mobileMenuOpen &&
-            h(
-              motion.div,
-              {
-                initial: { opacity: 0, y: -10 },
-                animate: { opacity: 1, y: 0 },
-                exit: { opacity: 0, y: -10 },
-                transition: { duration: 0.2 },
-                style: {
-                  marginTop: "8px",
-                  background: "var(--bg-surface)",
-                  border: "1px solid var(--border-light)",
-                  borderRadius: "20px",
-                  padding: "1rem",
-                  boxShadow: "var(--shadow-elevated)"
-                }
-              },
-              h(
-                "div",
-                { style: { display: "flex", flexDirection: "column", gap: "0.4rem" } },
-                [
-                  { id: "home", label: "Home" },
-                  { id: "about", label: "About" },
-                  { id: "experience", label: "Experience" },
-                  { id: "projects", label: "Projects" },
-                  { id: "certifications", label: "Certifications" },
-                  { id: "contact", label: "Contact" }
-                ].map((item) =>
-                  h(
-                    "button",
-                    {
-                      key: item.id,
-                      type: "button",
-                      onClick: () => navigateToSection(item.id),
-                      style: {
-                        textAlign: "left",
-                        padding: "0.65rem 0.9rem",
-                        borderRadius: "12px",
-                        border: "none",
-                        background:
-                          activeNav === item.id ? "var(--bg-subtle)" : "transparent",
-                        fontWeight: 700,
-                        fontSize: "0.92rem",
-                        color: "var(--text-primary)",
-                        cursor: "pointer"
-                      }
-                    },
-                    item.label
-                  )
-                ),
-                // Mobile Theme Toggle Row inside Drawer
-                h(
-                  "button",
-                  {
-                    type: "button",
-                    className: "theme-toggle-btn",
-                    style: {
-                      width: "100%",
-                      justifyContent: "space-between",
-                      marginTop: "0.5rem",
-                      padding: "0.65rem 0.9rem"
-                    },
-                    onClick: (e) => {
-                      handleToggleTheme(e);
-                      setMobileMenuOpen(false);
-                    },
-                    "aria-label":
-                      theme === "dark" ? "Switch to Light Mode" : "Switch to Dark Mode"
-                  },
-                  h(
-                    "span",
-                    {
-                      style: {
-                        display: "inline-flex",
-                        alignItems: "center",
-                        gap: "0.5rem"
-                      }
-                    },
-                    h("span", { className: "theme-toggle-led" }),
-                    h(
-                      "span",
-                      { style: { fontSize: "0.86rem" } },
-                      theme === "dark" ? "Switch to Solar Light" : "Switch to Robotic Dark"
-                    )
-                  ),
-                  h(
-                    "span",
-                    { className: "theme-toggle-icon-box" },
-                    theme === "dark" ? "🌙" : "☀️"
-                  )
-                )
-              )
-            )
-        )
+      )
     ),
 
     // ========================================================================

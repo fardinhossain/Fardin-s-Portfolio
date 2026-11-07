@@ -1477,7 +1477,7 @@ export function CertificationShowcase({
           setIsQuickReveal(false);
           setDeliveredIds(new Set());
           setRunCount((r) => r + 1);
-        }, 1000);
+        }, 300);
       }
     };
 

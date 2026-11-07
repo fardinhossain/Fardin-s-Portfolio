@@ -233,7 +233,7 @@ body { background: var(--folio-ground); }
   .navbar-wrapper .theme-toggle-btn { width: 22px !important; min-width: 22px !important; height: 22px !important; min-height: 22px !important; padding: 2px !important; }
   .navbar-wrapper .theme-toggle-icon-box { width: 12px !important; height: 12px !important; }
   .navbar-wrapper .theme-toggle-icon-box svg { width: 12px !important; height: 12px !important; }
-  .mobile-menu-trigger { width: 24px !important; min-width: 24px !important; height: 24px !important; min-height: 24px !important; font-size: 11px !important; line-height: 1 !important; padding: 0 !important; }
+  .mobile-menu-trigger { display: none !important; }
   .navbar-wrapper .nav-btn-talk, [data-theme="dark"] .navbar-wrapper .nav-btn-talk { display: none; }
   .fh-hero { height: auto !important; min-height: auto !important; }
   .fh-inner { height: auto !important; min-height: auto !important; display: block; }
