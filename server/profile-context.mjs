@@ -16,8 +16,8 @@ export const professionalProfile = {
       github: PROFILE_DATA.github, linkedin: PROFILE_DATA.linkedin,
       resumeUrl: PROFILE_DATA.resumeUrl
     },
-    projects: PROJECTS_LIST.map(({ title, summary, description, highlights, tags, liveUrl, githubUrl, paperUrl }) =>
-      ({ title, summary, description, highlights, tags, liveUrl, githubUrl, paperUrl })),
+    projects: PROJECTS_LIST.map(({ title, summary, highlights, liveUrl, githubUrl }) =>
+      ({ title, summary, highlights, liveUrl, githubUrl })),
     skills: SKILL_GROUPS.map(({ category, items }) => ({ category, items })),
     internship: { role: JOURNEY_OVERVIEW.role, period: JOURNEY_OVERVIEW.period, summary: JOURNEY_OVERVIEW.subtitle },
     reportedMetrics: HERO_METRICS.map(({ value, label }) => ({ value, label })),
