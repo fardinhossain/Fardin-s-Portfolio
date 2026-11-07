@@ -218,6 +218,8 @@ export function AboutChapterMedia({ chapter, idx, active, sectionInView, isLight
 
   const hasPlayedRef = useRef(false);
   const hasCompletedRef = useRef(reduced);
+  const botTransitionTriggeredRef = useRef(false);
+  const staticTransitionTriggeredRef = useRef(false);
   const lockedThemeRef = useRef(null);
   const advanceTimerRef = useRef(null);
 
@@ -225,6 +227,8 @@ export function AboutChapterMedia({ chapter, idx, active, sectionInView, isLight
   useEffect(() => {
     if (reduced) {
       hasCompletedRef.current = true;
+      botTransitionTriggeredRef.current = true;
+      staticTransitionTriggeredRef.current = true;
       setStage("static-image");
     }
   }, [reduced]);
@@ -284,14 +288,33 @@ export function AboutChapterMedia({ chapter, idx, active, sectionInView, isLight
 
   // Transitions between stages
   const advanceToStatic = useCallback(() => {
-    if (advanceTimerRef.current) clearTimeout(advanceTimerRef.current);
+    if (staticTransitionTriggeredRef.current || hasCompletedRef.current) return;
+    staticTransitionTriggeredRef.current = true;
     hasCompletedRef.current = true;
+    if (advanceTimerRef.current) clearTimeout(advanceTimerRef.current);
+
+    const chapterVideo = chapterVideoRef.current;
+    if (chapterVideo && !chapterVideo.paused) {
+      chapterVideo.pause();
+    }
+    const botVideo = botVideoRef.current;
+    if (botVideo && !botVideo.paused) {
+      botVideo.pause();
+    }
+
     setStage("static-image");
   }, []);
 
   const advanceToBotVideo = useCallback(() => {
-    if (hasCompletedRef.current) return;
+    if (botTransitionTriggeredRef.current || hasCompletedRef.current) return;
+    botTransitionTriggeredRef.current = true;
     if (advanceTimerRef.current) clearTimeout(advanceTimerRef.current);
+
+    // CRITICAL: Immediately pause chapter video so it stops firing timeupdate and resetting botVideo
+    const chapterVideo = chapterVideoRef.current;
+    if (chapterVideo && !chapterVideo.paused) {
+      chapterVideo.pause();
+    }
 
     setStage("bot-video");
 
@@ -370,6 +393,7 @@ export function AboutChapterMedia({ chapter, idx, active, sectionInView, isLight
   }, [stage, chapterDuration, botDuration, advanceToBotVideo, advanceToStatic]);
 
   const handleChapterTimeUpdate = useCallback(() => {
+    if (stage !== "chapter-video" || botTransitionTriggeredRef.current) return;
     const video = chapterVideoRef.current;
     if (!video) return;
     if (
@@ -378,9 +402,10 @@ export function AboutChapterMedia({ chapter, idx, active, sectionInView, isLight
     ) {
       advanceToBotVideo();
     }
-  }, [chapterDuration, advanceToBotVideo]);
+  }, [stage, chapterDuration, advanceToBotVideo]);
 
   const handleBotTimeUpdate = useCallback(() => {
+    if (stage !== "bot-video" || staticTransitionTriggeredRef.current) return;
     const video = botVideoRef.current;
     if (!video) return;
     if (
@@ -389,7 +414,7 @@ export function AboutChapterMedia({ chapter, idx, active, sectionInView, isLight
     ) {
       advanceToStatic();
     }
-  }, [botDuration, advanceToStatic]);
+  }, [stage, botDuration, advanceToStatic]);
 
   // Preloading controls:
   // - Chapter video: auto if idx===0 or near view or previous chapter active
