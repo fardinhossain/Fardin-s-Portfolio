@@ -232,7 +232,15 @@ export function AboutGhostRobot() {
 // Revisit sequence (2 steps on every return to a finished chapter):
 //   1. Revisit Bot F-01 Transition Video (3s, current theme & viewport)
 //   2. Static High-Resolution PNG Artwork
-export function AboutChapterMedia({ chapter, idx, active, sectionInView, isLight, isMobile, reduced }) {
+export function AboutChapterMedia({
+  chapter,
+  idx,
+  active,
+  sectionInView,
+  isLight,
+  isMobile,
+  reduced
+}) {
   const cardRef = useRef(null);
   const chapterVideoRef = useRef(null);
   const botVideoRef = useRef(null);
@@ -240,7 +248,6 @@ export function AboutChapterMedia({ chapter, idx, active, sectionInView, isLight
   // Stages: "idle" | "intro-bot" | "chapter-video" | "outro-bot" | "revisit-bot" | "static-image"
   const [stage, setStage] = useState(() => (reduced ? "static-image" : "idle"));
   const [revisitCount, setRevisitCount] = useState(0);
-  const [lockedVariant, setLockedVariant] = useState(null);
   const [cardInView, setCardInView] = useState(false);
   const [cardNearView, setCardNearView] = useState(false);
 
@@ -250,7 +257,6 @@ export function AboutChapterMedia({ chapter, idx, active, sectionInView, isLight
   const revisitArmedRef = useRef(false);
   const revisitCountRef = useRef(0);
   const stageStartedKeyRef = useRef(null);
-  const lockedVariantRef = useRef(null);
   const isVisibleNowRef = useRef(false);
   const botErrorSrcRef = useRef(null);
   const chapterErrorSrcRef = useRef(null);
@@ -267,8 +273,6 @@ export function AboutChapterMedia({ chapter, idx, active, sectionInView, isLight
       hasStartedFirstVisitRef.current = true;
       hasCompletedFirstVisitRef.current = true;
       revisitArmedRef.current = false;
-      lockedVariantRef.current = null;
-      setLockedVariant(null);
       stageRef.current = "static-image";
       setStage("static-image");
     }
@@ -308,29 +312,111 @@ export function AboutChapterMedia({ chapter, idx, active, sectionInView, isLight
   }, [isMobile]);
 
   // Determine current active theme & viewport variant:
-  // Lock theme & viewport during an active first-visit sequence or revisit bot run
+  // Live theme & viewport are directly respected so toggling dark/light switches video content immediately
   const isVideoStage =
     stage === "intro-bot" ||
     stage === "chapter-video" ||
     stage === "outro-bot" ||
     stage === "revisit-bot";
 
-  const activeVariant = isVideoStage && (lockedVariant || lockedVariantRef.current)
-    ? (lockedVariant || lockedVariantRef.current)
-    : { isLight, isMobile };
+  const chapterVideoSrc = isMobile
+    ? (isLight ? chapter.videoMobileLight : chapter.videoMobileDark)
+    : (isLight ? chapter.videoDesktopLight : chapter.videoDesktopDark);
 
-  const chapterVideoSrc = activeVariant.isMobile
-    ? (activeVariant.isLight ? chapter.videoMobileLight : chapter.videoMobileDark)
-    : (activeVariant.isLight ? chapter.videoDesktopLight : chapter.videoDesktopDark);
-
-  const botVideoSrc = (activeVariant.isMobile
-    ? (activeVariant.isLight ? chapter.botMobileLight : chapter.botMobileDark)
-    : (activeVariant.isLight ? chapter.botDesktopLight : chapter.botDesktopDark))
+  const botVideoSrc = (isMobile
+    ? (isLight ? chapter.botMobileLight : chapter.botMobileDark)
+    : (isLight ? chapter.botDesktopLight : chapter.botDesktopDark))
     || chapterVideoSrc.replace("/assets/videos/about-me/", "/assets/videos/about-me/bot-transition/");
 
-  const posterSrc = activeVariant.isMobile
-    ? (activeVariant.isLight ? chapter.mobileLight : chapter.mobileDark)
-    : (activeVariant.isLight ? chapter.desktopLight : chapter.desktopDark);
+  const posterSrc = isMobile
+    ? (isLight ? chapter.mobileLight : chapter.mobileDark)
+    : (isLight ? chapter.desktopLight : chapter.desktopDark);
+
+  const isBotLayerActive = stage === "intro-bot" || stage === "outro-bot" || stage === "revisit-bot";
+  const isChapterLayerActive = stage === "chapter-video";
+
+  // Track playback timestamps across live theme switches
+  const lastBotTimeRef = useRef(0);
+  const lastChapterTimeRef = useRef(0);
+  const pendingBotResumeTimeRef = useRef(null);
+  const pendingChapterResumeTimeRef = useRef(null);
+  const prevBotSrcRef = useRef(botVideoSrc);
+  const prevChapterSrcRef = useRef(chapterVideoSrc);
+
+  // When video source changes (e.g. theme toggle Dark <-> Light) during an active stage,
+  // record the current playback timestamp to carry over seamlessly
+  if (prevBotSrcRef.current !== botVideoSrc) {
+    if (isBotLayerActive) {
+      const cur = (botVideoRef.current && botVideoRef.current.currentTime > 0)
+        ? botVideoRef.current.currentTime
+        : lastBotTimeRef.current;
+      if (cur > 0.05) {
+        pendingBotResumeTimeRef.current = cur;
+      }
+    }
+    prevBotSrcRef.current = botVideoSrc;
+  }
+
+  if (prevChapterSrcRef.current !== chapterVideoSrc) {
+    if (isChapterLayerActive) {
+      const cur = (chapterVideoRef.current && chapterVideoRef.current.currentTime > 0)
+        ? chapterVideoRef.current.currentTime
+        : lastChapterTimeRef.current;
+      if (cur > 0.05) {
+        pendingChapterResumeTimeRef.current = cur;
+      }
+    }
+    prevChapterSrcRef.current = chapterVideoSrc;
+  }
+
+  // Restore playback timestamp and resume after a live theme source swap
+  const applyBotResume = useCallback((vid) => {
+    if (!vid || pendingBotResumeTimeRef.current == null) return;
+    const resumeTime = pendingBotResumeTimeRef.current;
+    pendingBotResumeTimeRef.current = null;
+    try {
+      if (!Number.isNaN(vid.duration) && vid.duration > 0) {
+        vid.currentTime = Math.min(resumeTime, Math.max(0, vid.duration - 0.05));
+      } else {
+        vid.currentTime = resumeTime;
+      }
+    } catch (_) {}
+    if (isVisibleNowRef.current && vid.paused) {
+      const p = vid.play();
+      if (p !== undefined) p.catch(() => {});
+    }
+  }, []);
+
+  const applyChapterResume = useCallback((vid) => {
+    if (!vid || pendingChapterResumeTimeRef.current == null) return;
+    const resumeTime = pendingChapterResumeTimeRef.current;
+    pendingChapterResumeTimeRef.current = null;
+    try {
+      if (!Number.isNaN(vid.duration) && vid.duration > 0) {
+        vid.currentTime = Math.min(resumeTime, Math.max(0, vid.duration - 0.05));
+      } else {
+        vid.currentTime = resumeTime;
+      }
+    } catch (_) {}
+    if (isVisibleNowRef.current && vid.paused) {
+      const p = vid.play();
+      if (p !== undefined) p.catch(() => {});
+    }
+  }, []);
+
+  useEffect(() => {
+    const botVid = botVideoRef.current;
+    if (botVid && pendingBotResumeTimeRef.current != null && botVid.readyState >= 1) {
+      applyBotResume(botVid);
+    }
+  }, [botVideoSrc, applyBotResume]);
+
+  useEffect(() => {
+    const chapVid = chapterVideoRef.current;
+    if (chapVid && pendingChapterResumeTimeRef.current != null && chapVid.readyState >= 1) {
+      applyChapterResume(chapVid);
+    }
+  }, [chapterVideoSrc, applyChapterResume]);
 
   // Stage transition callbacks
   const advanceToStatic = useCallback(() => {
@@ -351,8 +437,6 @@ export function AboutChapterMedia({ chapter, idx, active, sectionInView, isLight
 
     hasCompletedFirstVisitRef.current = true;
     revisitArmedRef.current = !isVisibleNowRef.current;
-    lockedVariantRef.current = null;
-    setLockedVariant(null);
     stageRef.current = "static-image";
     setStage("static-image");
   }, []);
@@ -391,9 +475,6 @@ export function AboutChapterMedia({ chapter, idx, active, sectionInView, isLight
     if (!hasCompletedFirstVisitRef.current && !hasStartedFirstVisitRef.current) {
       if (isVisibleNow && stage === "idle") {
         hasStartedFirstVisitRef.current = true;
-        const initialVariant = { isLight, isMobile };
-        lockedVariantRef.current = initialVariant;
-        setLockedVariant(initialVariant);
         stageRef.current = "intro-bot";
         setStage("intro-bot");
       }
@@ -408,14 +489,11 @@ export function AboutChapterMedia({ chapter, idx, active, sectionInView, isLight
         revisitArmedRef.current = false;
         revisitCountRef.current += 1;
         setRevisitCount(revisitCountRef.current);
-        const currentVariant = { isLight, isMobile };
-        lockedVariantRef.current = currentVariant;
-        setLockedVariant(currentVariant);
         stageRef.current = "revisit-bot";
         setStage("revisit-bot");
       }
     }
-  }, [isVisibleNow, stage, reduced, isLight, isMobile]);
+  }, [isVisibleNow, stage, reduced]);
 
   // Initialize playback when entering a new video stage (resets currentTime = 0 once per stage entry)
   useEffect(() => {
@@ -427,6 +505,11 @@ export function AboutChapterMedia({ chapter, idx, active, sectionInView, isLight
 
     if (stageStartedKeyRef.current === instanceKey) return;
     stageStartedKeyRef.current = instanceKey;
+
+    lastBotTimeRef.current = 0;
+    lastChapterTimeRef.current = 0;
+    pendingBotResumeTimeRef.current = null;
+    pendingChapterResumeTimeRef.current = null;
 
     if (stage === "intro-bot" || stage === "outro-bot" || stage === "revisit-bot") {
       const chapterVideo = chapterVideoRef.current;
@@ -527,7 +610,10 @@ export function AboutChapterMedia({ chapter, idx, active, sectionInView, isLight
       ? chapterVideoRef.current
       : botVideoRef.current;
     const targetDuration = stage === "chapter-video" ? chapterDuration : botDuration;
-    const elapsed = currentVid ? (Number(currentVid.currentTime) || 0) : 0;
+    const elapsed = Math.max(
+      currentVid ? (Number(currentVid.currentTime) || 0) : 0,
+      (stage === "chapter-video" ? lastChapterTimeRef.current : lastBotTimeRef.current) || 0
+    );
     const remainingSec = Math.max(0.4, targetDuration - elapsed + 0.45);
 
     advanceTimerRef.current = setTimeout(() => {
@@ -585,9 +671,6 @@ export function AboutChapterMedia({ chapter, idx, active, sectionInView, isLight
     hasStartedFirstVisitRef.current
   ) ? "auto" : "none";
 
-  const isBotLayerActive = stage === "intro-bot" || stage === "outro-bot" || stage === "revisit-bot";
-  const isChapterLayerActive = stage === "chapter-video";
-
   return h(
     "div",
     {
@@ -606,6 +689,12 @@ export function AboutChapterMedia({ chapter, idx, active, sectionInView, isLight
       playsInline: true,
       preload: chapterPreload,
       disablePictureInPicture: true,
+      onTimeUpdate: (e) => {
+        const t = e.currentTarget.currentTime;
+        if (t > 0) lastChapterTimeRef.current = t;
+      },
+      onLoadedMetadata: (e) => applyChapterResume(e.currentTarget),
+      onCanPlay: (e) => applyChapterResume(e.currentTarget),
       onEnded: handleChapterEnded,
       onError: handleChapterError,
       "aria-hidden": "true"
@@ -621,6 +710,12 @@ export function AboutChapterMedia({ chapter, idx, active, sectionInView, isLight
       playsInline: true,
       preload: botPreload,
       disablePictureInPicture: true,
+      onTimeUpdate: (e) => {
+        const t = e.currentTarget.currentTime;
+        if (t > 0) lastBotTimeRef.current = t;
+      },
+      onLoadedMetadata: (e) => applyBotResume(e.currentTarget),
+      onCanPlay: (e) => applyBotResume(e.currentTarget),
       onEnded: handleBotEnded,
       onError: handleBotError,
       "aria-hidden": "true"
@@ -909,6 +1004,16 @@ export function AboutScrollStory() {
         if (firstRect.top > vh * 0.40) return;
         if (lastRect.bottom < vh * 0.60) return;
 
+        // Check if any chapter currently has an active running video
+        const activeVideoCard = document.querySelector('.ae-scene-card.has-active-video');
+        let targetIdx = -1;
+        if (activeVideoCard) {
+          const activeChapterEl = activeVideoCard.closest('.ae-chapter');
+          if (activeChapterEl && activeChapterEl.dataset.index != null) {
+            targetIdx = parseInt(activeChapterEl.dataset.index, 10);
+          }
+        }
+
         // Find closest chapter to viewport center
         const vhCenter = vh / 2;
         let closestIdx = 0;
@@ -926,19 +1031,31 @@ export function AboutScrollStory() {
           }
         });
 
-        // If further than 220px from center, user is transitioning between areas; do not hijack
-        if (minDistance > 220) return;
+        // If an animation is running in a chapter near viewport center (within 360px), prioritize centering that card!
+        let settleIdx = closestIdx;
+        if (targetIdx >= 0 && chapterRefs.current[targetIdx]) {
+          const tCard = chapterRefs.current[targetIdx].querySelector(".ae-scene-card") || chapterRefs.current[targetIdx];
+          const tDist = Math.abs(tCard.getBoundingClientRect().top + tCard.getBoundingClientRect().height / 2 - vhCenter);
+          if (tDist < 360) {
+            settleIdx = targetIdx;
+          }
+        }
 
-        // If the picture is already centered within 16px, it is cleanly focused
-        if (minDistance <= 16) return;
+        const settleCard = chapterRefs.current[settleIdx]?.querySelector(".ae-scene-card") || chapterRefs.current[settleIdx];
+        if (!settleCard) return;
+        const settleDist = Math.abs(settleCard.getBoundingClientRect().top + settleCard.getBoundingClientRect().height / 2 - vhCenter);
 
-        // Auto-stop and center the picture cleanly
+        // Expanded catch zone up to 350px so stopping wheel near a chapter centers it cleanly
+        if (settleDist > 350) return;
+        if (settleDist <= 16) return;
+
+        // Auto-stop and center the picture cleanly in the middle of the screen
         isSettlingRef.current = true;
-        focusChapter(closestIdx);
+        focusChapter(settleIdx);
         setTimeout(() => {
           isSettlingRef.current = false;
         }, 700);
-      }, 220);
+      }, 200);
     };
 
     window.addEventListener("wheel", onUserWheel, { passive: true });

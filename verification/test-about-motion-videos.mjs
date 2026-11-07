@@ -285,7 +285,7 @@ try {
     await page.close();
   }
 
-  // Test 3: Theme Toggle Mid-Sequence & Theme Toggle Before Revisit
+  // Test 3: Live Theme Toggle Mid-Sequence & Live Theme Toggle During Revisit + Auto-Focus Centering
   {
     const page = await browser.newPage({ viewport: { width: 1440, height: 900 } });
     await page.addInitScript(() => {
@@ -301,36 +301,73 @@ try {
       return card?.dataset.stage === 'intro-bot';
     }, { timeout: 3000 });
 
+    // Assert auto-focus centering of card near the center of the viewport (900 / 2 = 450)
+    await page.waitForTimeout(400);
+    const centerOffset = await page.evaluate(() => {
+      const card = document.querySelector('#who-i-am .ae-scene-card');
+      if (!card) return 999;
+      const rect = card.getBoundingClientRect();
+      const cardCenter = rect.top + rect.height / 2;
+      return Math.abs(cardCenter - window.innerHeight / 2);
+    });
+    console.log(`Auto-focus card distance from viewport center: ${centerOffset.toFixed(1)}px`);
+    if (centerOffset > 90) {
+      throw new Error(`Expected card to be auto-focused near viewport center, got distance: ${centerOffset}`);
+    }
+    console.log('PASS: Running animation card is auto-focused in the middle of the screen.');
+
     // Toggle theme from Dark -> Light while Chapter 1 is in intro-bot
     await page.locator('.theme-toggle-btn').click();
     await page.waitForFunction(() => document.documentElement.dataset.theme === 'light');
 
-    // Verify Chapter 1 stays locked on Dark videos for the rest of its first-visit sequence
-    const lockedBotSrc1 = await page.locator('#who-i-am .ae-layer-bot-video').getAttribute('src');
-    const lockedChapSrc1 = await page.locator('#who-i-am .ae-layer-chapter-video').getAttribute('src');
-    if (!lockedBotSrc1.includes('02_Desktop_Who-I-Am_Dark.mp4') || !lockedChapSrc1.includes('02_Desktop_Who-I-Am_Dark.mp4')) {
-      throw new Error(`Expected locked dark videos mid-sequence, got bot=${lockedBotSrc1}, chap=${lockedChapSrc1}`);
-    }
+    // Verify Chapter 1 immediately switches to Light video content mid-stream
+    await page.waitForFunction(() => {
+      const botSrc = document.querySelector('#who-i-am .ae-layer-bot-video')?.getAttribute('src');
+      const chapSrc = document.querySelector('#who-i-am .ae-layer-chapter-video')?.getAttribute('src');
+      return botSrc?.includes('01_Desktop_Who-I-Am_Light.mp4') && chapSrc?.includes('01_Desktop_Who-I-Am_Light.mp4');
+    }, { timeout: 3000 });
+    console.log('PASS: Mid-intro theme toggle immediately switches video content to Light variant.');
 
-    // Advance intro-bot -> chapter-video -> outro-bot
+    // Advance intro-bot -> chapter-video
     await page.evaluate(() => document.querySelector('#who-i-am .ae-layer-bot-video').dispatchEvent(new Event('ended')));
     await page.waitForFunction(() => document.querySelector('#who-i-am .ae-scene-card')?.dataset.stage === 'chapter-video');
+
+    const chapSrcLight = await page.locator('#who-i-am .ae-layer-chapter-video').getAttribute('src');
+    if (!chapSrcLight.includes('01_Desktop_Who-I-Am_Light.mp4')) {
+      throw new Error(`Expected chapter video to play Light, got ${chapSrcLight}`);
+    }
+
+    // Wait for previous theme robot flight animation to complete before next toggle
+    await page.waitForTimeout(1400);
+
+    // Toggle theme from Light -> Dark while in chapter-video
+    await page.locator('.theme-toggle-btn').click();
+    await page.waitForFunction(() => document.documentElement.dataset.theme === 'dark');
+
+    // Verify chapter video immediately switches to Dark variant
+    await page.waitForFunction(() => {
+      const chapSrc = document.querySelector('#who-i-am .ae-layer-chapter-video')?.getAttribute('src');
+      return chapSrc?.includes('02_Desktop_Who-I-Am_Dark.mp4');
+    }, { timeout: 3000 });
+    console.log('PASS: Mid-chapter-video theme toggle immediately switches video content to Dark variant.');
+
+    // Advance chapter-video -> outro-bot
     await page.evaluate(() => document.querySelector('#who-i-am .ae-layer-chapter-video').dispatchEvent(new Event('ended')));
     await page.waitForFunction(() => document.querySelector('#who-i-am .ae-scene-card')?.dataset.stage === 'outro-bot');
 
     const outroSrc = await page.locator('#who-i-am .ae-layer-bot-video').getAttribute('src');
-    if (outroSrc !== lockedBotSrc1) {
-      throw new Error(`Expected outro bot video (${outroSrc}) to match intro bot video (${lockedBotSrc1})`);
+    if (!outroSrc.includes('02_Desktop_Who-I-Am_Dark.mp4')) {
+      throw new Error(`Expected outro bot video to be Dark, got: ${outroSrc}`);
     }
-    console.log('PASS: Mid-sequence theme toggle preserves locked theme across intro-bot, chapter-video, and outro-bot.');
+    console.log('PASS: Outro bot video plays current Dark theme video.');
 
-    // Complete first-visit sequence
+    // Complete first-visit sequence -> static-image
     await page.evaluate(() => document.querySelector('#who-i-am .ae-layer-bot-video').dispatchEvent(new Event('ended')));
     await page.waitForFunction(() => document.querySelector('#who-i-am .ae-scene-card')?.dataset.stage === 'static-image');
 
     await page.locator('#who-i-am .ae-scene-card').screenshot({ path: `${artifactDir}/about-motion-light-desktop.png` });
 
-    // Scroll away and revisit Chapter 1: now that theme is Light, revisit-bot MUST use the Light bot video!
+    // Scroll away and revisit Chapter 1: revisit-bot starts with Dark bot video
     await page.evaluate(() => window.scrollTo(0, 0));
     await page.waitForTimeout(350);
     await page.locator('#who-i-am').scrollIntoViewIfNeeded();
@@ -340,11 +377,23 @@ try {
       return card?.dataset.stage === 'revisit-bot';
     }, { timeout: 3000 });
 
-    const revisitBotSrc = await page.locator('#who-i-am .ae-layer-bot-video').getAttribute('src');
-    if (!revisitBotSrc.includes('01_Desktop_Who-I-Am_Light.mp4')) {
-      throw new Error(`Expected revisit after theme toggle to use Light bot video, got: ${revisitBotSrc}`);
+    const revisitBotSrc1 = await page.locator('#who-i-am .ae-layer-bot-video').getAttribute('src');
+    if (!revisitBotSrc1.includes('02_Desktop_Who-I-Am_Dark.mp4')) {
+      throw new Error(`Expected revisit bot video to be Dark, got: ${revisitBotSrc1}`);
     }
-    console.log(`PASS: Revisit after theme toggle uses the NEW theme's bot video (${revisitBotSrc}).`);
+
+    // Wait for previous theme robot flight animation to complete before next toggle
+    await page.waitForTimeout(1400);
+
+    // Toggle theme while revisit-bot is running: it must switch to Light bot video!
+    await page.locator('.theme-toggle-btn').click();
+    await page.waitForFunction(() => document.documentElement.dataset.theme === 'light');
+
+    await page.waitForFunction(() => {
+      const botSrc = document.querySelector('#who-i-am .ae-layer-bot-video')?.getAttribute('src');
+      return botSrc?.includes('01_Desktop_Who-I-Am_Light.mp4');
+    }, { timeout: 3000 });
+    console.log('PASS: Revisit bot video immediately switches video content on live theme toggle.');
 
     await page.close();
   }
