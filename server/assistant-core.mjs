@@ -235,11 +235,23 @@ async function callSingleProvider(endpoint, key, model, messages, fetchImpl, tim
   });
   try {
     return await Promise.race([timeout, (async () => {
-      const response = await fetchImpl(endpoint, {
+      const headers = { 'Content-Type': 'application/json', 'User-Agent': 'free-code/0.1.2' };
+      if (key) headers.Authorization = `Bearer ${key}`;
+      let response = await fetchImpl(endpoint, {
         method: 'POST', redirect: 'error', signal: controller.signal,
-        headers: { 'Content-Type': 'application/json', Authorization: `Bearer ${key}` },
+        headers,
         body: JSON.stringify({ model, messages: [{ role: 'system', content: SYSTEM_INSTRUCTIONS }, ...messages], max_tokens: LIMITS.outputTokens, stream: false })
       });
+      // If a Free.ai token runs out of quota (401/402/403/429), seamlessly fall back to Free.ai public free pool
+      if (!response.ok && endpoint.includes('api.free.ai') && key && [401, 402, 403, 429].includes(response.status)) {
+        await response.body?.cancel().catch(() => {});
+        delete headers.Authorization;
+        response = await fetchImpl(endpoint, {
+          method: 'POST', redirect: 'error', signal: controller.signal,
+          headers,
+          body: JSON.stringify({ model, messages: [{ role: 'system', content: SYSTEM_INSTRUCTIONS }, ...messages], max_tokens: LIMITS.outputTokens, stream: false })
+        });
+      }
       if (!response.ok) { await response.body?.cancel(); fail(502, 'AI_UNAVAILABLE'); }
       if (Number(response.headers.get('content-length')) > LIMITS.responseBytes) { await response.body?.cancel(); fail(502, 'AI_UNAVAILABLE'); }
       if (!response.body) fail(502, 'AI_UNAVAILABLE');
@@ -254,9 +266,15 @@ async function callSingleProvider(endpoint, key, model, messages, fetchImpl, tim
         chunks.push(Buffer.from(value));
       }
       const data = JSON.parse(Buffer.concat(chunks).toString('utf8'));
-      const reply = data?.choices?.[0]?.message?.content;
+      let reply = data?.choices?.[0]?.message?.content;
       if (typeof reply !== 'string' || !reply.trim() || reply.includes(key)) fail(502, 'AI_UNAVAILABLE');
-      return reply.trim().slice(0, LIMITS.outputChars);
+      reply = reply
+        .replace(/\*\*/g, '')
+        .replace(/^\s*\*\s+/gm, '- ')
+        .replace(/\*/g, '')
+        .replace(/\b(the portfolio reports(?: that)?|the portfolio states(?: that)?|the resume notes(?: that)?|the resume states(?: that)?|based on the (?:supplied|portfolio|provided) (?:data|profile),?\s*)/gi, '')
+        .trim();
+      return reply.slice(0, LIMITS.outputChars);
     })()]);
   } catch (error) {
     if (controller.signal.aborted) fail(504, 'AI_TIMEOUT');
