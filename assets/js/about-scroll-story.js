@@ -76,7 +76,11 @@ export const ABOUT_CHAPTERS = [
     desktopDark: "/assets/images/about%20me/Desktop/Who%20I%20Am_%20Identity%20in%20Code.png",
     desktopLight: "/assets/images/about%20me/Desktop/Who%20I%20Am_%20Developer%20Identity.png",
     mobileDark: "/assets/images/about%20me/Mobile/Who%20I%20Am_%20CSE%20Developer%20Identity.png",
-    mobileLight: "/assets/images/about%20me/Mobile/Who%20I%20Am_%20CSE%20Student%20and%20Developer.png"
+    mobileLight: "/assets/images/about%20me/Mobile/Who%20I%20Am_%20CSE%20Student%20and%20Developer.png",
+    videoDesktopLight: "/assets/images/about%20me/About_Motion_Videos_Premium_16/01_Desktop_Who-I-Am_Light.mp4",
+    videoDesktopDark: "/assets/images/about%20me/About_Motion_Videos_Premium_16/02_Desktop_Who-I-Am_Dark.mp4",
+    videoMobileLight: "/assets/images/about%20me/About_Motion_Videos_Premium_16/09_Mobile_Who-I-Am_Light.mp4",
+    videoMobileDark: "/assets/images/about%20me/About_Motion_Videos_Premium_16/10_Mobile_Who-I-Am_Dark.mp4"
   },
   {
     id: "what-i-build",
@@ -86,7 +90,11 @@ export const ABOUT_CHAPTERS = [
     desktopDark: "/assets/images/about%20me/Desktop/What%20I%20Build_%20Neon%20Capabilities.png",
     desktopLight: "/assets/images/about%20me/Desktop/Building%20AI-Powered%20Web%20Solutions.png",
     mobileDark: "/assets/images/about%20me/Mobile/What%20I%20Build_%20AI-Powered%20Products.png",
-    mobileLight: "/assets/images/about%20me/Mobile/Capabilities_%20From%20Idea%20to%20AI%20Product.png"
+    mobileLight: "/assets/images/about%20me/Mobile/Capabilities_%20From%20Idea%20to%20AI%20Product.png",
+    videoDesktopLight: "/assets/images/about%20me/About_Motion_Videos_Premium_16/03_Desktop_What-I-Build_Light.mp4",
+    videoDesktopDark: "/assets/images/about%20me/About_Motion_Videos_Premium_16/04_Desktop_What-I-Build_Dark.mp4",
+    videoMobileLight: "/assets/images/about%20me/About_Motion_Videos_Premium_16/11_Mobile_What-I-Build_Light.mp4",
+    videoMobileDark: "/assets/images/about%20me/About_Motion_Videos_Premium_16/12_Mobile_What-I-Build_Dark.mp4"
   },
   {
     id: "why-me",
@@ -96,7 +104,11 @@ export const ABOUT_CHAPTERS = [
     desktopDark: "/assets/images/about%20me/Desktop/Why%20Me_%20Strengths%20in%20Software%20Development.png",
     desktopLight: "/assets/images/about%20me/Desktop/Chapter%2003_%20Why%20Me%20Strengths%20Infographic.png",
     mobileDark: "/assets/images/about%20me/Mobile/Why%20Me_%20Strengths%20in%20Code.png",
-    mobileLight: "/assets/images/about%20me/Mobile/whymelight.png"
+    mobileLight: "/assets/images/about%20me/Mobile/whymelight.png",
+    videoDesktopLight: "/assets/images/about%20me/About_Motion_Videos_Premium_16/05_Desktop_Why-Me_Light.mp4",
+    videoDesktopDark: "/assets/images/about%20me/About_Motion_Videos_Premium_16/06_Desktop_Why-Me_Dark.mp4",
+    videoMobileLight: "/assets/images/about%20me/About_Motion_Videos_Premium_16/13_Mobile_Why-Me_Light.mp4",
+    videoMobileDark: "/assets/images/about%20me/About_Motion_Videos_Premium_16/14_Mobile_Why-Me_Dark.mp4"
   },
   {
     id: "how-i-work",
@@ -106,7 +118,11 @@ export const ABOUT_CHAPTERS = [
     desktopDark: "/assets/images/about%20me/Desktop/Neon%20Staircase_%20How%20I%20Work.png",
     desktopLight: "/assets/images/about%20me/Desktop/How%20I%20Work_%20A%20Five-Step%20Process.png",
     mobileDark: "/assets/images/about%20me/Mobile/How%20I%20Work_%20A%20Neon%20Process%20Path.png",
-    mobileLight: "/assets/images/about%20me/Mobile/How%20I%20Work_%20A%20Thoughtful%20Process.png"
+    mobileLight: "/assets/images/about%20me/Mobile/How%20I%20Work_%20A%20Thoughtful%20Process.png",
+    videoDesktopLight: "/assets/images/about%20me/About_Motion_Videos_Premium_16/07_Desktop_How-I-Work_Light.mp4",
+    videoDesktopDark: "/assets/images/about%20me/About_Motion_Videos_Premium_16/08_Desktop_How-I-Work_Dark.mp4",
+    videoMobileLight: "/assets/images/about%20me/About_Motion_Videos_Premium_16/15_Mobile_How-I-Work_Light.mp4",
+    videoMobileDark: "/assets/images/about%20me/About_Motion_Videos_Premium_16/16_Mobile_How-I-Work_Dark.mp4"
   }
 ];
 
@@ -180,6 +196,149 @@ export function AboutGhostRobot() {
   return h("div", { ref: host, className: "ae-ghost-robot", "aria-hidden": "true", inert: "" });
 }
 
+// Media Card Component: Plays the motion animation on chapter arrival and smoothly cross-fades into the static master artwork
+function AboutSceneMedia({ chapter, idx, active, sectionInView, isLight, isMobile, reduced }) {
+  const cardRef = useRef(null);
+  const videoRef = useRef(null);
+  const [videoState, setVideoState] = useState("idle"); // "idle" | "playing" | "finished"
+  const [isPlaying, setIsPlaying] = useState(false);
+  const hasPlayedRef = useRef(false);
+  const [cardInView, setCardInView] = useState(false);
+
+  const isActive = active === idx;
+  const videoSrc = isMobile
+    ? (isLight ? chapter.videoMobileLight : chapter.videoMobileDark)
+    : (isLight ? chapter.videoDesktopLight : chapter.videoDesktopDark);
+
+  const prevSrcRef = useRef(videoSrc);
+
+  // Reset played state when theme or viewport mode changes so user can see animation in new mode
+  useEffect(() => {
+    if (prevSrcRef.current !== videoSrc) {
+      prevSrcRef.current = videoSrc;
+      hasPlayedRef.current = false;
+      setVideoState("idle");
+      setIsPlaying(false);
+    }
+  }, [videoSrc]);
+
+  // Track card element visibility within the viewport
+  useEffect(() => {
+    if (typeof IntersectionObserver === "undefined") {
+      setCardInView(true);
+      return;
+    }
+    const card = cardRef.current;
+    if (!card) return;
+
+    const observer = new IntersectionObserver((entries) => {
+      entries.forEach((entry) => {
+        setCardInView(entry.isIntersecting);
+      });
+    }, { threshold: isMobile ? 0.2 : 0.35 });
+
+    observer.observe(card);
+    return () => observer.disconnect();
+  }, [isMobile]);
+
+  // Handle motion video autoplay when section + card are visible and chapter is active
+  useEffect(() => {
+    if (reduced) {
+      setVideoState("finished");
+      setIsPlaying(false);
+      return;
+    }
+    const video = videoRef.current;
+    if (!video) return;
+
+    video.muted = true;
+    video.defaultMuted = true;
+
+    const shouldPlay = sectionInView && (isMobile ? isActive : (isActive && cardInView)) && !hasPlayedRef.current;
+
+    if (shouldPlay) {
+      hasPlayedRef.current = true;
+      setVideoState("playing");
+      video.currentTime = 0;
+      const playPromise = video.play();
+      if (playPromise !== undefined) {
+        playPromise.catch(() => {
+          // Autoplay blocked by browser policy -> smoothly show static image
+          setVideoState("finished");
+          setIsPlaying(false);
+        });
+      }
+    }
+  }, [sectionInView, cardInView, isActive, isMobile, reduced, videoSrc]);
+
+  // Pause if user scrolls away or navigates to another chapter while playing
+  useEffect(() => {
+    const video = videoRef.current;
+    if (!video) return;
+
+    const isVisibleNow = sectionInView && (isMobile ? isActive : cardInView);
+    if (!isVisibleNow && videoState === "playing") {
+      video.pause();
+    } else if (isVisibleNow && videoState === "playing" && video.paused) {
+      video.play().catch(() => {});
+    }
+  }, [sectionInView, cardInView, isActive, isMobile, videoState]);
+
+  const handlePlaying = useCallback(() => {
+    setIsPlaying(true);
+  }, []);
+
+  const handleEnded = useCallback(() => {
+    setVideoState("finished");
+    setIsPlaying(false);
+  }, []);
+
+  const handleError = useCallback(() => {
+    setVideoState("finished");
+    setIsPlaying(false);
+  }, []);
+
+  return h("div", { ref: cardRef, className: "ae-scene-card" },
+    // Motion Video Layer (overlays static image, smoothly cross-fades to static image on end)
+    !reduced && h("video", {
+      ref: videoRef,
+      key: videoSrc,
+      src: videoSrc,
+      className: `ae-scene-video${isPlaying ? " is-playing" : ""}${videoState === "finished" ? " is-finished" : ""}`,
+      muted: true,
+      playsInline: true,
+      preload: idx === 0 ? "auto" : "metadata",
+      disablePictureInPicture: true,
+      onPlaying: handlePlaying,
+      onEnded: handleEnded,
+      onError: handleError,
+      "aria-hidden": "true"
+    }),
+    // High-Resolution Master Artwork Card (always rendered underneath with zero layout shift)
+    h("picture", { className: "ae-scene-picture" },
+      // Mobile portrait viewports <= 768px
+      h("source", {
+        media: "(max-width: 768px)",
+        srcSet: isLight ? chapter.mobileLight : chapter.mobileDark,
+        width: 1086,
+        height: 1448
+      }),
+      // Desktop widescreen viewports > 768px
+      h("img", {
+        src: isLight ? chapter.desktopLight : chapter.desktopDark,
+        alt: `${chapter.number} / ${chapter.title} — ${chapter.tag}`,
+        width: 1672,
+        height: 941,
+        loading: idx === 0 ? "eager" : "lazy",
+        decoding: "async",
+        className: "ae-scene-img"
+      })
+    ),
+    h("div", { className: "ae-scene-bottom-fade", "aria-hidden": "true" }),
+    h("div", { className: "ae-scene-glow", "aria-hidden": "true" })
+  );
+}
+
 export function AboutScrollStory() {
   const [active, setActive] = useState(0);
   const [theme, setTheme] = useState(getCurrentTheme);
@@ -197,6 +356,26 @@ export function AboutScrollStory() {
   const [isMobile, setIsMobile] = useState(() => typeof window !== "undefined" && window.innerWidth <= 768);
   const [showPopupHint, setShowPopupHint] = useState(false);
   const hasShownHintRef = useRef(false);
+  const [sectionInView, setSectionInView] = useState(false);
+
+  // Section in-view tracking for motion video trigger
+  useEffect(() => {
+    if (typeof IntersectionObserver === "undefined") {
+      setSectionInView(true);
+      return;
+    }
+    const section = sectionRef.current;
+    if (!section) return;
+
+    const observer = new IntersectionObserver((entries) => {
+      entries.forEach((entry) => {
+        setSectionInView(entry.isIntersecting);
+      });
+    }, { threshold: 0.1 });
+
+    observer.observe(section);
+    return () => observer.disconnect();
+  }, []);
 
   useEffect(() => {
     const checkMobile = () => setIsMobile(window.innerWidth <= 768);
@@ -691,31 +870,16 @@ export function AboutScrollStory() {
                 tabIndex: -1,
                 "aria-label": `${ch.number} ${ch.title} — ${ch.tag}`
               },
-                // High-Resolution Master Artwork Card
-                h("div", { className: "ae-scene-card" },
-                  h("picture", { className: "ae-scene-picture" },
-                    // Mobile portrait viewports <= 768px
-                    h("source", {
-                      media: "(max-width: 768px)",
-                      srcSet: isLight ? ch.mobileLight : ch.mobileDark,
-                      width: 1086,
-                      height: 1448
-                    }),
-                    // Desktop widescreen viewports > 768px
-                    h("img", {
-                      src: isLight ? ch.desktopLight : ch.desktopDark,
-                      alt: `${ch.number} / ${ch.title} — ${ch.tag}`,
-                      width: 1672,
-                      height: 941,
-                      loading: idx === 0 ? "eager" : "lazy",
-                      decoding: "async",
-                      className: "ae-scene-img"
-                    })
-                  ),
-                  // Subtle bottom fade blending into background scenery
-                  h("div", { className: "ae-scene-bottom-fade", "aria-hidden": "true" }),
-                  h("div", { className: "ae-scene-glow", "aria-hidden": "true" })
-                )
+                // Motion Animation to Static Artwork Scene Media
+                h(AboutSceneMedia, {
+                  chapter: ch,
+                  idx,
+                  active,
+                  sectionInView,
+                  isLight,
+                  isMobile,
+                  reduced
+                })
               )
             )
           )

@@ -1174,6 +1174,32 @@
   box-shadow: 0 20px 48px rgba(0, 0, 0, 0.09), inset 0 1px 0 rgba(255, 255, 255, 0.95);
 }
 
+.ae-scene-video {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  object-fit: contain;
+  border-radius: 20px;
+  z-index: 1;
+  opacity: 0;
+  pointer-events: none;
+  background: transparent;
+  transition: opacity 0.65s cubic-bezier(0.16, 1, 0.3, 1), transform 0.7s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+.ae-scene-video.is-playing {
+  opacity: 1;
+}
+
+.ae-scene-video.is-finished {
+  opacity: 0;
+}
+
+.ae-scene-card:hover .ae-scene-video {
+  transform: scale(1.018);
+}
+
 .ae-scene-picture {
   display: block;
   width: 100%;
@@ -1213,7 +1239,7 @@
   inset: 0;
   box-shadow: inset 0 0 36px rgba(0, 0, 0, 0.28);
   pointer-events: none;
-  z-index: 1;
+  z-index: 2;
 }
 
 /* Reduced motion accessibility override */
@@ -1221,6 +1247,12 @@
   .ae-scene-card {
     opacity: 1 !important;
     transform: none !important;
+    transition: none !important;
+  }
+  .ae-scene-video {
+    display: none !important;
+    opacity: 0 !important;
+    animation: none !important;
     transition: none !important;
   }
 }
@@ -1367,6 +1399,11 @@
     border-radius: 14px;
   }
 
+  .ae-scenes-stream.ae-story-track .ae-scene-video {
+    aspect-ratio: 1086 / 1448;
+    border-radius: 14px;
+  }
+
   /* 2-Second Floating Popup Instruction Pill */
   .ae-story-popup-hint {
     position: absolute;
@@ -1473,6 +1510,10 @@
   }
 
   .ae-scene-img {
+    border-radius: 14px;
+  }
+
+  .ae-scene-video {
     border-radius: 14px;
   }
 }
