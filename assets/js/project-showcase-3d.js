@@ -16,6 +16,7 @@ import React, { useState, useEffect, useRef, useMemo, useCallback } from "react"
 import { motion as motionImport, AnimatePresence as AnimatePresenceImport } from "framer-motion";
 import * as THREE from "three";
 import { getCurrentTheme, subscribeTheme } from "./theme-manager.js";
+import { SectionSummitBg } from "./summit-banner-bg.js";
 
 const h = React.createElement;
 
@@ -855,35 +856,7 @@ export function FeaturedProjects({
       h(
         "header",
         { className: "section-summit-header projects-summit-header reveal-on-scroll" },
-        h(
-          "div",
-          { className: "section-summit-bg", "aria-hidden": "true" },
-          h(
-            "picture",
-            { className: "section-summit-pic" },
-            h("source", {
-              srcSet:
-                theme === "light"
-                  ? "/assets/images/about-summitscape-light.webp"
-                  : "/assets/images/about-summitscape.webp",
-              type: "image/webp"
-            }),
-            h("img", {
-              src:
-                theme === "light"
-                  ? "/assets/images/about-summitscape-light.png"
-                  : "/assets/images/about-summitscape.png",
-              alt: "",
-              width: 1568,
-              height: 627,
-              loading: "lazy",
-              decoding: "async",
-              className: "section-summit-img"
-            })
-          ),
-          h("div", { className: "section-summit-glow" }),
-          h("div", { className: "section-summit-overlay" })
-        ),
+        h(SectionSummitBg, { theme }),
         h(
           "div",
           { className: "section-summit-inner projects-summit-inner" },
