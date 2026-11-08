@@ -1231,14 +1231,15 @@
 }
 
 /* ==========================================================================
-   ABOUT CHAPTER 3-LAYER STACK (CHAPTER VIDEO -> BOT VIDEO -> STATIC ARTWORK)
+   ABOUT CHAPTER 4-LAYER STACK (CHAPTER VIDEO -> BOT VIDEO -> LOADING VIDEO -> STATIC ARTWORK)
    ========================================================================== */
 .ae-scene-video {
   position: absolute;
   inset: 0;
   width: 100%;
   height: 100%;
-  object-fit: contain;
+  object-fit: cover;
+  object-position: center center;
   border-radius: 20px;
   opacity: 0;
   pointer-events: none;
@@ -1259,6 +1260,16 @@
 }
 
 .ae-layer-bot-video.is-active {
+  opacity: 1;
+}
+
+.ae-layer-loading-video {
+  z-index: 3;
+  object-fit: cover;
+  object-position: center center;
+}
+
+.ae-layer-loading-video.is-active {
   opacity: 1;
 }
 
@@ -1285,7 +1296,8 @@
   display: block;
   width: 100%;
   height: 100%;
-  object-fit: contain;
+  object-fit: cover;
+  object-position: center center;
   border-radius: 20px;
   transition: transform 0.7s cubic-bezier(0.16, 1, 0.3, 1);
 }
