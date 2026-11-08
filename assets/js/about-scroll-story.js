@@ -79,14 +79,14 @@ export const ABOUT_CHAPTERS = [
     desktopLight: "/assets/images/about%20me/Desktop/Who%20I%20Am_%20Developer%20Identity.png",
     mobileDark: "/assets/images/about%20me/Mobile/Who%20I%20Am_%20CSE%20Developer%20Identity.png",
     mobileLight: "/assets/images/about%20me/Mobile/Who%20I%20Am_%20CSE%20Student%20and%20Developer.png",
-    videoDesktopLight: "/assets/videos/about-me/Desktop/01_Desktop_Who-I-Am_Light.mp4",
-    videoDesktopDark: "/assets/videos/about-me/Desktop/02_Desktop_Who-I-Am_Dark.mp4",
-    videoMobileLight: "/assets/videos/about-me/Mobile/09_Mobile_Who-I-Am_Light.mp4",
-    videoMobileDark: "/assets/videos/about-me/Mobile/10_Mobile_Who-I-Am_Dark.mp4",
-    botDesktopLight: "/assets/videos/about-me/bot-transition/Desktop/01_Desktop_Who-I-Am_Light.mp4",
-    botDesktopDark: "/assets/videos/about-me/bot-transition/Desktop/02_Desktop_Who-I-Am_Dark.mp4",
-    botMobileLight: "/assets/videos/about-me/bot-transition/Mobile/09_Mobile_Who-I-Am_Light.mp4",
-    botMobileDark: "/assets/videos/about-me/bot-transition/Mobile/10_Mobile_Who-I-Am_Dark.mp4"
+    videoDesktopLight: "/assets/images/about%20me/About_Motion_Videos_Premium_16/01_Desktop_Who-I-Am_Light.mp4",
+    videoDesktopDark: "/assets/images/about%20me/About_Motion_Videos_Premium_16/02_Desktop_Who-I-Am_Dark.mp4",
+    videoMobileLight: "/assets/images/about%20me/About_Motion_Videos_Premium_16/09_Mobile_Who-I-Am_Light.mp4",
+    videoMobileDark: "/assets/images/about%20me/About_Motion_Videos_Premium_16/10_Mobile_Who-I-Am_Dark.mp4",
+    botDesktopLight: "/assets/images/about%20me/About_Motion_Videos_Premium_16/Bot_Transition_Videos_v2_16/01_Desktop_Who-I-Am_Light.mp4",
+    botDesktopDark: "/assets/images/about%20me/About_Motion_Videos_Premium_16/Bot_Transition_Videos_v2_16/02_Desktop_Who-I-Am_Dark.mp4",
+    botMobileLight: "/assets/images/about%20me/About_Motion_Videos_Premium_16/Bot_Transition_Videos_v2_16/09_Mobile_Who-I-Am_Light.mp4",
+    botMobileDark: "/assets/images/about%20me/About_Motion_Videos_Premium_16/Bot_Transition_Videos_v2_16/10_Mobile_Who-I-Am_Dark.mp4"
   },
   {
     id: "what-i-build",
@@ -98,14 +98,14 @@ export const ABOUT_CHAPTERS = [
     desktopLight: "/assets/images/about%20me/Desktop/Building%20AI-Powered%20Web%20Solutions.png",
     mobileDark: "/assets/images/about%20me/Mobile/What%20I%20Build_%20AI-Powered%20Products.png",
     mobileLight: "/assets/images/about%20me/Mobile/Capabilities_%20From%20Idea%20to%20AI%20Product.png",
-    videoDesktopLight: "/assets/videos/about-me/Desktop/03_Desktop_What-I-Build_Light.mp4",
-    videoDesktopDark: "/assets/videos/about-me/Desktop/04_Desktop_What-I-Build_Dark.mp4",
-    videoMobileLight: "/assets/videos/about-me/Mobile/11_Mobile_What-I-Build_Light.mp4",
-    videoMobileDark: "/assets/videos/about-me/Mobile/12_Mobile_What-I-Build_Dark.mp4",
-    botDesktopLight: "/assets/videos/about-me/bot-transition/Desktop/03_Desktop_What-I-Build_Light.mp4",
-    botDesktopDark: "/assets/videos/about-me/bot-transition/Desktop/04_Desktop_What-I-Build_Dark.mp4",
-    botMobileLight: "/assets/videos/about-me/bot-transition/Mobile/11_Mobile_What-I-Build_Light.mp4",
-    botMobileDark: "/assets/videos/about-me/bot-transition/Mobile/12_Mobile_What-I-Build_Dark.mp4"
+    videoDesktopLight: "/assets/images/about%20me/About_Motion_Videos_Premium_16/03_Desktop_What-I-Build_Light.mp4",
+    videoDesktopDark: "/assets/images/about%20me/About_Motion_Videos_Premium_16/04_Desktop_What-I-Build_Dark.mp4",
+    videoMobileLight: "/assets/images/about%20me/About_Motion_Videos_Premium_16/11_Mobile_What-I-Build_Light.mp4",
+    videoMobileDark: "/assets/images/about%20me/About_Motion_Videos_Premium_16/12_Mobile_What-I-Build_Dark.mp4",
+    botDesktopLight: "/assets/images/about%20me/About_Motion_Videos_Premium_16/Bot_Transition_Videos_v2_16/03_Desktop_What-I-Build_Light.mp4",
+    botDesktopDark: "/assets/images/about%20me/About_Motion_Videos_Premium_16/Bot_Transition_Videos_v2_16/04_Desktop_What-I-Build_Dark.mp4",
+    botMobileLight: "/assets/images/about%20me/About_Motion_Videos_Premium_16/Bot_Transition_Videos_v2_16/11_Mobile_What-I-Build_Light.mp4",
+    botMobileDark: "/assets/images/about%20me/About_Motion_Videos_Premium_16/Bot_Transition_Videos_v2_16/12_Mobile_What-I-Build_Dark.mp4"
   },
   {
     id: "why-me",
@@ -117,14 +117,14 @@ export const ABOUT_CHAPTERS = [
     desktopLight: "/assets/images/about%20me/Desktop/Chapter%2003_%20Why%20Me%20Strengths%20Infographic.png",
     mobileDark: "/assets/images/about%20me/Mobile/Why%20Me_%20Strengths%20in%20Code.png",
     mobileLight: "/assets/images/about%20me/Mobile/whymelight.png",
-    videoDesktopLight: "/assets/videos/about-me/Desktop/05_Desktop_Why-Me_Light.mp4",
-    videoDesktopDark: "/assets/videos/about-me/Desktop/06_Desktop_Why-Me_Dark.mp4",
-    videoMobileLight: "/assets/videos/about-me/Mobile/13_Mobile_Why-Me_Light.mp4",
-    videoMobileDark: "/assets/videos/about-me/Mobile/14_Mobile_Why-Me_Dark.mp4",
-    botDesktopLight: "/assets/videos/about-me/bot-transition/Desktop/05_Desktop_Why-Me_Light.mp4",
-    botDesktopDark: "/assets/videos/about-me/bot-transition/Desktop/06_Desktop_Why-Me_Dark.mp4",
-    botMobileLight: "/assets/videos/about-me/bot-transition/Mobile/13_Mobile_Why-Me_Light.mp4",
-    botMobileDark: "/assets/videos/about-me/bot-transition/Mobile/14_Mobile_Why-Me_Dark.mp4"
+    videoDesktopLight: "/assets/images/about%20me/About_Motion_Videos_Premium_16/05_Desktop_Why-Me_Light.mp4",
+    videoDesktopDark: "/assets/images/about%20me/About_Motion_Videos_Premium_16/06_Desktop_Why-Me_Dark.mp4",
+    videoMobileLight: "/assets/images/about%20me/About_Motion_Videos_Premium_16/13_Mobile_Why-Me_Light.mp4",
+    videoMobileDark: "/assets/images/about%20me/About_Motion_Videos_Premium_16/14_Mobile_Why-Me_Dark.mp4",
+    botDesktopLight: "/assets/images/about%20me/About_Motion_Videos_Premium_16/Bot_Transition_Videos_v2_16/05_Desktop_Why-Me_Light.mp4",
+    botDesktopDark: "/assets/images/about%20me/About_Motion_Videos_Premium_16/Bot_Transition_Videos_v2_16/06_Desktop_Why-Me_Dark.mp4",
+    botMobileLight: "/assets/images/about%20me/About_Motion_Videos_Premium_16/Bot_Transition_Videos_v2_16/13_Mobile_Why-Me_Light.mp4",
+    botMobileDark: "/assets/images/about%20me/About_Motion_Videos_Premium_16/Bot_Transition_Videos_v2_16/14_Mobile_Why-Me_Dark.mp4"
   },
   {
     id: "how-i-work",
@@ -136,29 +136,29 @@ export const ABOUT_CHAPTERS = [
     desktopLight: "/assets/images/about%20me/Desktop/How%20I%20Work_%20A%20Five-Step%20Process.png",
     mobileDark: "/assets/images/about%20me/Mobile/How%20I%20Work_%20A%20Neon%20Process%20Path.png",
     mobileLight: "/assets/images/about%20me/Mobile/How%20I%20Work_%20A%20Thoughtful%20Process.png",
-    videoDesktopLight: "/assets/videos/about-me/Desktop/07_Desktop_How-I-Work_Light.mp4",
-    videoDesktopDark: "/assets/videos/about-me/Desktop/08_Desktop_How-I-Work_Dark.mp4",
-    videoMobileLight: "/assets/videos/about-me/Mobile/15_Mobile_How-I-Work_Light.mp4",
-    videoMobileDark: "/assets/videos/about-me/Mobile/16_Mobile_How-I-Work_Dark.mp4",
-    botDesktopLight: "/assets/videos/about-me/bot-transition/Desktop/07_Desktop_How-I-Work_Light.mp4",
-    botDesktopDark: "/assets/videos/about-me/bot-transition/Desktop/08_Desktop_How-I-Work_Dark.mp4",
-    botMobileLight: "/assets/videos/about-me/bot-transition/Mobile/15_Mobile_How-I-Work_Light.mp4",
-    botMobileDark: "/assets/videos/about-me/bot-transition/Mobile/16_Mobile_How-I-Work_Dark.mp4"
+    videoDesktopLight: "/assets/images/about%20me/About_Motion_Videos_Premium_16/07_Desktop_How-I-Work_Light.mp4",
+    videoDesktopDark: "/assets/images/about%20me/About_Motion_Videos_Premium_16/08_Desktop_How-I-Work_Dark.mp4",
+    videoMobileLight: "/assets/images/about%20me/About_Motion_Videos_Premium_16/15_Mobile_How-I-Work_Light.mp4",
+    videoMobileDark: "/assets/images/about%20me/About_Motion_Videos_Premium_16/16_Mobile_How-I-Work_Dark.mp4",
+    botDesktopLight: "/assets/images/about%20me/About_Motion_Videos_Premium_16/Bot_Transition_Videos_v2_16/07_Desktop_How-I-Work_Light.mp4",
+    botDesktopDark: "/assets/images/about%20me/About_Motion_Videos_Premium_16/Bot_Transition_Videos_v2_16/08_Desktop_How-I-Work_Dark.mp4",
+    botMobileLight: "/assets/images/about%20me/About_Motion_Videos_Premium_16/Bot_Transition_Videos_v2_16/15_Mobile_How-I-Work_Light.mp4",
+    botMobileDark: "/assets/images/about%20me/About_Motion_Videos_Premium_16/Bot_Transition_Videos_v2_16/16_Mobile_How-I-Work_Dark.mp4"
   }
 ];
 
 export const BOT_TRANSITION_VIDEOS = {
-  desktopLight: "/assets/videos/about-me/Desktop/Bot_Transition_Desktop_Light.mp4",
-  desktopDark: "/assets/videos/about-me/Desktop/Bot_Transition_Desktop_Dark.mp4",
-  mobileLight: "/assets/videos/about-me/Mobile/Bot_Transition_Mobile_Light.mp4",
-  mobileDark: "/assets/videos/about-me/Mobile/Bot_Transition_Mobile_Dark.mp4"
+  desktopLight: "/assets/images/about%20me/About_Motion_Videos_Premium_16/Bot_Transition_Videos_v2_16/01_Desktop_Who-I-Am_Light.mp4",
+  desktopDark: "/assets/images/about%20me/About_Motion_Videos_Premium_16/Bot_Transition_Videos_v2_16/02_Desktop_Who-I-Am_Dark.mp4",
+  mobileLight: "/assets/images/about%20me/About_Motion_Videos_Premium_16/Bot_Transition_Videos_v2_16/09_Mobile_Who-I-Am_Light.mp4",
+  mobileDark: "/assets/images/about%20me/About_Motion_Videos_Premium_16/Bot_Transition_Videos_v2_16/10_Mobile_Who-I-Am_Dark.mp4"
 };
 
 export const LOADING_VIDEOS = {
-  desktopDark: "/assets/images/about%20me/About_Motion_Videos_Premium_16/Loading/Loading_Desktop_Dark.mp4",
-  desktopLight: "/assets/images/about%20me/About_Motion_Videos_Premium_16/Loading/Loading_Desktop_Light.mp4",
-  mobileDark: "/assets/images/about%20me/About_Motion_Videos_Premium_16/Loading/loading_mobile_Dark.mp4",
-  mobileLight: "/assets/images/about%20me/About_Motion_Videos_Premium_16/Loading/loading_mobile_Light.mp4"
+  desktopDark: "/assets/images/about%20me/About_Motion_Videos_Premium_16/Loading/Robots_Building_Landscape_Dark.mp4",
+  desktopLight: "/assets/images/about%20me/About_Motion_Videos_Premium_16/Loading/Robots_Building_Landscape_Light.mp4",
+  mobileDark: "/assets/images/about%20me/About_Motion_Videos_Premium_16/Loading/Robots_Building_Portrait_Dark.mp4",
+  mobileLight: "/assets/images/about%20me/About_Motion_Videos_Premium_16/Loading/Robots_Building_Portrait_Light.mp4"
 };
 
 function silenceVideoElement(vid) {
@@ -243,12 +243,11 @@ export function AboutGhostRobot() {
 }
 
 // Reusable Chapter Media Component:
-// First-visit sequence (5 steps):
+// First-visit sequence (4 steps):
 //   1. Intro Bot F-01 Transition Video (3s)
 //   2. Chapter Motion Video (6s for Who I Am, 7.5s for others)
-//   3. Outro Bot F-01 Transition Video (3s, same file reset to 0s)
-//   4. Loading Video (plays once to its own ended event)
-//   5. Static High-Resolution PNG Artwork (crossfades in and stays visible)
+//   3. Loading Video (plays once to its own ended event)
+//   4. Static High-Resolution PNG Artwork (crossfades in and stays visible)
 // Revisit sequence (2 steps on every return to a finished chapter):
 //   1. Revisit Bot F-01 Transition Video (3s, current theme & viewport)
 //   2. Static High-Resolution PNG Artwork
@@ -266,7 +265,7 @@ export function AboutChapterMedia({
   const botVideoRef = useRef(null);
   const loadingVideoRef = useRef(null);
 
-  // Stages: "idle" | "intro-bot" | "chapter-video" | "outro-bot" | "loading-video" | "revisit-bot" | "static-image"
+  // Stages: "idle" | "intro-bot" | "chapter-video" | "loading-video" | "revisit-bot" | "static-image"
   const [stage, setStage] = useState(() => (reduced ? "static-image" : "idle"));
   const [revisitCount, setRevisitCount] = useState(0);
   const [cardInView, setCardInView] = useState(false);
@@ -345,7 +344,6 @@ export function AboutChapterMedia({
   const isFirstVisitRunning =
     stage === "intro-bot" ||
     stage === "chapter-video" ||
-    stage === "outro-bot" ||
     stage === "loading-video";
 
   const isVideoStage =
@@ -361,10 +359,9 @@ export function AboutChapterMedia({
     ? (sequenceIsLight ? chapter.videoMobileLight : chapter.videoMobileDark)
     : (sequenceIsLight ? chapter.videoDesktopLight : chapter.videoDesktopDark);
 
-  const botVideoSrc = (isMobile
+  const botVideoSrc = isMobile
     ? (sequenceIsLight ? chapter.botMobileLight : chapter.botMobileDark)
-    : (sequenceIsLight ? chapter.botDesktopLight : chapter.botDesktopDark))
-    || chapterVideoSrc.replace("/assets/videos/about-me/", "/assets/videos/about-me/bot-transition/");
+    : (sequenceIsLight ? chapter.botDesktopLight : chapter.botDesktopDark);
 
   const loadingVideoSrc = isMobile
     ? (sequenceIsLight ? LOADING_VIDEOS.mobileLight : LOADING_VIDEOS.mobileDark)
@@ -374,7 +371,7 @@ export function AboutChapterMedia({
     ? (sequenceIsLight ? chapter.mobileLight : chapter.mobileDark)
     : (sequenceIsLight ? chapter.desktopLight : chapter.desktopDark);
 
-  const isBotLayerActive = stage === "intro-bot" || stage === "outro-bot" || stage === "revisit-bot";
+  const isBotLayerActive = stage === "intro-bot" || stage === "revisit-bot";
   const isChapterLayerActive = stage === "chapter-video";
   const isLoadingLayerActive = stage === "loading-video";
 
@@ -388,7 +385,6 @@ export function AboutChapterMedia({
     const currentStage = stageRef.current;
     if (
       currentStage !== "loading-video" &&
-      currentStage !== "outro-bot" &&
       currentStage !== "revisit-bot" &&
       currentStage !== "chapter-video" &&
       currentStage !== "intro-bot"
@@ -417,19 +413,6 @@ export function AboutChapterMedia({
   }, []);
 
   const advanceToLoadingVideo = useCallback(() => {
-    if (stageRef.current !== "outro-bot") return;
-    if (advanceTimerRef.current) clearTimeout(advanceTimerRef.current);
-
-    const botVideo = botVideoRef.current;
-    if (botVideo && !botVideo.paused) {
-      botVideo.pause();
-    }
-
-    stageRef.current = "loading-video";
-    setStage("loading-video");
-  }, []);
-
-  const advanceToOutroBot = useCallback(() => {
     if (stageRef.current !== "chapter-video") return;
     if (advanceTimerRef.current) clearTimeout(advanceTimerRef.current);
 
@@ -438,8 +421,8 @@ export function AboutChapterMedia({
       chapterVideo.pause();
     }
 
-    stageRef.current = "outro-bot";
-    setStage("outro-bot");
+    stageRef.current = "loading-video";
+    setStage("loading-video");
   }, []);
 
   const advanceToChapterVideo = useCallback(() => {
@@ -500,7 +483,7 @@ export function AboutChapterMedia({
     lastChapterTimeRef.current = 0;
     lastLoadingTimeRef.current = 0;
 
-    if (stage === "intro-bot" || stage === "outro-bot" || stage === "revisit-bot") {
+    if (stage === "intro-bot" || stage === "revisit-bot") {
       const chapterVideo = chapterVideoRef.current;
       if (chapterVideo && !chapterVideo.paused) {
         chapterVideo.pause();
@@ -510,23 +493,9 @@ export function AboutChapterMedia({
         loadingVideo.pause();
       }
 
-      // Preload Loading video while outro-bot is playing so it starts instantly when outro ends
-      if (stage === "outro-bot" && loadingVideo) {
-        silenceVideoElement(loadingVideo);
-        if (loadingVideo.preload !== "auto") {
-          loadingVideo.preload = "auto";
-        }
-        if (loadingVideo.readyState === 0) {
-          try {
-            loadingVideo.load();
-          } catch (_) {}
-        }
-      }
-
       const botVideo = botVideoRef.current;
       if (!botVideo || botErrorSrcRef.current === botVideoSrc || botVideo.error) {
         if (stage === "intro-bot") advanceToChapterVideo();
-        else if (stage === "outro-bot") advanceToLoadingVideo();
         else advanceToStatic();
         return;
       }
@@ -541,7 +510,6 @@ export function AboutChapterMedia({
         if (playPromise !== undefined) {
           playPromise.catch(() => {
             if (stageRef.current === "intro-bot") advanceToChapterVideo();
-            else if (stageRef.current === "outro-bot") advanceToLoadingVideo();
             else if (stageRef.current === "revisit-bot") advanceToStatic();
           });
         }
@@ -556,9 +524,22 @@ export function AboutChapterMedia({
         loadingVideo.pause();
       }
 
+      // Preload Loading video while chapter-video is playing so it starts instantly when chapter-video ends
+      if (loadingVideo) {
+        silenceVideoElement(loadingVideo);
+        if (loadingVideo.preload !== "auto") {
+          loadingVideo.preload = "auto";
+        }
+        if (loadingVideo.readyState === 0) {
+          try {
+            loadingVideo.load();
+          } catch (_) {}
+        }
+      }
+
       const chapterVideo = chapterVideoRef.current;
       if (!chapterVideo || chapterErrorSrcRef.current === chapterVideoSrc || chapterVideo.error) {
-        advanceToOutroBot();
+        advanceToLoadingVideo();
         return;
       }
 
@@ -571,7 +552,7 @@ export function AboutChapterMedia({
         const playPromise = chapterVideo.play();
         if (playPromise !== undefined) {
           playPromise.catch(() => {
-            if (stageRef.current === "chapter-video") advanceToOutroBot();
+            if (stageRef.current === "chapter-video") advanceToLoadingVideo();
           });
         }
       }
@@ -613,7 +594,6 @@ export function AboutChapterMedia({
     chapterVideoSrc,
     loadingVideoSrc,
     advanceToChapterVideo,
-    advanceToOutroBot,
     advanceToLoadingVideo,
     advanceToStatic
   ]);
@@ -640,8 +620,7 @@ export function AboutChapterMedia({
       if (playPromise !== undefined) {
         playPromise.catch(() => {
           if (stageRef.current === "intro-bot") advanceToChapterVideo();
-          else if (stageRef.current === "chapter-video") advanceToOutroBot();
-          else if (stageRef.current === "outro-bot") advanceToLoadingVideo();
+          else if (stageRef.current === "chapter-video") advanceToLoadingVideo();
           else if (stageRef.current === "loading-video" || stageRef.current === "revisit-bot") advanceToStatic();
         });
       }
@@ -652,7 +631,6 @@ export function AboutChapterMedia({
     isVideoStage,
     reduced,
     advanceToChapterVideo,
-    advanceToOutroBot,
     advanceToLoadingVideo,
     advanceToStatic
   ]);
@@ -680,8 +658,7 @@ export function AboutChapterMedia({
 
     advanceTimerRef.current = setTimeout(() => {
       if (stageRef.current === "intro-bot") advanceToChapterVideo();
-      else if (stageRef.current === "chapter-video") advanceToOutroBot();
-      else if (stageRef.current === "outro-bot") advanceToLoadingVideo();
+      else if (stageRef.current === "chapter-video") advanceToLoadingVideo();
       else if (stageRef.current === "revisit-bot") advanceToStatic();
     }, remainingSec * 1000);
 
@@ -696,7 +673,6 @@ export function AboutChapterMedia({
     chapterDuration,
     botDuration,
     advanceToChapterVideo,
-    advanceToOutroBot,
     advanceToLoadingVideo,
     advanceToStatic
   ]);
@@ -704,36 +680,32 @@ export function AboutChapterMedia({
   const handleBotEnded = useCallback(() => {
     if (stageRef.current === "intro-bot") {
       advanceToChapterVideo();
-    } else if (stageRef.current === "outro-bot") {
-      advanceToLoadingVideo();
     } else if (stageRef.current === "revisit-bot") {
       advanceToStatic();
     }
-  }, [advanceToChapterVideo, advanceToLoadingVideo, advanceToStatic]);
+  }, [advanceToChapterVideo, advanceToStatic]);
 
   const handleBotError = useCallback(() => {
     botErrorSrcRef.current = botVideoSrc;
     if (stageRef.current === "intro-bot") {
       advanceToChapterVideo();
-    } else if (stageRef.current === "outro-bot") {
-      advanceToLoadingVideo();
     } else if (stageRef.current === "revisit-bot") {
       advanceToStatic();
     }
-  }, [botVideoSrc, advanceToChapterVideo, advanceToLoadingVideo, advanceToStatic]);
+  }, [botVideoSrc, advanceToChapterVideo, advanceToStatic]);
 
   const handleChapterEnded = useCallback(() => {
     if (stageRef.current === "chapter-video") {
-      advanceToOutroBot();
+      advanceToLoadingVideo();
     }
-  }, [advanceToOutroBot]);
+  }, [advanceToLoadingVideo]);
 
   const handleChapterError = useCallback(() => {
     chapterErrorSrcRef.current = chapterVideoSrc;
     if (stageRef.current === "chapter-video") {
-      advanceToOutroBot();
+      advanceToLoadingVideo();
     }
-  }, [chapterVideoSrc, advanceToOutroBot]);
+  }, [chapterVideoSrc, advanceToLoadingVideo]);
 
   const handleLoadingEnded = useCallback(() => {
     if (stageRef.current === "loading-video") {
@@ -751,19 +723,18 @@ export function AboutChapterMedia({
   // Preloading controls:
   // - Preload bot video as soon as the chapter is NEAR the viewport so intro-bot starts instantly
   // - Preload chapter video while intro-bot is playing (or when card is in view)
-  // - Preload Loading video while outro-bot is playing or when chapter is near the viewport
+  // - Preload Loading video while chapter-video is playing or when chapter is near the viewport
   // - Never preload all videos on initial page load
   const isNearViewport = cardNearView || cardInView;
   const botPreload = (isNearViewport || hasStartedFirstVisitRef.current) ? "auto" : "none";
   const chapterPreload = (
     stage === "intro-bot" ||
     stage === "chapter-video" ||
-    stage === "outro-bot" ||
     cardInView ||
     hasStartedFirstVisitRef.current
   ) ? "auto" : "none";
   const loadingPreload = (
-    stage === "outro-bot" ||
+    stage === "chapter-video" ||
     stage === "loading-video" ||
     isNearViewport
   ) ? "auto" : "none";
@@ -804,7 +775,7 @@ export function AboutChapterMedia({
       "aria-hidden": "true"
     }),
 
-    // Layer 2: Bot F-01 Transition Video (Intro, Outro, and Revisit)
+    // Layer 2: Bot F-01 Transition Video (Intro on 1st visit, and Revisit on every return)
     !reduced && h("video", {
       ref: (el) => {
         botVideoRef.current = el;
@@ -832,7 +803,7 @@ export function AboutChapterMedia({
       "aria-hidden": "true"
     }),
 
-    // Layer 3: Loading Video (plays once after outro-bot on first visit only, before static artwork)
+    // Layer 3: Loading Video (plays once after chapter-video on first visit only, before static artwork)
     !reduced && h("video", {
       ref: (el) => {
         loadingVideoRef.current = el;
